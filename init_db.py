@@ -1,4 +1,5 @@
 import boto3
+import json
 
 client_aws = boto3.client('dynamodb')
 response = client_aws.describe_endpoints()
@@ -53,7 +54,7 @@ client.put_item(
         'info': {'S': 'plot_0101'},
         'row': {'N': '1'},
         'column': {'N': '1'},
-        'yield': {'N': '105'},
+        'yield': {'N': '1105'},
     }
 )
 
@@ -61,4 +62,71 @@ client.get_item(TableName='ft_db',
     Key={'trial_id': {'S': 'trial_1A'},
         'info': {'S': 'plot_0101'}
     }
+)
+
+
+
+response = client.query(
+    TableName='ft_db',
+    KeyConditionExpression='trial_id = :trial_id',
+    ExpressionAttributeValues={
+        ':trial_id': {'S': 'trial_1A'},
+        # ':info': {'S': 'plot'}
+    }
+)
+print(response['Items'])
+response['Items'][1]
+
+
+response = client.query(
+    TableName='ft_db',
+    KeyConditionExpression='trial_id = :trial_id AND begins_with ( info , :info )',
+    ExpressionAttributeValues={
+        ':trial_id': {'S': 'trial_1A'},
+        ':info': {'S': 'plot'}
+    }
+)
+print(response['Items'])
+
+# from boto3.dynamodb.types import TypeDeserializer
+
+# def ddb_deserialize(r, type_deserializer = TypeDeserializer()):
+#     return type_deserializer.deserialize({"M": r})
+
+# def lambda_handler(event, context):
+#     new_images = [ ddb_deserialize(r["dynamodb"]["NewImage"]) for r in event['Records'] ]
+#     print('Converted records', json.dumps(new_images, indent=2))
+
+import dynamo_utils
+json_string = {"row": 2, "column": 2, "yield": 310}
+x=dynamo_utils.python_obj_to_dynamo_obj(json_string)
+# dynamo_utils.dynamo_obj_to_python_obj(x)
+# json_obj = json.dumps(json_string)
+
+dynamo_json_string = {"row": {"N":"2"}, "column": {"N":"2"}, "yield": {"N":"123"}}
+dynamo_utils.dynamo_obj_to_python_obj(dynamo_json_string)
+
+
+json_string = '{"row": 2, "column": 2, "yield": 310}'
+json_obj = json.loads(json_string)
+
+dynamodb = session.resource('dynamodb', endpoint_url='http://localhost:8000')
+table = dynamodb.Table('ft_db')
+
+table.put_item(Item={
+    'trial_id': 'trial_1A',
+    'info': 'plot_0202',
+    **json_obj
+    }
+)
+
+jj = table.get_item(
+    Key={'trial_id': 'trial_1A',
+        'info': 'plot_0202'
+    }
+)
+jj["Item"]["yield"]
+
+response = table.scan(
+Select="ALL_ATTRIBUTES",
 )
