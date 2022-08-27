@@ -46,6 +46,17 @@ def init_ft_table(client):
 
 client.describe_table(TableName='ft_db')
 
+
+dynamodb = session.resource('dynamodb', endpoint_url='http://localhost:8000')
+table = dynamodb.Table('ft_db')
+table.item_count
+table.key_schema
+
+
+
+
+
+
 client.put_item(
     TableName='ft_db',
     Item = {

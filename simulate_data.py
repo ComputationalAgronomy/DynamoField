@@ -13,11 +13,6 @@ ncol = 4
 ntrt  = 6
 
 
-simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name)
-simulate_trial_data(trial_id_list, "temp_trialmeta.csv")
-simulate_trt_data(trial_id_list, ntrt, "temp_trt.csv")
-
-
 def simulate_one_trial(trial_id, nrow, ncol, ntrt):
     nrep = int(nrow * ncol / ntrt )
     trt_list =  [ "T"+str(trt) for trt in range(1, ntrt+1, 1) for _ in range(nrep)]
@@ -37,15 +32,6 @@ def simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name):
             f.writelines(sim_data)
 
 
-def simulate_trial_data(trial_id_list, file_name):
-    with open(file_name, "w") as f:
-        sim_title = "trial_id,location,contact,irrigation\n"
-        f.write(sim_title)
-        for index, trial in enumerate(trial_id_list):
-            sim_data = f"{trial},Loc_{index},person_{index},Yes\n"
-            f.writelines(sim_data)
-
-
 def simulate_trt_data(trial_id_list, ntrt, file_name):
     with open(file_name, "w") as f:
         sim_title = "trial_id,trt_number,treatment,seed\n"
@@ -53,4 +39,35 @@ def simulate_trt_data(trial_id_list, ntrt, file_name):
         for trial in trial_id_list:
             sim_data = [f"{trial},T{t},trt_{t}X,seed_type_A\n" for t in range(1, ntrt+1, 1)]
             f.writelines(sim_data)
+
+
+
+def simulate_trial_field_data(trial_id_list, file_name):
+    with open(file_name, "w") as f:
+        sim_title = "trial_id,location,soil_type,soil_ph,irrigation\n"
+        f.write(sim_title)
+        for index, trial in enumerate(trial_id_list):
+            sim_data = f"{trial},Loc_{index},sandy,{random.uniform(5, 9):.1f}Yes\n"
+            f.writelines(sim_data)
+
+
+
+
+def simulate_trial_contact(trial_id_list, file_name):
+    with open(file_name, "w") as f:
+        sim_title = "trial_id,person,phone\n"
+        f.write(sim_title)
+        for index, trial in enumerate(trial_id_list):
+            phone = f"{int(random.uniform(100, 900))}-{int(random.uniform(100, 900))}-{int(random.uniform(100, 900))}"
+            sim_data = f"{trial},John,{phone}\n"
+            f.writelines(sim_data)
+
+
+
+
+simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name)
+simulate_trt_data(trial_id_list, ntrt, "temp_trt.csv")
+
+simulate_trial_field_data(trial_id_list, "temp_trial_meta.csv")
+simulate_trial_contact(trial_id_list, "temp_trial_contact.csv")
 

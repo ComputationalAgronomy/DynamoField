@@ -37,7 +37,7 @@ response = client.query(
     TableName='ft_db',
     KeyConditionExpression='trial_id = :trial_id AND begins_with ( info , :info )',
     ExpressionAttributeValues={
-        ':trial_id': {'S': 'trial_2B'},
+        ':trial_id': {'S': 'trial_3C'},
         ':info': {'S': 'plot'}
     },
     ReturnConsumedCapacity="Indexes"
@@ -50,7 +50,7 @@ response = client.query(
     TableName='ft_db',
     KeyConditionExpression='trial_id = :trial_id AND begins_with ( info , :info )',
     ExpressionAttributeValues={
-        ':trial_id': {'S': 'trial_2B'},
+        ':trial_id': {'S': 'trial_3C'},
         ':info': {'S': 'plot_'},
     },
     ProjectionExpression='#trt,#y',
@@ -62,6 +62,20 @@ response = client.query(
 )
 print(response['Items'])
 
+
+
+
+
+response = client.query(
+    TableName='ft_db',
+    KeyConditionExpression='trial_id = :trial_id ',
+    ExpressionAttributeValues={
+        ':trial_id': {'S': 'trial_3C'},
+        # ':info': {'S': 'plot_'},
+    },
+    ProjectionExpression='trial_id, info',
+)
+print(response['Items'])
 
 
 
