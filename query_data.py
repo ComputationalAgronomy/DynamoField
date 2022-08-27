@@ -14,68 +14,10 @@ client = session.client('dynamodb',
 
 response = client.list_tables()
 
-def init_ft_table(client):
-    response = client.create_table(
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'trial_id',
-                'AttributeType': 'S'
-            },
-            {
-                'AttributeName': 'info',
-                'AttributeType': 'S'
-            }
-        ],
-        TableName='ft_db',
-        KeySchema=[
-            {
-                'AttributeName': 'trial_id',
-                'KeyType': 'HASH'
-            },
-            {
-                'AttributeName': 'info',
-                'KeyType': 'RANGE'
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 10,
-            'WriteCapacityUnits': 10
-        },
-    )    
 
 
-client.describe_table(TableName='ft_db')
-
-client.put_item(
-    TableName='ft_db',
-    Item = {
-        'trial_id': {'S': 'trial_1A'},
-        'info': {'S': 'plot_0101'},
-        'row': {'N': '1'},
-        'column': {'N': '1'},
-        'yield': {'N': '1105'},
-    }
-)
-
-client.put_item(
-    TableName='ft_db',
-    Item = {
-        {'trial_id': {'S': 'trial_1A'}},
-        {'info': {'S': 'plot_0101'}},
-        {'row': {'N': '1'},
-        'column': {'N': '1'},
-        'yield': {'N': '1105'}},
-    }
-)
-
-
-
-client.get_item(TableName='ft_db',
-    Key={'trial_id': {'S': 'trial_3C'},
-        'info': {'S': 'plot_0101'}
-    }
-)
-
+client.describe_table(TableName="ft_db")["Table"]
+client.describe_table(TableName="ft_db")["Table"]["ItemCount"]
 
 
 response = client.query(
