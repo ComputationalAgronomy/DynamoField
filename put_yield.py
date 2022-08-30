@@ -7,6 +7,12 @@ import pandas
 import dynamo_utils
 # numpy.repeat([], 4)
 
+import boto3
+import json
+
+
+session = boto3.session.Session()
+client = session.client('dynamodb', endpoint_url='http://localhost:8000')
 
 client.describe_table(TableName="ft_db")["Table"]["ItemCount"]
 
@@ -230,19 +236,4 @@ for trial_id, df_group in df_trials:
 
 
 
-
-
-
-with open(file_name, "r") as f:
-    # data = csv.reader(f, delimiter=',', quotechar='"')
-    # data[0]
-    # for l in data:
-    #     print(l)
-    col_names = f.readline().strip().split(",")
-    print(col_names)
-    for l in f.readlines():
-        plot = l.strip().split(",")
-        [plot[i] for i in index_column]
-        print(l.strip())
-            
 

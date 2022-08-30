@@ -103,20 +103,19 @@ class Field:
 
     def get_all_non_standard_info(self, trial_id):
         list_sort_keys = self.get_all_sort_keys(trial_id)
-        other_sort_keys = [i for i in list_sort_key if not i.startswith('plot_') | i.startswith('trt_')]
+        other_sort_keys = [i for i in list_sort_keys if not i.startswith('plot_') | i.startswith('trt_')]
 
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
+        other_info_dict = {}
         for sort_key in other_sort_keys:
-            Keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
+            primary_keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
+            keywords = {"KeyConditionExpression": primary_keys}
+            response = self.table.query(**keywords)
+            other_info_dict[sort_key] = response["Items"]
+        # for item in response['Items']:
+        #     sort_key_list.append(item.get("info"))
         
-        keywords = {"KeyConditionExpression": Keys, 
-                    "ProjectionExpression": Field.SORT_KEY}
-        response = self.table.query(**keywords)
-        sort_key_list = []
-        for item in response['Items']:
-            sort_key_list.append(item.get("info"))
-        
-        return sort_key_list
+        return other_info_dict
 
     def scan_plots(self, trial_id):
         """

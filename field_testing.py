@@ -1,5 +1,7 @@
+import boto3
 import field
 import importlib
+import pandas as pd
 
 importlib.reload(field)
 
@@ -42,3 +44,5 @@ df_trt = ft.scan_treatments(trial_id)
 
 pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
 
+
+ft.get_all_non_standard_info(trial_id)

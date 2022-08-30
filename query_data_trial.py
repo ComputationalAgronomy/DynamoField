@@ -2,6 +2,11 @@ import boto3
 import json
 
 from boto3.dynamodb.conditions import Key, Attr
+from botocore.exceptions import ClientError
+
+
+session = boto3.session.Session()
+client = session.client('dynamodb', endpoint_url='http://localhost:8000')
 
 
 table_name = "ft_db"
@@ -83,7 +88,7 @@ response = client.scan(
 print(response['Items'])
 
 
-table.scan()
+
 
 response = client.scan(
     TableName='ft_db',
@@ -112,38 +117,3 @@ response = client.query(
 print(response['Items'])
 
 
-
-def scan_template(table, scan_kwargs):
-    output = []
-    try:
-        done = False
-        start_key = None
-        while not done:
-            if start_key:
-                scan_kwargs['ExclusiveStartKey'] = start_key
-            # response = self.table.scan(**scan_kwargs)
-            response = table.scan(**scan_kwargs)
-            output.extend(response.get('Items', []))
-            start_key = response.get('LastEvaluatedKey', None)
-            done = start_key is None
-    except ClientError as err:
-        logger.error(
-            "Couldn't scan for movies. Here's why: %s: %s",
-            err.response['Error']['Code'], err.response['Error']['Message'])
-        raise
-    return output
-
-
-scan_kwargs = {
-    # 'FilterExpression': Key('info').begins_with("plot"),
-    # 'FilterExpression': Key('info').ne("plot_0404"),
-    'FilterExpression': Attr('yield').not_exists(),
-    'ProjectionExpression': "trial_id, info",
-    # 'ExpressionAttributeNames': {"#yr": "year"}
-    "ReturnConsumedCapacity": "Total"
-}
-
-output = scan_template(table, scan_kwargs)
-output
-
-    
