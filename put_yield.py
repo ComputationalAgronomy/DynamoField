@@ -63,7 +63,7 @@ REQUIRED_COLUMN = {
 REQUIRED_DATA = ["treatment", "yield"]
 REQUIRED_SORT_KEY = {["column", "row"], "plot"}
 REQUIRED_SORT_KEY = ["column", "row"]
-REQUIRED_PRIMARY_KEY = "trial_id"
+REQUIRED_PARTITION_KEY = "trial_id"
 
 
 
@@ -71,12 +71,12 @@ REQUIRED_PRIMARY_KEY = "trial_id"
 
 def json_key_type_value(key, type, value):
     json = f"'{key}': {{'{type}': '{value}'}}"
-    return(json)
+    return json
 
 
 def json_key_value(key, value):
     json = f"'{key}': '{value}'"
-    return(json)
+    return json
 
 
 def create_sort_key(data):
@@ -85,7 +85,7 @@ def create_sort_key(data):
     # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(sort_key)
     # 'trial_id': {'S': 'trial_1A'},
     #     'info': {'S': 'plot_0101'},
-    return(sort_key)
+    return sort_key 
 
 
 
@@ -94,7 +94,7 @@ def create_json_dynamodb(scheme, data):
     for k, v in scheme.items():
         # json_key_type_value(k, v, data[k])
         json_output[k] = json_key_value(k, data[k])
-    return(json_output)
+    return json_output 
 
 
 def create_json_dict(keys, data):
@@ -103,7 +103,7 @@ def create_json_dict(keys, data):
         # json_key_type_value(k, v, data[k])
         # json_output[k] = json_key_value(k, data[k])
     # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_output)
-    return(json_output)
+    return json_output 
 
 
 
@@ -129,21 +129,21 @@ col_names = df.columns.values.tolist()
 # _ = [index_others.remove(i) for i in index_column]
 
 data_names = col_names
-data_names.remove(REQUIRED_PRIMARY_KEY)
+data_names.remove(REQUIRED_PARTITION_KEY)
 _ = [data_names.remove(k) for k in REQUIRED_SORT_KEY]
 data_names
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 
 df_trials = df.groupby("trial_id")
 for trial_id, df_group in df_trials:
-    primary_key = {'trial_id' : f"{trial_id}"}
+    partition_key = {'trial_id' : f"{trial_id}"}
     for index, dfrow in df_group.iterrows():
         print(dfrow['row'], dfrow['column'])
         sort_key = create_sort_key(dfrow)
         # python_obj_to_dynamo_obj(json_output)
         attributes_data = create_json_dict(data_names, dfrow)
-        # primary_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**primary_key, **sort_key, **attributes_data}
+        # partition_key | sort_key | attributes_data  # python 3.9 only
+        json_data = {**partition_key, **sort_key, **attributes_data}
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
         client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
 
@@ -158,20 +158,20 @@ df = df.astype(str)
 
 col_names = df.columns.values.tolist()
 data_names = col_names
-data_names.remove(REQUIRED_PRIMARY_KEY)
+data_names.remove(REQUIRED_PARTITION_KEY)
 data_names
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 df_trials = df.groupby("trial_id")
 
 for trial_id, df_group in df_trials:
-    primary_key = {'trial_id' : f"{trial_id}"}
+    partition_key = {'trial_id' : f"{trial_id}"}
     for index, dfrow in df_group.iterrows():
-        sort_key = sort_key = {'info' : f"{data_type}_{dfrow['trt_number']}"}
+        sort_key = sort_key = {'info' : f"{data_type}_{dfrow['treatment']}"}
         # python_obj_to_dynamo_obj(json_output)
         attributes_data = create_json_dict(data_names, dfrow)
-        # primary_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**primary_key, **sort_key, **attributes_data}
+        # partition_key | sort_key | attributes_data  # python 3.9 only
+        json_data = {**partition_key, **sort_key, **attributes_data}
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
         client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
 
@@ -184,20 +184,20 @@ df = df.astype(str)
 
 col_names = df.columns.values.tolist()
 data_names = col_names
-data_names.remove(REQUIRED_PRIMARY_KEY)
+data_names.remove(REQUIRED_PARTITION_KEY)
 data_names
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 df_trials = df.groupby("trial_id")
 
 for trial_id, df_group in df_trials:
-    primary_key = {'trial_id' : f"{trial_id}"}
+    partition_key = {'trial_id' : f"{trial_id}"}
     for index, dfrow in df_group.iterrows():
         sort_key = sort_key = {'info' : f"{data_type}"}
         # python_obj_to_dynamo_obj(json_output)
         attributes_data = create_json_dict(data_names, dfrow)
-        # primary_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**primary_key, **sort_key, **attributes_data}
+        # partition_key | sort_key | attributes_data  # python 3.9 only
+        json_data = {**partition_key, **sort_key, **attributes_data}
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
         client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
 
@@ -210,20 +210,20 @@ df = df.astype(str)
 
 col_names = df.columns.values.tolist()
 data_names = col_names
-data_names.remove(REQUIRED_PRIMARY_KEY)
+data_names.remove(REQUIRED_PARTITION_KEY)
 data_names
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 df_trials = df.groupby("trial_id")
 
 for trial_id, df_group in df_trials:
-    primary_key = {'trial_id' : f"{trial_id}"}
+    partition_key = {'trial_id' : f"{trial_id}"}
     for index, dfrow in df_group.iterrows():
         sort_key = sort_key = {'info' : f"{data_type}"}
         # python_obj_to_dynamo_obj(json_output)
         attributes_data = create_json_dict(data_names, dfrow)
-        # primary_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**primary_key, **sort_key, **attributes_data}
+        # partition_key | sort_key | attributes_data  # python 3.9 only
+        json_data = {**partition_key, **sort_key, **attributes_data}
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
         client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
 

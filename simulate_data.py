@@ -19,7 +19,7 @@ def simulate_one_trial(trial_id, nrow, ncol, ntrt):
     random.shuffle(trt_list)
     design = itertools.product(range(1, nrow+1, 1), range(1, ncol+1, 1))
     sim_data = [f"{trial_id},{d[0]},{d[1]},{t},{random.uniform(50, 100):.2f},{random.uniform(1, 10):.1f}\n" for d, t in zip(design, trt_list)]
-    return(sim_data)
+    return sim_data
 
 
 def simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name):
@@ -34,7 +34,7 @@ def simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name):
 
 def simulate_trt_data(trial_id_list, ntrt, file_name):
     with open(file_name, "w") as f:
-        sim_title = "trial_id,trt_number,treatment,seed\n"
+        sim_title = "trial_id,treatment,treatment_name,seed\n"
         f.write(sim_title)
         for trial in trial_id_list:
             sim_data = [f"{trial},T{t},trt_{t}X,seed_type_A\n" for t in range(1, ntrt+1, 1)]
@@ -65,7 +65,7 @@ def simulate_trial_contact(trial_id_list, file_name):
 
 
 
-simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name)
+simulate_yield_data(trial_id_list, nrow, ncol, ntrt, "temp_yield.csv")
 simulate_trt_data(trial_id_list, ntrt, "temp_trt.csv")
 
 simulate_trial_field_data(trial_id_list, "temp_trial_meta.csv")
