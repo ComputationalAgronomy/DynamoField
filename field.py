@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Field:
     """Encapsulates an Amazon DynamoDB table of field trial data."""
-    PRIMARY_KEY = "trial_id"
+    PARTITION_KEY = "trial_id"
     SORT_KEY = "info"
 
     def __init__(self, dyn_resource, table_name):
@@ -78,7 +78,7 @@ class Field:
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
         """
-        Keys = Key(Field.PRIMARY_KEY).eq(trial_id)
+        Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         if sort_key is not None:
             Keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
         keywords = {"KeyConditionExpression": Keys}
@@ -90,7 +90,7 @@ class Field:
 
     def get_all_sort_keys(self, trial_id):
         
-        Keys = Key(Field.PRIMARY_KEY).eq(trial_id)
+        Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         keywords = {"KeyConditionExpression": Keys, 
                     "ProjectionExpression": Field.SORT_KEY}
         response = self.table.query(**keywords)
@@ -105,7 +105,10 @@ class Field:
         list_sort_keys = self.get_all_sort_keys(trial_id)
         other_sort_keys = [i for i in list_sort_key if not i.startswith('plot_') | i.startswith('trt_')]
 
-        Keys = Key(Field.PRIMARY_KEY).eq(trial_id)
+        Keys = Key(Field.PARTITION_KEY).eq(trial_id)
+        for sort_key in other_sort_keys:
+            Keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
+        
         keywords = {"KeyConditionExpression": Keys, 
                     "ProjectionExpression": Field.SORT_KEY}
         response = self.table.query(**keywords)
@@ -120,7 +123,7 @@ class Field:
         Scans all plots and return data
         :return: The list of plots
         """
-        Keys = Key(Field.PRIMARY_KEY).eq(trial_id)
+        Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         scan_kwargs = {
             #"KeyConditionExpression": Keys, 
             'FilterExpression': Keys & Key(Field.SORT_KEY).begins_with("plot_")}
@@ -138,7 +141,7 @@ class Field:
         Scans all plots and return data
         :return: The list of plots
         """
-        Keys = Key(Field.PRIMARY_KEY).eq(trial_id)
+        Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         scan_kwargs = {
             #"KeyConditionExpression": Keys, 
             'FilterExpression': Keys & Key(Field.SORT_KEY).begins_with("trt_")}

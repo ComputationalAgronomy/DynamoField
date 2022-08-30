@@ -7,10 +7,10 @@ import json
 
 session = boto3.session.Session()
 client = session.client('dynamodb', 
-    endpoint_url='http://localhost:8000',
-    aws_access_key_id='temp',
-    aws_secret_access_key='temp',
-)
+    endpoint_url='http://localhost:8000')
+#     aws_access_key_id='temp',
+#     aws_secret_access_key='temp',
+# )
 
 response = client.list_tables()
 

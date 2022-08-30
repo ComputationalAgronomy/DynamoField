@@ -40,12 +40,12 @@ print(response['Items'])
 
 
 
-def query_trial(client, table_name, primary_key, sort_key_prefix="p"):
+def query_trial(client, table_name, partition_key, sort_key_prefix="p"):
     response = client.query(
         TableName=table_name,
         KeyConditionExpression='trial_id = :trial_id AND begins_with ( info , :info )',
         ExpressionAttributeValues={
-            ':trial_id': {'S': primary_key},
+            ':trial_id': {'S': partition_key},
             ':info': {'S': sort_key_prefix},
         },
         # ProjectionExpression='#trt,#y',
