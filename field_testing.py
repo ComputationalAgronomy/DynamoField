@@ -44,5 +44,6 @@ df_trt = ft.scan_treatments(trial_id)
 
 pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
 
-
+list_sort_key = ft.get_all_sort_keys(trial_id)
+ft.get_all_sort_keys(trial_id, prune_common=True)
 ft.get_all_non_standard_info(trial_id)

@@ -17,7 +17,6 @@ def get_item_count(client, table_name):
 
 
 
-
 response = client.query(
     TableName='ft_db',
     KeyConditionExpression='trial_id = :trial_id',

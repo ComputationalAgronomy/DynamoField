@@ -51,6 +51,18 @@ def simulate_trial_field_data(trial_id_list, file_name):
             f.writelines(sim_data)
 
 
+def simulate_management_data(trial_id_list, file_name):
+    with open(file_name, "w") as f:
+        sim_title = "trial_id,fertilizer,type,amount,solid_or_powder\n"
+        f.write(sim_title)
+        sim_data = [None]*4
+        for index, trial in enumerate(trial_id_list):
+            sim_data[0] = f"{trial},N,NPK_1,{random.uniform(10, 50):.1f},solid\n"
+            sim_data[1] = f"{trial},N,NPK_2,{random.uniform(10, 50):.1f},powder\n"
+            sim_data[2] = f"{trial},P,,{random.uniform(10, 50):.1f},solid\n"
+            sim_data[3] = f"{trial},P,,{random.uniform(10, 50):.1f},solid\n"
+            f.writelines(sim_data)
+
 
 
 def simulate_trial_contact(trial_id_list, file_name):
@@ -71,3 +83,4 @@ simulate_trt_data(trial_id_list, ntrt, "temp_trt.csv")
 simulate_trial_field_data(trial_id_list, "temp_trial_meta.csv")
 simulate_trial_contact(trial_id_list, "temp_trial_contact.csv")
 
+simulate_management_data(trial_id_list, "temp_trial_management.csv")

@@ -88,7 +88,7 @@ class Field:
 
 
 
-    def get_all_sort_keys(self, trial_id):
+    def get_all_sort_keys(self, trial_id, prune_common=False):
         
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         keywords = {"KeyConditionExpression": Keys, 
@@ -97,17 +97,19 @@ class Field:
         sort_key_list = []
         for item in response['Items']:
             sort_key_list.append(item.get("info"))
-        
+        if prune_common:
+            other_sort_keys = [i for i in sort_key_list if not i.startswith('plot_') | i.startswith('trt_')]    
+            return other_sort_keys
+
         return sort_key_list
 
 
     def get_all_non_standard_info(self, trial_id):
-        list_sort_keys = self.get_all_sort_keys(trial_id)
-        other_sort_keys = [i for i in list_sort_keys if not i.startswith('plot_') | i.startswith('trt_')]
-
+        list_sort_keys = self.get_all_sort_keys(trial_id, prune_common=True)
+        
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         other_info_dict = {}
-        for sort_key in other_sort_keys:
+        for sort_key in list_sort_keys:
             primary_keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
             keywords = {"KeyConditionExpression": primary_keys}
             response = self.table.query(**keywords)

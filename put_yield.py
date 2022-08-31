@@ -3,9 +3,11 @@ import itertools
 import numpy
 
 import csv
-import pandas
+import pandas as pd
 import dynamo_utils
 # numpy.repeat([], 4)
+
+from decimal import Decimal
 
 import boto3
 import json
@@ -105,7 +107,7 @@ def create_json_dynamodb(scheme, data):
 
 def create_json_dict(keys, data):
     # json_output = dict()
-    json_output = {k:data[k] for k in keys}
+    json_output = {k:data[k] for k in keys if pd.notnull(data[k])}
         # json_key_type_value(k, v, data[k])
         # json_output[k] = json_key_value(k, data[k])
     # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_output)
@@ -114,13 +116,11 @@ def create_json_dict(keys, data):
 
 
 
-from decimal import Decimal
-Decimal(2.4)
 
 
 
 data_type = "yield"
-df = pandas.read_csv(f"temp_{data_type}.csv")
+df = pd.read_csv(f"temp_{data_type}.csv")
 df = df.astype(str)
 df.describe()
 df.dtypes
@@ -159,7 +159,7 @@ for trial_id, df_group in df_trials:
 
 
 data_type = "trt"
-df = pandas.read_csv(f"temp_{data_type}.csv")
+df = pd.read_csv(f"temp_{data_type}.csv")
 df = df.astype(str)
 
 col_names = df.columns.values.tolist()
@@ -185,7 +185,7 @@ for trial_id, df_group in df_trials:
 
 
 data_type = "trial_meta"
-df = pandas.read_csv(f"temp_{data_type}.csv")
+df = pd.read_csv(f"temp_{data_type}.csv")
 df = df.astype(str)
 
 col_names = df.columns.values.tolist()
@@ -211,8 +211,8 @@ for trial_id, df_group in df_trials:
 
 
 data_type = "trial_contact"
-df = pandas.read_csv(f"temp_{data_type}.csv")
-df = df.astype(str)
+df = pd.read_csv(f"temp_{data_type}.csv")
+# df = df.astype(str)
 
 col_names = df.columns.values.tolist()
 data_names = col_names
@@ -233,6 +233,37 @@ for trial_id, df_group in df_trials:
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
         client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
 
+
+
+
+
+
+
+
+data_type = "trial_management"
+df = pd.read_csv(f"temp_{data_type}.csv")
+# df = df.astype(str)
+
+col_names = df.columns.values.tolist()
+data_names = col_names
+data_names.remove(REQUIRED_PARTITION_KEY)
+data_names
+
+dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
+df_trials = df.groupby("trial_id")
+
+for trial_id, df_group in df_trials:
+    partition_key = {'trial_id' : f"{trial_id}"}
+    for index, dfrow in df_group.reset_index().iterrows():
+        sort_key = {'info' : f"{data_type}_{index}"}
+        # python_obj_to_dynamo_obj(json_output)
+        attributes_data = create_json_dict(data_names, dfrow)
+        # partition_key | sort_key | attributes_data  # python 3.9 only
+        json_data = {**partition_key, **sort_key, **attributes_data}
+        json_data = json.loads(json.dumps(json_data), parse_float=Decimal)
+        dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
+        print(dynamo_json)
+        _ = client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
 
 
 
