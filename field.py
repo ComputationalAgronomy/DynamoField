@@ -1,13 +1,13 @@
-import boto3
-from boto3.dynamodb.conditions import Key
-from botocore.exceptions import ClientError
 import json
 import logging
-
-
 from decimal import Decimal
 
+import boto3
 import pandas as pd
+from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
+
+import json_utils
 
 # from io import BytesIO
 # import os
@@ -33,10 +33,10 @@ class Field:
         self.dyn_resource = dyn_resource
         self.table = self.dyn_resource.Table('ft_db')
 
-
-    def query_template(self, keywords):
+    @staticmethod
+    def template_query_table(table, keywords):
         try:
-            response = self.table.query(**keywords)
+            response = table.query(**keywords)
         except ClientError as err:
             logger.error(
                 "Couldn't query field trial. Here's why: %s: %s",
@@ -46,8 +46,8 @@ class Field:
             return response#['Items']
         pass
 
-
-    def scan_template(self, scan_kwargs):
+    @staticmethod
+    def template_scan_table(table, scan_kwargs):
         """
         Scans all plots and return data
         :return: The list of plots
@@ -59,7 +59,7 @@ class Field:
             while not done:
                 if start_key:
                     scan_kwargs['ExclusiveStartKey'] = start_key
-                response = self.table.scan(**scan_kwargs)
+                response = table.scan(**scan_kwargs)
                 results.extend(response.get('Items', []))
                 start_key = response.get('LastEvaluatedKey', None)
                 done = start_key is None
@@ -71,9 +71,15 @@ class Field:
         return results
 
 
+    def template_query(self, keywords):
+        return Field.template_query_table(self.table, keywords)
 
+    def template_scan(self, scan_kwargs):
+        return Field.template_scan_table(self.table, scan_kwargs)
 
-    def query_trial(self, trial_id, sort_key=None):
+    
+
+    def get_trial(self, trial_id, sort_key=None):
         """
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
@@ -83,12 +89,12 @@ class Field:
             Keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
         keywords = {"KeyConditionExpression": Keys}
         
-        response = self.query_template(keywords)
+        response = self.template_query(keywords)
         return response['Items']
 
 
 
-    def get_all_sort_keys(self, trial_id, prune_common=False):
+    def list_all_sort_keys(self, trial_id, prune_common=False):
         
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         keywords = {"KeyConditionExpression": Keys, 
@@ -105,7 +111,7 @@ class Field:
 
 
     def get_all_non_standard_info(self, trial_id):
-        list_sort_keys = self.get_all_sort_keys(trial_id, prune_common=True)
+        list_sort_keys = self.list_all_sort_keys(trial_id, prune_common=True)
         
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         other_info_dict = {}
@@ -119,7 +125,8 @@ class Field:
         
         return other_info_dict
 
-    def scan_plots(self, trial_id):
+
+    def get_all_plots(self, trial_id):
         """
         Scans all plots and return data
         :return: The list of plots
@@ -127,17 +134,16 @@ class Field:
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         scan_kwargs = {
             #"KeyConditionExpression": Keys, 
-            'FilterExpression': Keys & Key(Field.SORT_KEY).begins_with("plot_")}
+            'FilterExpression': Keys & Key(Field.SORT_KEY).begins_with("plot_")
             # 'ProjectionExpression': "#yr, title, info.rating",
-        results = self.scan_template(scan_kwargs)
-        df_list = [pd.DataFrame.from_dict(r, orient='index') for r in results]
-        df = pd.concat(df_list, axis=1).transpose()
-
+        }
+        results = self.template_scan(scan_kwargs)
+        df = json_utils.result_list_to_df(results)
         return df
 
 
 
-    def scan_treatments(self, trial_id):
+    def get_all_treatments(self, trial_id):
         """
         Scans all plots and return data
         :return: The list of plots
@@ -147,14 +153,25 @@ class Field:
             #"KeyConditionExpression": Keys, 
             'FilterExpression': Keys & Key(Field.SORT_KEY).begins_with("trt_")}
             # 'ProjectionExpression': "#yr, title, info.rating",
-        results = self.scan_template(scan_kwargs)
-        df = pd.read_json(json.dumps(results))
+        results = self.template_scan(scan_kwargs)
+        df = json_utils.result_list_to_df(results)
         return df
-        df_list = [pd.DataFrame.from_dict(r, orient='index') for r in results]
-        df = pd.concat(df_list, axis=1).transpose()
+        
 
+
+    def get_by_sort_key(self, sort_key, type="eq"):
+        
+        Keys = Key(Field.SORT_KEY).eq(sort_key)
+        if type == "begins":
+            Keys = Key(Field.SORT_KEY).begins_with(sort_key)
+        elif type != "eq":
+            logging.warning(f"Invalid Key type: {type}")
+        scan_kwargs = {
+            'FilterExpression': Keys
+        }
+        results = self.template_scan(scan_kwargs)
+        df = json_utils.result_list_to_df(results)
+        
         return df
-
-
 
 

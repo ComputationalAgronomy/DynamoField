@@ -25,7 +25,7 @@ def simulate_one_trial(trial_id, nrow, ncol, ntrt):
 def simulate_yield_data(trial_id_list, nrow, ncol, ntrt, file_name):
     # list(itertools.product(range(1, 7, 1), range(1, 5, 1)))
     with open(file_name, "w") as f:
-        sim_title = "trial_id,row,column,treatment,yield,meta\n"
+        sim_title = "trial_id,row,column,treatment,yields,meta\n"
         f.write(sim_title)
         for trial in trial_id_list:
             sim_data = simulate_one_trial(trial, nrow, ncol, ntrt)
@@ -47,7 +47,7 @@ def simulate_trial_field_data(trial_id_list, file_name):
         sim_title = "trial_id,location,soil_type,soil_ph,irrigation\n"
         f.write(sim_title)
         for index, trial in enumerate(trial_id_list):
-            sim_data = f"{trial},Loc_{index},sandy,{random.uniform(5, 9):.1f}Yes\n"
+            sim_data = f"{trial},Loc_{index},sandy,{random.uniform(5, 9):.1f},Yes\n"
             f.writelines(sim_data)
 
 
