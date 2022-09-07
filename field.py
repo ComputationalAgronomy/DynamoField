@@ -74,24 +74,9 @@ class Field:
     def template_query(self, keywords):
         return Field.template_query_table(self.table, keywords)
 
+
     def template_scan(self, scan_kwargs):
         return Field.template_scan_table(self.table, scan_kwargs)
-
-    
-
-    def get_trial(self, trial_id, sort_key=None):
-        """
-        :param trial_id: Trial ID
-        :return: All info relate to the given trial ID.
-        """
-        Keys = Key(Field.PARTITION_KEY).eq(trial_id)
-        if sort_key is not None:
-            Keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
-        keywords = {"KeyConditionExpression": Keys}
-        
-        response = self.template_query(keywords)
-        return response['Items']
-
 
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
@@ -108,8 +93,9 @@ class Field:
             return other_sort_keys
 
         return sort_key_list
+    
 
-
+    
     def get_all_non_standard_info(self, trial_id):
         list_sort_keys = self.list_all_sort_keys(trial_id, prune_common=True)
         
@@ -175,3 +161,15 @@ class Field:
         return df
 
 
+    def get_by_trial_id(self, trial_id, sort_key=None):
+            """
+            :param trial_id: Trial ID
+            :return: All info relate to the given trial ID.
+            """
+            Keys = Key(Field.PARTITION_KEY).eq(trial_id)
+            if sort_key is not None:
+                Keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
+            keywords = {"KeyConditionExpression": Keys}
+            
+            response = self.template_query(keywords)
+            return response['Items']

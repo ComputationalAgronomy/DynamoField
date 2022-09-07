@@ -5,12 +5,16 @@ import pandas as pd
 
 importlib.reload(field)
 
+
+
 table_name = "ft_db"
 
 session = boto3.session.Session()
 dynamodb_res = session.resource('dynamodb', endpoint_url='http://localhost:8000')
 table = dynamodb_res.Table('ft_db')
 table.item_count
+
+
 
 
 
@@ -23,9 +27,9 @@ trial_id = "trial_3C"
 trial_id = "trial_2B"
 
 
-field_trial.get_trial(trial_id)
-field_trial.get_trial(trial_id=["trial_3C", "trial_2B"], sort_key="plot_0202")
-field_trial.get_trial(trial_id, sort_key="aoeu")
+field_trial.get_by_trial_id(trial_id)
+field_trial.get_by_trial_id(trial_id=["trial_3C", "trial_2B"], sort_key="plot_0202")
+field_trial.get_by_trial_id(trial_id, sort_key="aoeu")
 
 
 list_sort_key = field_trial.list_all_sort_keys(trial_id)
@@ -61,3 +65,4 @@ field_trial.get_by_sort_key(sort_key, type="begins")
 
 sort_key = "trial_contact"
 field_trial.get_by_sort_key(sort_key)
+

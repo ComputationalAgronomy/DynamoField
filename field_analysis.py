@@ -8,7 +8,9 @@ from statsmodels.formula.api import ols
 
 # from field import Field
 
+
 logger = logging.getLogger(__name__)
+
 
 
 def summary_plots(field_trial, trial_id, response_list=["yield", "meta"]):
@@ -25,7 +27,8 @@ def summary_plots(field_trial, trial_id, response_list=["yield", "meta"]):
     return summary_table
 
 
-def analysis_design(df, factor="treatment", response_list=["yields"], block=None):
+
+def analysis_design(df, factor="treatment", response_list=["yields", "meta"], block=None):
     anova_tables = []
     for response in response_list:
         df_subset = df[[factor, response]]
@@ -33,6 +36,7 @@ def analysis_design(df, factor="treatment", response_list=["yields"], block=None
         model = ols(formula, data=df_subset).fit()
         anova_result = sm.stats.anova_lm(model, typ=2)
         anova_tables.append(anova_result)
+        
     return anova_tables
     
 
