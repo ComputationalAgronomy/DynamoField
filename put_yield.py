@@ -13,31 +13,27 @@ import boto3
 import json
 
 
-trial_id = ["trial_2B", "trial_3C", "trial_4D"]
-file_name = f"temp_yield.csv"
-nrow = 6
-ncol = 4
-ntrt  = 6
 
 
+PARTITION_KEY_COLUMN_NAME = field.Field.PARTITION_KEY
+SORT_KEY_COLUMN_NAME = field.Field.SORT_KEY
 
 
+RESERVE_KEYWORDS = [field.Field.PARTITION_KEY, field.Field.SORT_KEY,
+                    PARTITION_KEY_COLUMN_NAME, SORT_KEY_COLUMN_NAME, 
+                    "row", "column"]
 
 
-REQUIRED_COLUMN = {
-    "column": "N",
-    "row": "N",
-    "treatment": "S",
-    "yield": "S"
-    }
-
-REQUIRED_DATA = ["treatment", "yield"]
-REQUIRED_SORT_KEY = {["column", "row"], "plot"}
-REQUIRED_SORT_KEY = ["column", "row"]
-
-PARTITION_KEY = field.Field.PARTITION_KEY
-SORT_KEY = field.Field.SORT_KEY
-
+def check_col_names(col_names, df, remove_list=[]):
+    if col_names is None:    
+        col_names = df.columns.values.tolist()
+        remove_list.extend(RESERVE_KEYWORDS)
+        for remove in remove_list:
+            try:
+                col_names.remove(remove)
+            except:
+                pass
+    return col_names
 
 
 
@@ -83,10 +79,19 @@ def create_sort_key(info):
     return sort_key
 
 
+def create_plot_sort_key(prefix, key):
+    if not key.startswith(prefix):
+        key = f"{prefix}_{key}"
+    sort_key = {field.Field.SORT_KEY : key}
+    return sort_key
+
+
+
 def convert_attribute_dict(col_names, data_s):
-    attr_dict = data_s[col_names].to_dict()
+    # attr_dict = data_s[col_names].to_dict()
+    # attr_dict = {k: v for k, v in data_s.items() if pd.notnull(v)}
     # json_output = dict()
-    # json_output = {k: data[k] for k in col_names if pd.notnull(data[k])}
+    attr_dict = {k: data_s[k] for k in col_names if pd.notnull(data_s[k])}
         # json_key_type_value(k, v, data[k])
         # json_output[k] = json_key_value(k, data[k])
     # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_output)
@@ -101,65 +106,79 @@ def reload_dynamo_json(data_dict):
 
 
 
+def import_field_data_client(client, table_name, dynamo_json_list, dynamo_config={}):
+    for dynamo_json in dynamo_json_list:
+        dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(dynamo_json)
+        client.put_item(TableName=table_name, Item=dynamo_attribute, **dynamo_config)
 
 
 
-data_type = "yield"
-df = pd.read_csv(f"temp_{data_type}.csv")
-# df = df.astype(str)
-df.describe()
-df.dtypes
+def batch_import_field_data_res(res_table, dynamo_json_list):
+    # resource.put_item(Item=dynamo_json_list[0])
+    try:
+        with res_table.batch_writer() as batch:
+            for j in dynamo_json_list:
+                batch.put_item(Item=j)
+    except Exception as e:
+        print(e)
 
-# df.loc[:,["column","row"]]
 
-print(df)
-col_names = df.columns.values.tolist()
-
-# index_column = {col_names.index(k) for k in REQUIRED_COLUMN.keys()}
-# index_others = {*range(len(col_names))} - index_column
-# _ = [index_others.remove(i) for i in index_column]
-
-data_names = col_names
-data_names.remove(PARTITION_KEY)
-_ = [data_names.remove(k) for k in REQUIRED_SORT_KEY]
-data_names
-dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
-
-df_trials = df.groupby("trial_id")
-for trial_id, df_group in df_trials:
-    partition_key = {'trial_id' : f"{trial_id}"}
-    for index, dfrow in df_group.iterrows():
-        print(dfrow['row'], dfrow['column'])
-        sort_key = create_sort_key(dfrow)
-        # python_obj_to_dynamo_obj(json_output)
-        attributes_data = convert_attribute_dict(data_names, dfrow)
-        try:
-            json_data = partition_key | sort_key | attributes_data   # python 3.9 only
-        except TypeError:
-            json_data = {**partition_key, **sort_key, **attributes_data}
-        dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
-        client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
+def merge_dicts(partition_key, sort_key, attributes_data):
+    try:
+        json_data = partition_key | sort_key | attributes_data   # python 3.9 only
+    except TypeError:
+        json_data = {**partition_key, **sort_key, **attributes_data}
+    return json_data
 
 
 
-data_type = "trt"
-df = pd.read_csv(f"temp_{data_type}.csv")
-# df = df.astype(str)
 
-col_names = df.columns.values.tolist()
-data_names = col_names
-data_names.remove(PARTITION_KEY)
-data_names
+def create_df_column_plot(df):
+    rename_mapper = {
+        "Plot": "plot",
+        "Row": "row",
+        "Column": "column",
+    }
+    df.rename(columns=rename_mapper, inplace=True)
+    col_names = df.columns.values.tolist()
+    if "plot" in col_names:
+        return df
+    try:
+        index_row = col_names.index("row")
+        index_column = col_names.index("column")
+    except ValueError as e:
+        print(f"Can't parse plot data. {e}")
+        raise
+    df['plot'] = "plot_" + df['column'].astype(str) + '-' + df['row'].astype(str)
+    return df
 
 
-dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
+
+def parse_df_plot_to_dynamo_json(df, col_names=None):
+    sort_key_prefix = "plot"
+    col_names = check_col_names(col_names, df, remove_list=[])
+    df = create_df_column_plot(df)
+    json_list = []    
+    df_trials = df.groupby(PARTITION_KEY_COLUMN_NAME)
+    for trial_id, df_group in df_trials:
+        partition_key = create_partition_key(trial_id)
+        for index, dfrow in df_group.reset_index().iterrows():
+            sort_key = create_plot_sort_key(sort_key_prefix, dfrow[sort_key_prefix])
+            attributes_data = convert_attribute_dict(col_names, dfrow)
+            json_data = merge_dicts(partition_key, sort_key, attributes_data)
+            json_list.append(json_data)
+    dynamo_json_list = [reload_dynamo_json(j) for j in json_list]
+    return dynamo_json_list
 
 
-def parse_df_to_dynamo_json(df, sort_key_prefix):
-    json_list = []
-    data_names = df.columns.values.tolist()
-    data_names.remove(PARTITION_KEY)
-    df_trials = df.groupby(field.Field.PARTITION_KEY)
+
+
+
+
+def parse_df_to_dynamo_json(df, sort_key_prefix, col_names=None):
+    json_list = []    
+    col_names = check_col_names(col_names, df)
+    df_trials = df.groupby(PARTITION_KEY_COLUMN_NAME)
     for trial_id, df_group in df_trials:
         partition_key = create_partition_key(trial_id)
         is_single_row = df_group.shape[0] == 1
@@ -168,150 +187,53 @@ def parse_df_to_dynamo_json(df, sort_key_prefix):
                 sort_key = create_sort_key(f"{sort_key_prefix}")
             else:
                 sort_key = create_sort_key(f"{sort_key_prefix}_{index}")
-            # sort_key = {'info' : f"{data_type}_{index}"}
-            # python_obj_to_dynamo_obj(json_output)
-            attributes_data = convert_attribute_dict(data_names, dfrow)
-            try:
-                json_data = partition_key | sort_key | attributes_data   # python 3.9 only
-            except TypeError:
-                json_data = {**partition_key, **sort_key, **attributes_data}
-            # json_data = json.loads(json.dumps(json_data), parse_float=Decimal)
-            # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
+            attributes_data = convert_attribute_dict(col_names, dfrow)
+            json_data = merge_dicts(partition_key, sort_key, attributes_data)
             json_list.append(json_data)
     dynamo_json_list = [reload_dynamo_json(j) for j in json_list]
     return dynamo_json_list
 
 
 
-data_type = "trial_meta"
-file_name = f"temp_{data_type}.csv"
 
-# def import_data_csv(file_name):
-df = pd.read_csv(file_name)
-# df = df.astype(str)
-# col_names = df.columns.values.tolist()
-data_names = df.columns.values.tolist()
-data_names.remove(PARTITION_KEY)
-# data_names
-# return df, data_names
+
+
+
+
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 
-
-data_type = "trial_meta"
+data_type = "yield"
 file_name = f"temp_{data_type}.csv"
-
 df = pd.read_csv(file_name)
-
-json_list = parse_df_to_dynamo_json(df, sort_key_prefix="meta")
-
-
-
-# def convert_to_dynamo_json(json_list):
-#     dynamo_json_list = [reload_dynamo_json(j) for j in json_list]
-#     return dynamo_json_list
-        
-        
-# dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(dynamo_json)
+df.describe()
+df.dtypes
+dynamo_json_list = parse_df_plot_to_dynamo_json(df)
+batch_import_field_data_res(res_table, dynamo_json_list)
 
 
-for dynamo_json in dynamo_json_list:
-    dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(dynamo_json)
-    client.put_item(TableName='ft_db', Item=dynamo_json, **dynamo_config)
 
-
-# dynamo_json_list = convert_to_dynamo_json(json_list)
-
-res_table.put_item(Item=dynamo_json_list[0])
-    # resource.put_item()
-
-
-with res_table.batch_writer() as batch:
-    for j in dynamo_json_list:
-        batch.put_item(Item=j)
+data_type = "trt"
+data_type = "yield"
 
 
 data_type = "trial_meta"
-df = pd.read_csv(f"temp_{data_type}.csv")
-# df = df.astype(str)
-
-# col_names = df.columns.values.tolist()
-data_names = df.columns.values.tolist()
-data_names.remove(PARTITION_KEY)
-# data_names
-
-dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
-df_trials = df.groupby("trial_id")
-
-for trial_id, df_group in df_trials:
-    partition_key = {'trial_id' : f"{trial_id}"}
-    for index, dfrow in df_group.iterrows():
-        sort_key = sort_key = {'info' : f"{data_type}"}
-        # python_obj_to_dynamo_obj(json_output)
-        attributes_data = convert_attribute_dict(data_names, dfrow)
-        # partition_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**partition_key, **sort_key, **attributes_data}
-        dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
-        client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
-
-
-
-
 data_type = "trial_contact"
-df = pd.read_csv(f"temp_{data_type}.csv")
-# df = df.astype(str)
-
-col_names = df.columns.values.tolist()
-data_names = col_names
-data_names.remove(PARTITION_KEY)
-data_names
-
-dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
-df_trials = df.groupby("trial_id")
-
-for trial_id, df_group in df_trials:
-    partition_key = {'trial_id' : f"{trial_id}"}
-    for index, dfrow in df_group.iterrows():
-        sort_key = sort_key = {'info' : f"{data_type}"}
-        # python_obj_to_dynamo_obj(json_output)
-        attributes_data = convert_attribute_dict(data_names, dfrow)
-        # partition_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**partition_key, **sort_key, **attributes_data}
-        dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
-        client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
-
-
-
-
-
-
-
-
 data_type = "trial_management"
-df = pd.read_csv(f"temp_{data_type}.csv")
-# df = df.astype(str)
 
-col_names = df.columns.values.tolist()
-data_names = col_names
-data_names.remove(PARTITION_KEY)
-data_names
-
-dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
-df_trials = df.groupby("trial_id")
-
-for trial_id, df_group in df_trials:
-    partition_key = {'trial_id' : f"{trial_id}"}
-    for index, dfrow in df_group.reset_index().iterrows():
-        sort_key = {'info' : f"{data_type}_{index}"}
-        # python_obj_to_dynamo_obj(json_output)
-        attributes_data = convert_attribute_dict(data_names, dfrow)
-        # partition_key | sort_key | attributes_data  # python 3.9 only
-        json_data = {**partition_key, **sort_key, **attributes_data}
-        json_data = json.loads(json.dumps(json_data), parse_float=Decimal)
-        dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
-        print(dynamo_json)
-        _ = client.put_item(TableName='ft_db', Item = dynamo_json, **dynamo_config)
+for data_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
+    file_name = f"temp_{data_type}.csv"
+    df = pd.read_csv(file_name)
+    dynamo_json_list = parse_df_to_dynamo_json(df, sort_key_prefix=data_type)
+    batch_import_field_data_res(res_table, dynamo_json_list)
 
 
+
+
+dynamo_json_list = parse_df_to_dynamo_json(df, sort_key_prefix="meta")
+batch_import_field_data_res(res_table, dynamo_json_list)
+
+
+import_field_data_client(client, table_name, dynamo_json_list, dynamo_config)
 
 

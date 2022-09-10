@@ -31,7 +31,7 @@ class Field:
         :param dyn_resource: A Boto3 DynamoDB resource.
         """
         self.dyn_resource = dyn_resource
-        self.res_table = self.dyn_resource.Table('ft_db')
+        self.res_table = self.dyn_resource.Table(table_name)
 
     @staticmethod
     def template_query_table(table, keywords):
