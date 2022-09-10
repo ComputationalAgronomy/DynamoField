@@ -13,12 +13,6 @@ import boto3
 import json
 
 
-session = boto3.session.Session()
-client = session.client('dynamodb', endpoint_url='http://localhost:8000')
-
-client.describe_table(TableName="ft_db")["Table"]["ItemCount"]
-
-
 trial_id = ["trial_2B", "trial_3C", "trial_4D"]
 file_name = f"temp_yield.csv"
 nrow = 6
@@ -40,7 +34,9 @@ REQUIRED_COLUMN = {
 REQUIRED_DATA = ["treatment", "yield"]
 REQUIRED_SORT_KEY = {["column", "row"], "plot"}
 REQUIRED_SORT_KEY = ["column", "row"]
-REQUIRED_PARTITION_KEY = field.Field.PARTITION_KEY
+
+PARTITION_KEY = field.Field.PARTITION_KEY
+SORT_KEY = field.Field.SORT_KEY
 
 
 
@@ -87,16 +83,21 @@ def create_sort_key(info):
     return sort_key
 
 
-
-def create_json_dict(keys, data):
+def convert_attribute_dict(col_names, data_s):
+    attr_dict = data_s[col_names].to_dict()
     # json_output = dict()
-    json_output = {k: data[k] for k in keys if pd.notnull(data[k])}
+    # json_output = {k: data[k] for k in col_names if pd.notnull(data[k])}
         # json_key_type_value(k, v, data[k])
         # json_output[k] = json_key_value(k, data[k])
     # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_output)
     # json_data = json.loads(json.dumps(json_data), parse_float=Decimal)
-    return json_output 
+    return attr_dict 
 
+
+
+def reload_dynamo_json(data_dict):
+    dynamo_json = json.loads(json.dumps(data_dict), parse_float=Decimal)
+    return dynamo_json
 
 
 
@@ -119,7 +120,7 @@ col_names = df.columns.values.tolist()
 # _ = [index_others.remove(i) for i in index_column]
 
 data_names = col_names
-data_names.remove(REQUIRED_PARTITION_KEY)
+data_names.remove(PARTITION_KEY)
 _ = [data_names.remove(k) for k in REQUIRED_SORT_KEY]
 data_names
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
@@ -131,7 +132,7 @@ for trial_id, df_group in df_trials:
         print(dfrow['row'], dfrow['column'])
         sort_key = create_sort_key(dfrow)
         # python_obj_to_dynamo_obj(json_output)
-        attributes_data = create_json_dict(data_names, dfrow)
+        attributes_data = convert_attribute_dict(data_names, dfrow)
         try:
             json_data = partition_key | sort_key | attributes_data   # python 3.9 only
         except TypeError:
@@ -147,56 +148,97 @@ df = pd.read_csv(f"temp_{data_type}.csv")
 
 col_names = df.columns.values.tolist()
 data_names = col_names
-data_names.remove(REQUIRED_PARTITION_KEY)
+data_names.remove(PARTITION_KEY)
 data_names
 
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 
 
-
-def parse_df_to_dynamo_json(df, sort_key_prefix, data_names):
-
-    dynamo_json_list = []
+def parse_df_to_dynamo_json(df, sort_key_prefix):
+    json_list = []
+    data_names = df.columns.values.tolist()
+    data_names.remove(PARTITION_KEY)
     df_trials = df.groupby(field.Field.PARTITION_KEY)
     for trial_id, df_group in df_trials:
         partition_key = create_partition_key(trial_id)
-
         is_single_row = df_group.shape[0] == 1
         for index, dfrow in df_group.reset_index().iterrows():
             if is_single_row:
                 sort_key = create_sort_key(f"{sort_key_prefix}")
             else:
                 sort_key = create_sort_key(f"{sort_key_prefix}_{index}")
-                
             # sort_key = {'info' : f"{data_type}_{index}"}
             # python_obj_to_dynamo_obj(json_output)
-            attributes_data = create_json_dict(data_names, dfrow)
-            
+            attributes_data = convert_attribute_dict(data_names, dfrow)
             try:
                 json_data = partition_key | sort_key | attributes_data   # python 3.9 only
             except TypeError:
                 json_data = {**partition_key, **sort_key, **attributes_data}
+            # json_data = json.loads(json.dumps(json_data), parse_float=Decimal)
+            # dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
+            json_list.append(json_data)
+    dynamo_json_list = [reload_dynamo_json(j) for j in json_list]
+    return dynamo_json_list
 
-            dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
-            dynamo_json_list.append(dynamo_json)
 
 
-for j in dynamo_json_list:
-    client.put_item(TableName='ft_db', 
-        Item=j, **dynamo_config)
+data_type = "trial_meta"
+file_name = f"temp_{data_type}.csv"
 
+# def import_data_csv(file_name):
+df = pd.read_csv(file_name)
+# df = df.astype(str)
+# col_names = df.columns.values.tolist()
+data_names = df.columns.values.tolist()
+data_names.remove(PARTITION_KEY)
+# data_names
+# return df, data_names
+
+dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
+
+
+data_type = "trial_meta"
+file_name = f"temp_{data_type}.csv"
+
+df = pd.read_csv(file_name)
+
+json_list = parse_df_to_dynamo_json(df, sort_key_prefix="meta")
+
+
+
+# def convert_to_dynamo_json(json_list):
+#     dynamo_json_list = [reload_dynamo_json(j) for j in json_list]
+#     return dynamo_json_list
+        
+        
+# dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(dynamo_json)
+
+
+for dynamo_json in dynamo_json_list:
+    dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(dynamo_json)
+    client.put_item(TableName='ft_db', Item=dynamo_json, **dynamo_config)
+
+
+# dynamo_json_list = convert_to_dynamo_json(json_list)
+
+res_table.put_item(Item=dynamo_json_list[0])
     # resource.put_item()
+
+
+with res_table.batch_writer() as batch:
+    for j in dynamo_json_list:
+        batch.put_item(Item=j)
 
 
 data_type = "trial_meta"
 df = pd.read_csv(f"temp_{data_type}.csv")
-df = df.astype(str)
+# df = df.astype(str)
 
-col_names = df.columns.values.tolist()
-data_names = col_names
-data_names.remove(REQUIRED_PARTITION_KEY)
-data_names
+# col_names = df.columns.values.tolist()
+data_names = df.columns.values.tolist()
+data_names.remove(PARTITION_KEY)
+# data_names
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
 df_trials = df.groupby("trial_id")
@@ -206,7 +248,7 @@ for trial_id, df_group in df_trials:
     for index, dfrow in df_group.iterrows():
         sort_key = sort_key = {'info' : f"{data_type}"}
         # python_obj_to_dynamo_obj(json_output)
-        attributes_data = create_json_dict(data_names, dfrow)
+        attributes_data = convert_attribute_dict(data_names, dfrow)
         # partition_key | sort_key | attributes_data  # python 3.9 only
         json_data = {**partition_key, **sort_key, **attributes_data}
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
@@ -221,7 +263,7 @@ df = pd.read_csv(f"temp_{data_type}.csv")
 
 col_names = df.columns.values.tolist()
 data_names = col_names
-data_names.remove(REQUIRED_PARTITION_KEY)
+data_names.remove(PARTITION_KEY)
 data_names
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
@@ -232,7 +274,7 @@ for trial_id, df_group in df_trials:
     for index, dfrow in df_group.iterrows():
         sort_key = sort_key = {'info' : f"{data_type}"}
         # python_obj_to_dynamo_obj(json_output)
-        attributes_data = create_json_dict(data_names, dfrow)
+        attributes_data = convert_attribute_dict(data_names, dfrow)
         # partition_key | sort_key | attributes_data  # python 3.9 only
         json_data = {**partition_key, **sort_key, **attributes_data}
         dynamo_json = dynamo_utils.python_obj_to_dynamo_obj(json_data)
@@ -251,7 +293,7 @@ df = pd.read_csv(f"temp_{data_type}.csv")
 
 col_names = df.columns.values.tolist()
 data_names = col_names
-data_names.remove(REQUIRED_PARTITION_KEY)
+data_names.remove(PARTITION_KEY)
 data_names
 
 dynamo_config = {'ReturnConsumedCapacity': "INDEXES" }#"Total"}
@@ -262,7 +304,7 @@ for trial_id, df_group in df_trials:
     for index, dfrow in df_group.reset_index().iterrows():
         sort_key = {'info' : f"{data_type}_{index}"}
         # python_obj_to_dynamo_obj(json_output)
-        attributes_data = create_json_dict(data_names, dfrow)
+        attributes_data = convert_attribute_dict(data_names, dfrow)
         # partition_key | sort_key | attributes_data  # python 3.9 only
         json_data = {**partition_key, **sort_key, **attributes_data}
         json_data = json.loads(json.dumps(json_data), parse_float=Decimal)

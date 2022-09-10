@@ -6,19 +6,9 @@ import pandas as pd
 importlib.reload(field)
 
 
-
-table_name = "ft_db"
-
-session = boto3.session.Session()
-dynamodb_res = session.resource('dynamodb', endpoint_url='http://localhost:8000')
-table = dynamodb_res.Table('ft_db')
-table.item_count
-
-
-
-
-
 importlib.reload(field)
+
+
 field_trial = field.Field(dynamodb_res, table_name)
 
 

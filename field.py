@@ -31,7 +31,7 @@ class Field:
         :param dyn_resource: A Boto3 DynamoDB resource.
         """
         self.dyn_resource = dyn_resource
-        self.table = self.dyn_resource.Table('ft_db')
+        self.res_table = self.dyn_resource.Table('ft_db')
 
     @staticmethod
     def template_query_table(table, keywords):
@@ -72,11 +72,11 @@ class Field:
 
 
     def template_query(self, keywords):
-        return Field.template_query_table(self.table, keywords)
+        return Field.template_query_table(self.res_table, keywords)
 
 
     def template_scan(self, scan_kwargs):
-        return Field.template_scan_table(self.table, scan_kwargs)
+        return Field.template_scan_table(self.res_table, scan_kwargs)
 
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
@@ -84,7 +84,7 @@ class Field:
         Keys = Key(Field.PARTITION_KEY).eq(trial_id)
         keywords = {"KeyConditionExpression": Keys, 
                     "ProjectionExpression": Field.SORT_KEY}
-        response = self.table.query(**keywords)
+        response = self.res_table.query(**keywords)
         sort_key_list = []
         for item in response['Items']:
             sort_key_list.append(item.get("info"))
@@ -104,7 +104,7 @@ class Field:
         for sort_key in list_sort_keys:
             primary_keys = Keys & Key(Field.SORT_KEY).eq(sort_key)
             keywords = {"KeyConditionExpression": primary_keys}
-            response = self.table.query(**keywords)
+            response = self.res_table.query(**keywords)
             other_info_dict[sort_key] = response["Items"]
         # for item in response['Items']:
         #     sort_key_list.append(item.get("info"))
