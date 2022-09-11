@@ -18,3 +18,9 @@ def result_list_to_df(results):
     # df = pd.concat(df_list, axis=1).transpose()
     df = pd.read_json(json.dumps(results, cls=DecimalEncoder))
     return df
+
+
+def reload_dynamo_json(data_dict):
+    dynamo_json = json.loads(json.dumps(data_dict), parse_float=Decimal)
+    return dynamo_json
+

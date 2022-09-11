@@ -9,7 +9,7 @@ importlib.reload(field)
 importlib.reload(field)
 
 
-field_trial = field.Field(dynamodb_res, table_name)
+field_trial = field.FieldTable(dynamodb_res, table_name)
 
 
 trial_id = ["trial_3C", "trial_2B"]
