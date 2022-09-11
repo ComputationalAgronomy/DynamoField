@@ -7,7 +7,7 @@ import pandas as pd
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-import json_utils
+import utils.json_utils as json_utils
 
 # from io import BytesIO
 # import os
@@ -16,6 +16,16 @@ import json_utils
 # from zipfile import ZipFile
 # from question import Question
 
+
+def create_partition_key(trial_id):
+    partition_key = {FieldTable.PARTITION_KEY : f"{trial_id}"}
+    return partition_key
+
+
+
+def create_sort_key(info):
+    sort_key = {FieldTable.SORT_KEY : f"{info}"}
+    return sort_key
 
 
 logger = logging.getLogger(__name__)
@@ -27,16 +37,6 @@ class FieldTable:
     SORT_KEY = "info"
 
 
-    @staticmethod
-    def create_partition_key(trial_id):
-        partition_key = {FieldTable.PARTITION_KEY : f"{trial_id}"}
-        return partition_key
-
-
-    @staticmethod
-    def create_sort_key(info):
-        sort_key = {FieldTable.SORT_KEY : f"{info}"}
-        return sort_key
 
 
 
@@ -46,6 +46,28 @@ class FieldTable:
         """
         self.dyn_resource = dyn_resource
         self.res_table = self.dyn_resource.Table(table_name)
+
+
+
+
+
+    def import_field_data_client(client, table_name, dynamo_json_list, dynamo_config={}):
+        for dynamo_json in dynamo_json_list:
+            dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(dynamo_json)
+            client.put_item(TableName=table_name, Item=dynamo_attribute, **dynamo_config)
+
+
+
+    def batch_import_field_data_res(self, dynamo_json_list):
+        # resource.put_item(Item=dynamo_json_list[0])
+        try:
+            with self.res_table.batch_writer() as batch:
+                for j in dynamo_json_list:
+                    batch.put_item(Item=j)
+        except Exception as e:
+            print(e)
+
+
 
     @staticmethod
     def template_query_table(table, keywords):

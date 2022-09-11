@@ -1,7 +1,7 @@
 import json
 import logging
 from decimal import Decimal
-import json_utils
+import utils.json_utils as json_utils
 
 import statsmodels.api as sm
 from statsmodels.formula.api import ols

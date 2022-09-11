@@ -4,7 +4,7 @@ import numpy
 
 import csv
 import pandas as pd
-import dynamo_utils
+import utils.dynamo_utils as dynamo_utils
 # numpy.repeat([], 4)
 
 from decimal import Decimal

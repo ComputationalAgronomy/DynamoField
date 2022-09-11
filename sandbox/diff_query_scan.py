@@ -118,7 +118,7 @@ print(response['Items'])
 #     new_images = [ ddb_deserialize(r["dynamodb"]["NewImage"]) for r in event['Records'] ]
 #     print('Converted records', json.dumps(new_images, indent=2))
 
-import dynamo_utils
+import utils.dynamo_utils as dynamo_utils
 json_string = {"row": 2, "column": 2, "yield": 310}
 x=dynamo_utils.python_obj_to_dynamo_obj(json_string)
 # dynamo_utils.dynamo_obj_to_python_obj(x)
