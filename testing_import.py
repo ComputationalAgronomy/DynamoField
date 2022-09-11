@@ -5,6 +5,7 @@ import pandas as pd
 from field import importer
 from field import field_table
 
+import dynamodb_init
 importlib.reload(field_table)
 importlib.reload(importer)
 
@@ -13,6 +14,9 @@ data_import = importer.DataImporter(file_name, "meta")
 
 dynamo_json_list = data_import.parse_df_to_dynamo_json()
 
+
+table_name = "ft_db"
+dynamodb_res = dynamodb_init.init_dynamodb_resources()
 field_trial = field_table.FieldTable(dynamodb_res, table_name)
 
 field_trial.batch_import_field_data_res(dynamo_json_list)

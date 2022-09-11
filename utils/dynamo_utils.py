@@ -1,10 +1,12 @@
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 
+
 def dynamo_obj_to_python_obj(dynamo_obj: dict) -> dict:
     deserializer = TypeDeserializer()
     return {
         k: deserializer.deserialize(v) for k, v in dynamo_obj.items()
-    }  
+    }
+
 
 def python_obj_to_dynamo_obj(python_obj: dict) -> dict:
     serializer = TypeSerializer()
@@ -26,17 +28,17 @@ def python_obj_to_dynamo_obj(python_obj: dict) -> dict:
 # print(python_obj_to_dynamo_obj(p))
 
 # d = {
-#     'a': {'N': '1'}, 
-#     'b': {'S': 'b'}, 
+#     'a': {'N': '1'},
+#     'b': {'S': 'b'},
 #     'c': {
 #         'M': {
 #             'd': {'BOOL': False}
 #         }
-#     }, 
+#     },
 #     'e': {
 #         'L': [
-#             {'N': '10'}, 
-#             {'N': '20'}, 
+#             {'N': '10'},
+#             {'N': '20'},
 #             {'N': '30'}
 #         ]
 #     }

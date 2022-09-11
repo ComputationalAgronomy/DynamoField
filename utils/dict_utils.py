@@ -5,4 +5,3 @@ def merge_dicts(partition_key, sort_key, attributes_data):
     except TypeError:
         json_data = {**partition_key, **sort_key, **attributes_data}
     return json_data
-

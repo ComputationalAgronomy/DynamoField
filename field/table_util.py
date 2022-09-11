@@ -1,25 +1,7 @@
-import random
-import itertools
-import numpy
-
-import csv
-import pandas as pd
-import utils.dynamo_utils as dynamo_utils
-# numpy.repeat([], 4)
-
-from decimal import Decimal
-import field
 import boto3
-import json
 
 
-session = boto3.session.Session()
-client = session.client('dynamodb', endpoint_url='http://localhost:8000')
-
-
-client.describe_table(TableName="ft_db")["Table"]["ItemCount"]
-
-def delete_all_items(client):
+def delete_all_items(client, table_name):
     # KeyConditionExpression='trial_id = :trial_id AND begins_with( info, :info)',
     # response = client.query(
     #     TableName='ft_db',
@@ -34,7 +16,7 @@ def delete_all_items(client):
     # )
     # print(response['Items'])
     response = client.scan(
-        TableName='ft_db',
+        TableName='table_name',
         FilterExpression='begins_with ( trial_id , :trial_id )',
         # FilterExpression='info = :info',
         ExpressionAttributeValues={
@@ -47,4 +29,3 @@ def delete_all_items(client):
     print(response['Items'])
     for k in response['Items']:
         client.delete_item(TableName="ft_db", Key=k)
-
