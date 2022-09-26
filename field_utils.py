@@ -15,10 +15,10 @@ importlib.reload(field)
 
 # results = ft.query_trial(trial_id)
 
-def get_yield_trt(ft, trial_id):
+def get_yield_trt(field, trial_id):
     # df = pd.read_json(json.dumps(results))
-    df_plots = ft.scan_plots(trial_id)
-    df_trt = ft.scan_treatments(trial_id)
+    df_plots = field.scan_plots(trial_id)
+    df_trt = field.scan_treatments(trial_id)
     df_merged = pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
     return df_merged
 

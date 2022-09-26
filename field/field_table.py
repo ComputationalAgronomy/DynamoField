@@ -75,8 +75,8 @@ class FieldTable:
     @staticmethod
     def template_scan_table(table, scan_kwargs):
         """
-        Scans all plots and return data
-        :return: The list of plots
+        Scans all data and deal with page limits via LastEvaluatedKey
+        :return: The list
         """
         results = []
         try:

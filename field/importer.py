@@ -119,6 +119,12 @@ class DataImporter:
         dynamo_json_list = self.parse_df_to_dynamo_json()
         return dynamo_json_list
 
+    def parse_df_trt_to_dynamo_json(self):
+        sort_key_prefix = "trt"
+        # self.create_df_trt_column()
+        dynamo_json_list = self.parse_df_to_dynamo_json()
+        return dynamo_json_list
+
     # def parse_df_plot_to_dynamo_json(self, col_names=None):
     #     sort_key_prefix = "trt"
     #     dynamo_json_list = self.parse_df_to_dynamo_json(sort_key_prefix, col_names)
