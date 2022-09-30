@@ -7,8 +7,8 @@ import pandas as pd
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-from utils import dynamo_utils
-from utils import json_utils
+from dynamofield.utils import dynamo_utils
+from dynamofield.utils import json_utils
 
 # from io import BytesIO
 # import os
@@ -28,7 +28,7 @@ def create_sort_key(info):
     return sort_key
 
 
-logger = logging.getLogger(__name__)
+
 
 
 class FieldTable:

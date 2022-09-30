@@ -2,12 +2,15 @@ import boto3
 # import field
 import importlib
 import pandas as pd
-from field import importer
-from field import field_table
 
-import dynamodb_init
+from dynamofield.field import field_table
+from dynamofield.field import importer
+
+from dynamofield import dynamodb_init
+
 importlib.reload(field_table)
 importlib.reload(importer)
+
 
 data_import = importer.DataImporter(file_name, "meta")
 

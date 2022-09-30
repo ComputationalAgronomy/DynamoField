@@ -8,12 +8,12 @@ import boto3
 import numpy
 import pandas as pd
 
-from utils import dynamo_utils
-from utils import json_utils
-from utils import dict_utils
+from dynamofield.utils import dynamo_utils
+from dynamofield.utils import json_utils
+from dynamofield.utils import dict_utils
 
 # numpy.repeat([], 4)
-from field import field_table
+from dynamofield.field import field_table
 
 
 class DataImporter:
@@ -36,7 +36,7 @@ class DataImporter:
         # self.res_table = res_table
         self.df = pd.read_csv(file_name)
         self.data_type = data_type  # sort_key
-        self.import_column = None
+        self.import_column = import_column
 
     def check_col_names(self, remove_list=[]):
         if self.import_column is None:
