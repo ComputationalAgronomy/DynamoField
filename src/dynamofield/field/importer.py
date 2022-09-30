@@ -37,6 +37,8 @@ class DataImporter:
         self.df = pd.read_csv(file_name)
         self.data_type = data_type  # sort_key
         self.import_column = import_column
+        if self.data_type == "plot":
+            self.create_df_plot_column()
 
     def check_col_names(self, remove_list=[]):
         if self.import_column is None:

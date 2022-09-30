@@ -21,8 +21,8 @@ def field_trial():
 
     
     table_name = "ft_db"
-    # client = dynamodb_init.init_dynamodb_client()
-    # table_util.delete_all_items(client, table_name)
+    client = dynamodb_init.init_dynamodb_client()
+    table_util.delete_all_items(client, table_name)
     
     dynamodb_res = dynamodb_init.init_dynamodb_resources()
     field_trial = field_table.FieldTable(dynamodb_res, table_name)
@@ -68,22 +68,32 @@ def test_import(field_trial):
     expected_length = {
         "trt": 18,
         "meta": 3,
-        "contact": 3
+        "contact": 3,
+        "plot":72
     }
     expected_count = {
         "trt": 18,
         "meta": 21,
-        "contact": 24
+        "contact": 24,
+        "plot":96
     }
     # for data_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
-    for data_type in ["trt", "meta", "contact"]:
+    field_trial.res_table.reload()
+    assert field_trial.res_table.item_count == 0
+    for data_type in expected_length.keys():
+        print(data_type)
         file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
         data_import = importer.DataImporter(file_name, data_type)
         dynamo_json_list = data_import.parse_df_to_dynamo_json()
         assert len(dynamo_json_list) == expected_length[data_type]
         field_trial.batch_import_field_data_res(dynamo_json_list) # How to test this effectively?
-        # assert field_trial.res_table.item_count == expected_count[data_type]
-        
+        field_trial.res_table.reload()
+        assert field_trial.res_table.item_count == expected_count[data_type]
+    
+
+
+
+
 
 
 def _test_batch():

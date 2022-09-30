@@ -16,7 +16,7 @@ def delete_all_items(client, table_name):
     # )
     # print(response['Items'])
     response = client.scan(
-        TableName='table_name',
+        TableName=table_name,
         FilterExpression='begins_with ( trial_id , :trial_id )',
         # FilterExpression='info = :info',
         ExpressionAttributeValues={
