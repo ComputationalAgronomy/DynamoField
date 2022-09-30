@@ -14,7 +14,7 @@ client = session.client('dynamodb',
 
 response = client.list_tables()
 
-def init_ft_table(client):
+def init_ft_table(client, table_name):
     response = client.create_table(
         AttributeDefinitions=[
             {
@@ -26,7 +26,7 @@ def init_ft_table(client):
                 'AttributeType': 'S'
             }
         ],
-        TableName='ft_db',
+        TableName='table_name',
         KeySchema=[
             {
                 'AttributeName': 'trial_id',

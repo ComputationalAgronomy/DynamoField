@@ -26,7 +26,6 @@ field_trial.get_by_trial_id(trial_id, sort_key="aoeu")
 list_sort_key = field_trial.list_all_sort_keys(trial_id)
 
 
-list_sort_key = field_trial.list_all_sort_keys(trial_id)
 field_trial.list_all_sort_keys(trial_id, prune_common=True)
 field_trial.get_all_non_standard_info(trial_id)
 

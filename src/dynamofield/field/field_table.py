@@ -162,12 +162,14 @@ class FieldTable:
         df = json_utils.result_list_to_df(results)
         return df
 
-    def get_by_sort_key(self, sort_key, type="eq"):
-        Keys = Key(FieldTable.SORT_KEY).eq(sort_key)
-        if type == "begins":
+    def get_by_sort_key(self, sort_key, exact=False):
+        
+        if exact:
+            Keys = Key(FieldTable.SORT_KEY).eq(sort_key)
+        else:
             Keys = Key(FieldTable.SORT_KEY).begins_with(sort_key)
-        elif type != "eq":
-            logging.warning(f"Invalid Key type: {type}")
+        # elif type != "eq":
+        #     logging.warning(f"Invalid Key type: {type}")
         scan_kwargs = {
             'FilterExpression': Keys
         }
