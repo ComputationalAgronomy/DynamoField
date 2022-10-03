@@ -190,3 +190,18 @@ class FieldTable:
 
         response = self.template_query(keywords)
         return response['Items']
+
+    def find_offset(self, data_type):
+        # try:
+        current_data = self.get_by_sort_key(data_type)
+        current_data_split = current_data.groupby(FieldTable.PARTITION_KEY)
+        offset = current_data_split["info"].aggregate(lambda x : FieldTable._find_offset_sort_key_list(x))
+        # except NameError:
+        #     offest = 
+        return offset
+
+    def _find_offset_sort_key_list(x):
+        index = [int(s.rsplit("_")[1]) for s in x]
+        offset = max(index)
+        return(offset)
+

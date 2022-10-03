@@ -88,22 +88,32 @@ class DataImporter:
         '''
         if self.data_type == "plot":
             key = self.check_dup_key_prefix(dfrow[self.data_type])
-        elif is_single_row:
-            key = self.data_type
+        # elif is_single_row:
+        #     key = self.data_type
         else:
             key = f"{self.data_type}_{index}"
         sort_key = field_table.create_sort_key(key)
         return sort_key
 
-    def parse_df_to_dynamo_json(self):
+
+    def parse_df_to_dynamo_json(self, append=False, field_trial=None):
         json_list = []
         self.check_col_names(remove_list=[])
         df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY)
+        offset = {k: 0 for k in df_trials.groups.keys()}
+        if append:
+            try:
+                offset = field_trial.find_offset(self.data_type)
+            except AttributeError:
+                pass
+            except KeyError:
+                pass
 
         for trial_id, df_group in df_trials:
             partition_key = field_table.create_partition_key(trial_id)
             is_single_row = df_group.shape[0] == 1
-            for index, dfrow in df_group.reset_index().iterrows():
+            for index_raw, dfrow in df_group.reset_index().iterrows():
+                index = index_raw + offset[trial_id]
                 sort_key = self.complicated_sort_key_creation(
                     is_single_row, index, dfrow)
                 attributes_data = self.convert_attribute_dict(dfrow)
@@ -131,3 +141,24 @@ class DataImporter:
     #     sort_key_prefix = "trt"
     #     dynamo_json_list = self.parse_df_to_dynamo_json(sort_key_prefix, col_names)
     #     return dynamo_json_list
+
+
+
+#     # reduce(lambda x: x.split("_")[1], xx)
+
+# current_data_split.aggregate({"info": lambda x : x.split("_")})
+
+# current_data_split.aggregate({"info": lambda x : str(x)})
+
+# current_data_split.get_group(trial_id).apply(lambda x: [1,2], index=["info"], axis=0)
+# current_data_split.get_group(trial_id)["info"].apply(lambda x: x.split(), axis=1)
+
+# current_data_split["info"].apply(lambda x : find_offset(x))
+# xx = current_data_split["info"].aggregate(lambda x : find_offset(x))
+
+# current_data_split.info.aggregate(lambda x : [s.rsplit("_")[1] for s in x])
+
+
+# current_data_split.get_group(trial_id)["info"].apply(lambda x: x.split("_")[1])
+
+

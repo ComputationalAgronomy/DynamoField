@@ -5,6 +5,7 @@ import boto3
 # import field
 import importlib
 import pandas as pd
+import numpy as np
 
 
 
@@ -15,6 +16,7 @@ from src.dynamofield.db import init_db, table_utils
 
 
 # importlib.reload(field_table)
+# importlib.reload(importer)
 # importlib.reload(init_db)
 
 @pytest.fixture
@@ -97,19 +99,14 @@ def test_import(field_trial):
     TEST_DATA_DIR = "./tests/test_data"
     expected_length = {
         "trt": 18,
-        "contact": 3,
+        "contact": 4,
         "meta": 3,
         "management": 12,
         "plot":72
     }
-    expected_count = {
-        "trt": 18,
-        "contact": 21,
-        "meta": 24,
-        "management": 36,
-        "plot": 108
-    }
-
+    total = np.cumsum(list(expected_length.values()))
+    expected_total = dict(zip(expected_length.keys(), total))
+    
     # for data_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
     field_trial.res_table.reload()
     assert field_trial.res_table.item_count == 0
@@ -117,13 +114,13 @@ def test_import(field_trial):
         print(data_type)
         file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
         data_import = importer.DataImporter(file_name, data_type)
-        dynamo_json_list = data_import.parse_df_to_dynamo_json()
+        dynamo_json_list = data_import.parse_df_to_dynamo_json(append=True, field_trial=field_trial)
         assert len(dynamo_json_list) == expected_length[data_type]
         field_trial.batch_import_field_data_res(dynamo_json_list) # How to test this effectively?
         field_trial.res_table.reload()
-        assert field_trial.res_table.item_count == expected_count[data_type]
+        assert field_trial.res_table.item_count == expected_total[data_type]
     
     field_trial.res_table.reload()
-    assert field_trial.res_table.item_count == 108
+    assert field_trial.res_table.item_count == expected_total["plot"]
 
 
