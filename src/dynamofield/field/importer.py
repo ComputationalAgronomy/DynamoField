@@ -81,11 +81,7 @@ class DataImporter:
         # json_data = json.loads(json.dumps(json_data), parse_float=Decimal)
         return attr_dict
 
-    def complicated_sort_key_creation(self, is_single_row, index, dfrow):
-        '''
-        Overly complicated way to create sort key.
-        Redo this part later.
-        '''
+    def sort_key_creation(self, index, dfrow):
         if self.data_type == "plot":
             key = self.check_dup_key_prefix(dfrow[self.data_type])
         # elif is_single_row:
@@ -96,10 +92,7 @@ class DataImporter:
         return sort_key
 
 
-    def parse_df_to_dynamo_json(self, append=False, field_trial=None):
-        json_list = []
-        self.check_col_names(remove_list=[])
-        df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY)
+    def create_offset(self, df_trials, append, field_trial):
         offset = {k: 0 for k in df_trials.groups.keys()}
         if append:
             try:
@@ -108,14 +101,20 @@ class DataImporter:
                 pass
             except KeyError:
                 pass
+        return offset
+
+    def parse_df_to_dynamo_json(self, append=False, field_trial=None):
+        json_list = []
+        self.check_col_names(remove_list=[])
+        df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY)
+        offset = self.create_offset(df_trials, append, field_trial)
 
         for trial_id, df_group in df_trials:
             partition_key = field_table.create_partition_key(trial_id)
-            is_single_row = df_group.shape[0] == 1
+            # is_single_row = df_group.shape[0] == 1
             for index_raw, dfrow in df_group.reset_index().iterrows():
                 index = index_raw + offset[trial_id]
-                sort_key = self.complicated_sort_key_creation(
-                    is_single_row, index, dfrow)
+                sort_key = self.sort_key_creation(index, dfrow)
                 attributes_data = self.convert_attribute_dict(dfrow)
                 json_data = dict_utils.merge_dicts(
                     partition_key, sort_key, attributes_data)

@@ -1,8 +1,7 @@
-import field
+
 import importlib
 import pandas as pd
 
-importlib.reload(field)
 
 # table_name = "ft_db"
 # session = boto3.session.Session()

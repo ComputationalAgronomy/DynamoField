@@ -1,7 +1,6 @@
 import json
 import logging
 from decimal import Decimal
-import utils.json_utils as json_utils
 
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
@@ -9,7 +8,6 @@ from statsmodels.formula.api import ols
 # from field import Field
 
 
-logger = logging.getLogger(__name__)
 
 
 

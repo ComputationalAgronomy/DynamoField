@@ -28,7 +28,7 @@ def create_sort_key(info):
     return sort_key
 
 
-
+logger = logging.getLogger(__name__)
 
 
 class FieldTable:
@@ -42,6 +42,7 @@ class FieldTable:
         """
         self.dyn_resource = dyn_resource
         self.res_table = self.dyn_resource.Table(table_name)
+        
 
     def import_field_data_client(client, table_name, dynamo_json_list, dynamo_config={}):
         for dynamo_json in dynamo_json_list:
@@ -102,6 +103,7 @@ class FieldTable:
     def template_scan(self, scan_kwargs):
         return FieldTable.template_scan_table(self.res_table, scan_kwargs)
 
+
     def list_all_sort_keys(self, trial_id, prune_common=False):
         Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
         keywords = {"KeyConditionExpression": Keys,
@@ -133,18 +135,23 @@ class FieldTable:
 
         return other_info_dict
 
-    def get_all_plots(self, trial_id):
+
+    def get_all_plots(self, trial_ids):
         """
         Scans all plots and return data
         :return: The list of plots
         """
-        Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
-        scan_kwargs = {
-            # "KeyConditionExpression": Keys,
-            'FilterExpression': Keys & Key(FieldTable.SORT_KEY).begins_with("plot_")
-            # 'ProjectionExpression': "#yr, title, info.rating",
-        }
-        results = self.template_scan(scan_kwargs)
+        if not isinstance(trial_ids, list):
+            trial_ids = [trial_ids]
+        results = list()
+        for trial_id in trial_ids:
+            Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+            scan_kwargs = {
+                # "KeyConditionExpression": Keys,
+                'FilterExpression': Keys & Key(FieldTable.SORT_KEY).begins_with("plot_")
+                # 'ProjectionExpression': "#yr, title, info.rating",
+            }
+            results.extend(self.template_scan(scan_kwargs))
         df = json_utils.result_list_to_df(results)
         return df
 

@@ -82,7 +82,6 @@ def test_list_all_sort_keys(field_trial):
                 'trt_0', 'trt_1', 'trt_2', 'trt_3', 'trt_4', 'trt_5']
     assert list_sort_key == expected
 
-
     list_sort_key = field_trial.list_all_sort_keys(trial_id, prune_common=True)
     expected = ['contact_0', 'contact_1', 'management_0', 'management_1', 'management_2', 'management_3', 'meta_0']
     assert list_sort_key == expected
@@ -106,7 +105,6 @@ def test_get_all_non_standard_info(field_trial):
 
 
 def test_get_by_sort_key_exact(field_trial):
-
 
     sort_key = "management"
     result = field_trial.get_by_sort_key(sort_key, exact=True)
