@@ -25,8 +25,8 @@ def field_trial():
     table_name = "ft_db"
     # client = dynamodb_init.init_dynamodb_client()
     # table_utils.delete_all_items(client, table_name)
-    
-    dynamodb_res = dynamodb_init.init_dynamodb_resources()
+    dynamodb_server = dynamodb_init.DynamodbServer()
+    dynamodb_res = dynamodb_server.init_dynamodb_resources()
     field_trial = field_table.FieldTable(dynamodb_res, table_name)
     return field_trial
 
@@ -34,7 +34,9 @@ def field_trial():
 @pytest.mark.first
 def test_creation():
     table_name = "ft_db"    
-    client = dynamodb_init.init_dynamodb_client()
+    dynamodb_server = dynamodb_init.DynamodbServer()
+    # dynamodb_res = dynamodb_server.init_dynamodb_resources()
+    client = dynamodb_server.init_dynamodb_client()
     init_num_table = len(client.list_tables()["TableNames"])
     if init_num_table == 0:
         init_num_table = 1

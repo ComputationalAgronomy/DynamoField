@@ -8,7 +8,8 @@ from src.dynamofield.field import field_table, importer
 @pytest.fixture
 def field_trial():
     table_name = "ft_db"
-    dynamodb_res = dynamodb_init.init_dynamodb_resources()
+    dynamodb_server = dynamodb_init.DynamodbServer()
+    dynamodb_res = dynamodb_server.init_dynamodb_resources()
     field_trial = field_table.FieldTable(dynamodb_res, table_name)
     return field_trial
 

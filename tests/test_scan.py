@@ -15,8 +15,10 @@ from src.dynamofield import dynamodb_init
 @pytest.fixture
 def field_trial():
     table_name = "ft_db"
-    dynamodb_res = dynamodb_init.init_dynamodb_resources()
+    dynamodb_server = dynamodb_init.DynamodbServer()
+    dynamodb_res = dynamodb_server.init_dynamodb_resources()
     field_trial = field_table.FieldTable(dynamodb_res, table_name)
+    # field_trial = dynamodb_server.init_dynamodb_resources_table(table_name)
     return field_trial
 
 

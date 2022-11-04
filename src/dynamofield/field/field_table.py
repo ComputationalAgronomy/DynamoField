@@ -42,7 +42,7 @@ class FieldTable:
         """
         self.dyn_resource = dyn_resource
         self.res_table = self.dyn_resource.Table(table_name)
-        
+
 
     def import_field_data_client(client, table_name, dynamo_json_list, dynamo_config={}):
         for dynamo_json in dynamo_json_list:
@@ -50,6 +50,7 @@ class FieldTable:
                 dynamo_json)
             client.put_item(TableName=table_name,
                             Item=dynamo_attribute, **dynamo_config)
+
 
     def batch_import_field_data_res(self, dynamo_json_list):
         # resource.put_item(Item=dynamo_json_list[0])
@@ -59,6 +60,7 @@ class FieldTable:
                     batch.put_item(Item=j)
         except Exception as e:
             print(e)
+
 
     @staticmethod
     def template_query_table(table, keywords):
@@ -105,8 +107,8 @@ class FieldTable:
 
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
-        Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
-        keywords = {"KeyConditionExpression": Keys,
+        key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        keywords = {"KeyConditionExpression": key,
                     "ProjectionExpression": FieldTable.SORT_KEY}
         response = self.res_table.query(**keywords)
         sort_key_list = []
@@ -123,10 +125,10 @@ class FieldTable:
     def get_all_non_standard_info(self, trial_id):
         list_sort_keys = self.list_all_sort_keys(trial_id, prune_common=True)
 
-        Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        partn_key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
         other_info_dict = {}
         for sort_key in list_sort_keys:
-            primary_keys = Keys & Key(FieldTable.SORT_KEY).eq(sort_key)
+            primary_keys = partn_key & Key(FieldTable.SORT_KEY).eq(sort_key)
             keywords = {"KeyConditionExpression": primary_keys}
             response = self.res_table.query(**keywords)
             other_info_dict[sort_key] = response["Items"]
@@ -144,12 +146,11 @@ class FieldTable:
         if not isinstance(trial_ids, list):
             trial_ids = [trial_ids]
         results = list()
+        sort_key = Key(FieldTable.SORT_KEY).begins_with("plot_")
         for trial_id in trial_ids:
-            Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+            partn_key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
             scan_kwargs = {
-                # "KeyConditionExpression": Keys,
-                'FilterExpression': Keys & Key(FieldTable.SORT_KEY).begins_with("plot_")
-                # 'ProjectionExpression': "#yr, title, info.rating",
+                'FilterExpression': partn_key & sort_key
             }
             results.extend(self.template_scan(scan_kwargs))
         df = json_utils.result_list_to_df(results)
@@ -160,11 +161,13 @@ class FieldTable:
         Scans all plots and return data
         :return: The list of plots
         """
-        Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        partn_key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        sort_key = Key(FieldTable.SORT_KEY).begins_with("trt_")
         scan_kwargs = {
             # "KeyConditionExpression": Keys,
-            'FilterExpression': Keys & Key(FieldTable.SORT_KEY).begins_with("trt_")}
-        # 'ProjectionExpression': "#yr, title, info.rating",
+            # 'ProjectionExpression': "#yr, title, info.rating",
+            'FilterExpression': partn_key & sort_key
+        }
         results = self.template_scan(scan_kwargs)
         df = json_utils.result_list_to_df(results)
         return df
@@ -172,13 +175,11 @@ class FieldTable:
     def get_by_sort_key(self, sort_key, exact=False):
         
         if exact:
-            Keys = Key(FieldTable.SORT_KEY).eq(sort_key)
+            sort_keys = Key(FieldTable.SORT_KEY).eq(sort_key)
         else:
-            Keys = Key(FieldTable.SORT_KEY).begins_with(sort_key)
-        # elif type != "eq":
-        #     logging.warning(f"Invalid Key type: {type}")
+            sort_keys = Key(FieldTable.SORT_KEY).begins_with(sort_key)
         scan_kwargs = {
-            'FilterExpression': Keys
+            'FilterExpression': sort_keys
         }
         results = self.template_scan(scan_kwargs)
         df = json_utils.result_list_to_df(results)
@@ -190,10 +191,10 @@ class FieldTable:
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
         """
-        Keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
         if sort_key is not None:
-            Keys = Keys & Key(FieldTable.SORT_KEY).eq(sort_key)
-        keywords = {"KeyConditionExpression": Keys}
+            keys = keys & Key(FieldTable.SORT_KEY).eq(sort_key)
+        keywords = {"KeyConditionExpression": keys}
 
         response = self.template_query(keywords)
         return response['Items']
