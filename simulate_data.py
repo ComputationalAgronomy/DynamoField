@@ -7,11 +7,11 @@ import pandas
 
 
 trial_id_list = ["trial_2B", "trial_3C", "trial_4D"]
-file_name = f"temp_yield.csv"
-nrow = 6
-ncol = 4
-ntrt  = 6
 
+NROW = 6
+NCOL = 4
+NTRT  = 6
+nrow, ncol, ntrt = NROW, NCOL, NTRT
 
 def simulate_one_trial(trial_id, nrow, ncol, ntrt):
     nrep = int(nrow * ncol / ntrt )
@@ -76,11 +76,12 @@ def simulate_trial_contact(trial_id_list, file_name):
 
 
 
+# file_name = f"temp_yield.csv"
 
-simulate_yield_data(trial_id_list, nrow, ncol, ntrt, "temp_yield.csv")
-simulate_trt_data(trial_id_list, ntrt, "temp_trt.csv")
+simulate_yield_data(trial_id_list, NROW, NCOL, NTRT, file_name="temp_yield.csv")
+simulate_trt_data(trial_id_list, NTRT, file_name="temp_trt.csv")
 
-simulate_trial_field_data(trial_id_list, "temp_trial_meta.csv")
-simulate_trial_contact(trial_id_list, "temp_trial_contact.csv")
+simulate_trial_field_data(trial_id_list, file_name="temp_trial_meta.csv")
+simulate_trial_contact(trial_id_list, file_name="temp_trial_contact.csv")
 
-simulate_management_data(trial_id_list, "temp_trial_management.csv")
+simulate_management_data(trial_id_list, file_name="temp_trial_management.csv")
