@@ -10,10 +10,10 @@ import pandas
 
 ALPHABETS = list(string.ascii_uppercase)
 # ALPHABETS.insert(0, 0)
-
+trial_id_list = ["trial_2B", "trial_3C", "trial_4D"]
 trial_id_list = ["crop_yr1_t01", "crop_yr1_t02", "crop_yr1_t03", "crop_yr1_t04", 
                  "crop_yr2_t01", "crop_yr2_t02", "crop_yr2_t03", "crop_yr2_t04"]
-trial_id_list = ["trial_2B", "trial_3C", "trial_4D"]
+
 
 NROW = NTRT = 6  
 NCOL = NBLOCK = 4  
@@ -95,9 +95,11 @@ def simulate_yield_data(trial_id_list, ntrt, nblock, file_name):
         # sim_data = sim_data.concat(design)
     output = pd.concat(sim_data, ignore_index=True)
     output.to_csv(file_name)
+
+
+
     # design.assign(a=[random.uniform(50, 100) for _ in range(design.shape[0])], b=123)
     # design.apply(round, 1, "yields")
-
     # # list(itertools.product(range(1, 7, 1), range(1, 5, 1)))
     # with open(file_name, "w") as f:
     #     sim_title = "trial_id,row,column,treatment,yields,meta\n"
@@ -147,22 +149,27 @@ def simulate_trial_field_data(trial_id_list, file_name):
 
 
 def simulate_management_data(trial_id_list, file_name):
+    sim_length = len(trial_id_list)*2
+    id_list = random.choices(trial_id_list, k=sim_length)
+    solid_or_powder = random.choices(["solid", "powder"], k=sim_length)
     info = pd.DataFrame({
-        "trial_id": trial_id_list,
-        "pH": [round(random.uniform(5, 9), 1) for _ in trial_id_list],
-        "Location": [f"Loc_{ALPHABETS[t]}" for t, _ in enumerate(trial_id_list)],
-        "irrigation": [True if t % 2 == 0 else False for t, _ in enumerate(trial_id_list)]
+        "trial_id": id_list,
+        "fertilizer": ["P" if t % 3 == 0 else "N" for t, _ in enumerate(id_list)],
+        "type": ["NPK_type_I" if t % 2 == 0 else "" for t, _ in enumerate(id_list)],
+        "amount": [round(random.uniform(5, 9), 1) for _ in id_list],
+        "solid_or_powder": solid_or_powder
     })
-    with open(file_name, "w") as f:
-        sim_title = "trial_id,fertilizer,type,amount,solid_or_powder\n"
-        f.write(sim_title)
-        sim_data = [None]*4
-        for index, trial in enumerate(trial_id_list):
-            sim_data[0] = f"{trial},N,NPK_1,{random.uniform(10, 50):.1f},solid\n"
-            sim_data[1] = f"{trial},N,NPK_2,{random.uniform(10, 50):.1f},powder\n"
-            sim_data[2] = f"{trial},P,,{random.uniform(10, 50):.1f},solid\n"
-            sim_data[3] = f"{trial},P,,{random.uniform(10, 50):.1f},solid\n"
-            f.writelines(sim_data)
+    info.to_csv(file_name)
+    # with open(file_name, "w") as f:
+    #     sim_title = "trial_id,fertilizer,type,amount,solid_or_powder\n"
+    #     f.write(sim_title)
+    #     sim_data = [None]*4
+    #     for index, trial in enumerate(trial_id_list):
+    #         sim_data[0] = f"{trial},N,NPK_1,{random.uniform(10, 50):.1f},solid\n"
+    #         sim_data[1] = f"{trial},N,NPK_2,{random.uniform(10, 50):.1f},powder\n"
+    #         sim_data[2] = f"{trial},P,,{random.uniform(10, 50):.1f},solid\n"
+    #         sim_data[3] = f"{trial},P,,{random.uniform(10, 50):.1f},solid\n"
+    #         f.writelines(sim_data)
 
 
 
@@ -176,24 +183,18 @@ def simulate_trial_contact(trial_id_list, file_name):
         "person": ["John" if t % 2 == 0 else "Jane" for t, _ in enumerate(trial_id_list)],
         "phone": [generate_random_phone() for t, _ in enumerate(trial_id_list)]
     })
-    with open(file_name, "w") as f:
-        sim_title = "trial_id,person,phone\n"
-        f.write(sim_title)
-        for index, trial in enumerate(trial_id_list):
-            phone = 
-            sim_data = f"{trial},John,{phone}\n"
-            f.writelines(sim_data)
-
+    info.to_csv(file_name)
 
 
 # file_name = f"temp_yield.csv"
 
 # simulate_yield_data_old(trial_id_list, NROW, NCOL, NTRT, file_name="temp_plot.csv")
+prefix="eg_1"
+simulate_yield_data(trial_id_list, NTRT, NBLOCK, file_name=f"{prefix}_plot.csv")
+simulate_trt_data(trial_id_list, NTRT, file_name=f"{prefix}_trt.csv")
 
-simulate_yield_data(trial_id_list, NTRT, NBLOCK, file_name="temp_plot.csv")
-simulate_trt_data(trial_id_list, NTRT, file_name="temp_trt.csv")
+simulate_trial_field_data(trial_id_list, file_name=f"{prefix}_meta.csv")
+simulate_trial_contact(trial_id_list, file_name=f"{prefix}_contact.csv")
 
-simulate_trial_field_data(trial_id_list, file_name="temp_trial_meta.csv")
-simulate_trial_contact(trial_id_list, file_name="temp_trial_contact.csv")
+simulate_management_data(trial_id_list, file_name=f"{prefix}_management.csv")
 
-simulate_management_data(trial_id_list, file_name="temp_trial_management.csv")

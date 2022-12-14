@@ -3,6 +3,15 @@
 .vscode/
 
 
+## DynamoDB local server
+DynamoDBLocal.jar
+dynamodb_local_latest.tar.gz
+DynamoDBLocal_lib/*
+LICENSE.txt
+README.txt
+THIRD-PARTY-LICENSES.txt
+
+
 ## Template: R
 # History files
 .Rhistory

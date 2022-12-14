@@ -32,23 +32,24 @@ class DataImporter:
         "Column": "column",
     }
 
-    def __init__(self, file_name, data_type, import_column=None):
+    def __init__(self, file_name, data_type, import_column=[]):
         # self.res_table = res_table
         self.df = pd.read_csv(file_name)
         self.data_type = data_type  # sort_key
         self.import_column = import_column
+        if len(self.import_column) == 0:
+            self.import_column = self.df.columns.values.tolist()
         if self.data_type == "plot":
             self.create_df_plot_column()
 
+
     def check_col_names(self, remove_list=[]):
-        if self.import_column is None:
-            self.import_column = self.df.columns.values.tolist()
-            remove_list.extend(DataImporter.RESERVE_KEYWORDS)
-            for remove in remove_list:
-                try:
-                    self.import_column.remove(remove)
-                except ValueError:
-                    pass
+        remove_list.extend(DataImporter.RESERVE_KEYWORDS)
+        for remove in remove_list:
+            try:
+                self.import_column.remove(remove)
+            except ValueError:
+                pass
 
     def check_dup_key_prefix(self, key):
         if not key.startswith(self.data_type):
@@ -92,6 +93,7 @@ class DataImporter:
         return sort_key
 
 
+
     def create_offset(self, df_trials, append, field_trial):
         offset = {k: 0 for k in df_trials.groups.keys()}
         if append:
@@ -102,6 +104,7 @@ class DataImporter:
             except KeyError:
                 pass
         return offset
+
 
     def parse_df_to_dynamo_json(self, append=False, field_trial=None):
         json_list = []
@@ -124,11 +127,13 @@ class DataImporter:
             json_utils.reload_dynamo_json(j) for j in json_list]
         return dynamo_json_list
 
+
     def parse_df_plot_to_dynamo_json(self):
         sort_key_prefix = "plot"
         self.create_df_plot_column()
         dynamo_json_list = self.parse_df_to_dynamo_json()
         return dynamo_json_list
+
 
     def parse_df_trt_to_dynamo_json(self):
         sort_key_prefix = "trt"
@@ -140,8 +145,6 @@ class DataImporter:
     #     sort_key_prefix = "trt"
     #     dynamo_json_list = self.parse_df_to_dynamo_json(sort_key_prefix, col_names)
     #     return dynamo_json_list
-
-
 
 #     # reduce(lambda x: x.split("_")[1], xx)
 
