@@ -8,9 +8,10 @@ import numpy as np
 from pandas.testing import assert_frame_equal
 
 from src.dynamofield.field import field_table
-from src.dynamofield import dynamodb_init
+from dynamofield.db import dynamodb_init
 
 # importlib.reload(field_table)
+
 
 @pytest.fixture
 def field_trial():

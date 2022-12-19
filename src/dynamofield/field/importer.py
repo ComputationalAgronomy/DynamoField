@@ -12,7 +12,7 @@ from dynamofield.utils import dynamo_utils
 from dynamofield.utils import json_utils
 from dynamofield.utils import dict_utils
 
-# numpy.repeat([], 4)
+
 from dynamofield.field import field_table
 
 
@@ -37,6 +37,8 @@ class DataImporter:
         self.df = pd.read_csv(file_name)
         self.data_type = data_type  # sort_key
         self.import_column = import_column
+        self.dynamo_json_list = []
+        self.partition_key_collection = set()
         if len(self.import_column) == 0:
             self.import_column = self.df.columns.values.tolist()
         if self.data_type == "plot":
@@ -111,9 +113,10 @@ class DataImporter:
         self.check_col_names(remove_list=[])
         df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY)
         offset = self.create_offset(df_trials, append, field_trial)
-
+        self.partition_key_collection = set()
         for trial_id, df_group in df_trials:
             partition_key = field_table.create_partition_key(trial_id)
+            self.partition_key_collection.add(trial_id)
             # is_single_row = df_group.shape[0] == 1
             for index_raw, dfrow in df_group.reset_index().iterrows():
                 index = index_raw + offset[trial_id]
@@ -123,23 +126,25 @@ class DataImporter:
                     partition_key, sort_key, attributes_data)
                 json_list.append(json_data)
 
-        dynamo_json_list = [
+        self.dynamo_json_list = [
             json_utils.reload_dynamo_json(j) for j in json_list]
-        return dynamo_json_list
+        # return dynamo_json_list, partition_key_collection
+
+
 
 
     def parse_df_plot_to_dynamo_json(self):
         sort_key_prefix = "plot"
         self.create_df_plot_column()
-        dynamo_json_list = self.parse_df_to_dynamo_json()
-        return dynamo_json_list
+        self.parse_df_to_dynamo_json()
+        # return dynamo_json_list
 
 
     def parse_df_trt_to_dynamo_json(self):
         sort_key_prefix = "trt"
         # self.create_df_trt_column()
-        dynamo_json_list = self.parse_df_to_dynamo_json()
-        return dynamo_json_list
+        self.parse_df_to_dynamo_json()
+        # return dynamo_json_list
 
     # def parse_df_plot_to_dynamo_json(self, col_names=None):
     #     sort_key_prefix = "trt"

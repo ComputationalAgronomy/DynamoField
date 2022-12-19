@@ -60,9 +60,12 @@ def download_dynamodb_jar(dy_path="."):
 
 
 def start_dynamodb_server(path=".", jar="DynamoDBLocal.jar", lib="DynamoDBLocal_lib"):
-
     jar = os.path.join(path, jar)
     lib = os.path.join(path, lib)
     command = f"java -Djava.library.path={lib} -jar {jar} -sharedDb &"
     command_line = shlex.split(command)
-    subprocess.run(command, shell=True)
+    _ = subprocess.run(command, shell=True)
+
+
+
+

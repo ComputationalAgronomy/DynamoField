@@ -1,7 +1,7 @@
 ## Custom
 *.csv
 .vscode/
-
+sandbox/**
 
 ## DynamoDB local server
 DynamoDBLocal.jar
@@ -10,7 +10,7 @@ DynamoDBLocal_lib/*
 LICENSE.txt
 README.txt
 THIRD-PARTY-LICENSES.txt
-
+shared-local-instance.db
 
 ## Template: R
 # History files

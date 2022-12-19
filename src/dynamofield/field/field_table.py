@@ -7,7 +7,7 @@ import pandas as pd
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-from dynamofield.utils import dynamo_utils
+from dynamofield.utils import dict_utils, dynamo_utils
 from dynamofield.utils import json_utils
 
 # from io import BytesIO
@@ -35,6 +35,7 @@ class FieldTable:
     """Encapsulates an Amazon DynamoDB table of field trial data."""
     PARTITION_KEY = "trial_id"
     SORT_KEY = "info"
+    TRIAL_ID_LIST_PARTITION_KEY = "__private_list_all_id__"
 
     def __init__(self, dyn_resource, table_name):
         """
@@ -42,24 +43,6 @@ class FieldTable:
         """
         self.dyn_resource = dyn_resource
         self.res_table = self.dyn_resource.Table(table_name)
-
-
-    def import_field_data_client(client, table_name, dynamo_json_list, dynamo_config={}):
-        for dynamo_json in dynamo_json_list:
-            dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(
-                dynamo_json)
-            client.put_item(TableName=table_name,
-                            Item=dynamo_attribute, **dynamo_config)
-
-
-    def batch_import_field_data_res(self, dynamo_json_list):
-        # resource.put_item(Item=dynamo_json_list[0])
-        try:
-            with self.res_table.batch_writer() as batch:
-                for j in dynamo_json_list:
-                    batch.put_item(Item=j)
-        except Exception as e:
-            print(e)
 
 
     @staticmethod
@@ -106,6 +89,34 @@ class FieldTable:
         return FieldTable.template_scan_table(self.res_table, scan_kwargs)
 
 
+    def convert_partition_key_collection_dynamo_json(self, partition_key_collection):
+        json_list = []
+        partition_key = create_partition_key(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        for t in partition_key_collection:
+            sort_key = create_sort_key(t)
+            json_data = dict_utils.merge_dicts(partition_key, sort_key, {})
+            json_list.append(json_data)
+        dynamo_json = [json_utils.reload_dynamo_json(j) for j in json_list]
+        return dynamo_json
+
+
+
+    def import_batch_field_data_res(self, data_importer):
+        # resource.put_item(Item=dynamo_json_list[0])
+        if len(data_importer.dynamo_json_list) == 0 or len(data_importer.partition_key_collection) == 0:
+            print("Incomplete importer. Nothing to import\n")
+            return 0
+        id_json = self.convert_partition_key_collection_dynamo_json(data_importer.partition_key_collection)
+        try:
+            with self.res_table.batch_writer() as batch:
+                for j in data_importer.dynamo_json_list:
+                    batch.put_item(Item=j)
+                for j in id_json:
+                    batch.put_item(Item=j)
+        except Exception as e:
+            print(e)
+        
+
     def list_all_sort_keys(self, trial_id, prune_common=False):
         key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
         keywords = {"KeyConditionExpression": key,
@@ -121,6 +132,7 @@ class FieldTable:
             return other_sort_keys
 
         return sort_key_list
+
 
     def get_all_non_standard_info(self, trial_id):
         list_sort_keys = self.list_all_sort_keys(trial_id, prune_common=True)
@@ -156,6 +168,7 @@ class FieldTable:
         df = json_utils.result_list_to_df(results)
         return df
 
+
     def get_all_treatments(self, trial_id):
         """
         Scans all plots and return data
@@ -172,6 +185,7 @@ class FieldTable:
         df = json_utils.result_list_to_df(results)
         return df
 
+
     def get_by_sort_key(self, sort_key, exact=False):
         
         if exact:
@@ -185,6 +199,7 @@ class FieldTable:
         df = json_utils.result_list_to_df(results)
 
         return df
+
 
     def get_by_trial_id(self, trial_id, sort_key=None):
         """
@@ -213,3 +228,11 @@ class FieldTable:
         offset = max(index)
         return(offset)
 
+
+    @DeprecationWarning
+    def __import_field_data_client(client, table_name, dynamo_json_list, dynamo_config={}):
+        for dynamo_json in dynamo_json_list:
+            dynamo_attribute = dynamo_utils.python_obj_to_dynamo_obj(
+                dynamo_json)
+            client.put_item(TableName=table_name,
+                            Item=dynamo_attribute, **dynamo_config)
