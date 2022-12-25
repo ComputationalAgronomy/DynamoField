@@ -7,7 +7,7 @@ import scipy.stats as stats
 import seaborn as sns
 import statsmodels.api as sm
 import statsmodels.stats.multicomp
-from bioinfokit.analys import stat
+
 from statsmodels.formula.api import ols
 
 # from field import Field
@@ -77,7 +77,6 @@ def test_assumption(model):
     plt.show()
 
     # Shapiro-Wilk test
-
     # w, pvalue = stats.shapiro(res.anova_model_out.resid)
     w, pvalue = stats.shapiro(model.resid)
     print(w, pvalue)
@@ -102,6 +101,7 @@ def parse_design(df):
 
 def _anova_tukey(df, formula):
     # ANOVA table using bioinfokit v1.0.3 or later (it uses wrapper script for anova_lm)
+    from bioinfokit.analys import stat
     res = stat()
     res.anova_stat(df=df, res_var='value', anova_model=formula)
     res.anova_summary

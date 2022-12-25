@@ -187,7 +187,6 @@ class FieldTable:
 
 
     def get_by_sort_key(self, sort_key, exact=False):
-        
         if exact:
             sort_keys = Key(FieldTable.SORT_KEY).eq(sort_key)
         else:
@@ -214,6 +213,13 @@ class FieldTable:
         response = self.template_query(keywords)
         return response['Items']
 
+
+    def get_all_trial_id(self):
+        response = self.get_by_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        all_ids = [t["info"] for t in response]
+        return all_ids
+
+
     def find_offset(self, data_type):
         # try:
         current_data = self.get_by_sort_key(data_type)
@@ -223,10 +229,18 @@ class FieldTable:
         #     offest = 
         return offset
 
+
     def _find_offset_sort_key_list(x):
         index = [int(s.rsplit("_")[1]) for s in x]
         offset = max(index)
         return(offset)
+
+    @staticmethod
+    def extract_sort_key_prefix(x):
+        sort_keys_prefix = [s.rsplit("_")[0] for s in x]
+        sort_keys_prefix = list(set(sort_keys_prefix))
+        # offset = max(index)
+        return(sort_keys_prefix)
 
 
     @DeprecationWarning
