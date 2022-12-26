@@ -19,14 +19,14 @@ from dynamofield.utils import json_utils
 # from question import Question
 
 
-def create_partition_key(trial_id):
-    partition_key = {FieldTable.PARTITION_KEY: f"{trial_id}"}
-    return partition_key
+# def create_partition_key(trial_id):
+#     partition_key = {FieldTable.PARTITION_KEY: f"{trial_id}"}
+#     return partition_key
 
 
-def create_sort_key(info):
-    sort_key = {FieldTable.SORT_KEY: f"{info}"}
-    return sort_key
+# def create_sort_key(info):
+#     sort_key = {FieldTable.SORT_KEY: f"{info}"}
+#     return sort_key
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +34,10 @@ logger = logging.getLogger(__name__)
 
 class FieldTable:
     """Encapsulates an Amazon DynamoDB table of field trial data."""
-    PARTITION_KEY = "trial_id"
-    SORT_KEY = "info"
+    PARTITION_KEY_NAME = "trial_id"
+    SORT_KEY_NAME = "info"
+    PARTITION_KEY = Key(PARTITION_KEY_NAME)
+    SORT_KEY = Key(SORT_KEY_NAME)
     TRIAL_ID_LIST_PARTITION_KEY = "__private_list_all_id__"
 
     def __init__(self, dyn_resource, table_name):
@@ -45,6 +47,21 @@ class FieldTable:
         self.dyn_resource = dyn_resource
         self.res_table = self.dyn_resource.Table(table_name)
 
+    @staticmethod
+    def create_partition_key(trial_id):
+        partition_key = key_utils.create_db_key(FieldTable.PARTITION_KEY_NAME, trial_id)
+        return partition_key
+
+    @staticmethod
+    def create_sort_key(info):
+        sort_key = key_utils.create_db_key(FieldTable.SORT_KEY_NAME, info)
+        return sort_key
+
+    @staticmethod
+    def parse_sort_key_condition(value, exact):
+        sort_key_exprs = key_utils.parse_key_condition(
+            FieldTable.SORT_KEY, value, exact)
+        return sort_key_exprs
 
     @staticmethod
     def template_query_table(table, keywords):
@@ -90,11 +107,14 @@ class FieldTable:
         return FieldTable.template_scan_table(self.res_table, scan_kwargs)
 
 
+    
+
+
     def convert_partition_key_collection_dynamo_json(self, partition_key_collection):
         json_list = []
-        partition_key = key_utils.create_partition_key(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        partition_key = FieldTable.create_partition_key(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
         for t in partition_key_collection:
-            sort_key = create_sort_key(t)
+            sort_key = self.create_sort_key(t)
             json_data = dict_utils.merge_dicts(partition_key, sort_key, {})
             json_list.append(json_data)
         dynamo_json = [json_utils.reload_dynamo_json(j) for j in json_list]
@@ -119,9 +139,9 @@ class FieldTable:
         
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
-        key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        key = FieldTable.PARTITION_KEY.eq(trial_id)
         keywords = {"KeyConditionExpression": key,
-                    "ProjectionExpression": FieldTable.SORT_KEY}
+                    "ProjectionExpression": FieldTable.SORT_KEY_NAME}
         response = self.res_table.query(**keywords)
         sort_key_list = []
 
@@ -138,10 +158,10 @@ class FieldTable:
     def get_all_non_standard_info(self, trial_id):
         list_sort_keys = self.list_all_sort_keys(trial_id, prune_common=True)
 
-        partn_key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        partn_key = FieldTable.PARTITION_KEY.eq(trial_id)
         other_info_dict = {}
         for sort_key in list_sort_keys:
-            primary_keys = partn_key & Key(FieldTable.SORT_KEY).eq(sort_key)
+            primary_keys = partn_key & FieldTable.SORT_KEY.eq(sort_key)
             keywords = {"KeyConditionExpression": primary_keys}
             response = self.res_table.query(**keywords)
             other_info_dict[sort_key] = response["Items"]
@@ -176,9 +196,9 @@ class FieldTable:
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
         """
-        keys_exprs = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        keys_exprs = FieldTable.PARTITION_KEY.eq(trial_id)
         if sort_key is not None:
-            sort_key_exprs = key_utils.parse_sort_key_expression(sort_key, exact)
+            sort_key_exprs = FieldTable.parse_sort_key_condition(sort_key, exact)
             keys_exprs = keys_exprs & sort_key_exprs
         keywords = {"KeyConditionExpression": keys_exprs}
 
@@ -197,7 +217,7 @@ class FieldTable:
 
 
     def get_by_sort_key(self, sort_key, exact=False):
-        sort_key_exprs = key_utils.parse_sort_key_expression(sort_key, exact)
+        sort_key_exprs = self.parse_sort_key_condition(sort_key, exact)
         scan_kwargs = {
             'FilterExpression': sort_key_exprs
         }
@@ -224,7 +244,7 @@ class FieldTable:
     def find_offset(self, data_type):
         # try:
         current_data = self.get_by_sort_key(data_type)
-        current_data_split = current_data.groupby(FieldTable.PARTITION_KEY)
+        current_data_split = current_data.groupby(FieldTable.PARTITION_KEY_NAME)
         offset = current_data_split["info"].aggregate(lambda x : key_utils.find_offset_sort_key_list(x))
         # except NameError:
         #     offest = 

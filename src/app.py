@@ -444,7 +444,7 @@ def update_data_table(click, trial_id, info_list):
         raise PreventUpdate
     print(trial_id)
     print(info_list)
-    data = field_trial.get_by_trial_id(trial_id)#, info_list[0])
+    data = field_trial.get_multi_trial_id(trial_id)#, info_list[0])
     df = json_utils.result_list_to_df(data)
     print(df)
     columns = [{"name": i, "id": i} for i in df.columns]

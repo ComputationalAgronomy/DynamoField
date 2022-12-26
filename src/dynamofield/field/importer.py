@@ -18,11 +18,11 @@ from dynamofield.field import field_table
 
 class DataImporter:
 
-    PARTITION_KEY_COLUMN_NAME = field_table.FieldTable.PARTITION_KEY
-    SORT_KEY_COLUMN_NAME = field_table.FieldTable.SORT_KEY
+    PARTITION_KEY_COLUMN_NAME = field_table.FieldTable.PARTITION_KEY_NAME
+    SORT_KEY_COLUMN_NAME = field_table.FieldTable.SORT_KEY_NAME
 
-    RESERVE_KEYWORDS = [field_table.FieldTable.PARTITION_KEY,
-                        field_table.FieldTable.SORT_KEY,
+    RESERVE_KEYWORDS = [field_table.FieldTable.PARTITION_KEY_NAME,
+                        field_table.FieldTable.SORT_KEY_NAME,
                         PARTITION_KEY_COLUMN_NAME, SORT_KEY_COLUMN_NAME,
                         "row", "column"]
 
@@ -91,7 +91,7 @@ class DataImporter:
         #     key = self.data_type
         else:
             key = f"{self.data_type}_{index}"
-        sort_key = key_utils.create_sort_key(key)
+        sort_key = field_table.FieldTable.create_sort_key(key)
         return sort_key
 
 
@@ -111,11 +111,11 @@ class DataImporter:
     def parse_df_to_dynamo_json(self, append=False, field_trial=None):
         json_list = []
         self.check_col_names(remove_list=[])
-        df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY)
+        df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY_NAME)
         offset = self.create_offset(df_trials, append, field_trial)
         self.partition_key_collection = set()
         for trial_id, df_group in df_trials:
-            partition_key = key_utils.create_partition_key(trial_id)
+            partition_key = field_table.FieldTable.create_partition_key(trial_id)
             self.partition_key_collection.add(trial_id)
             # is_single_row = df_group.shape[0] == 1
             for index_raw, dfrow in df_group.reset_index().iterrows():
