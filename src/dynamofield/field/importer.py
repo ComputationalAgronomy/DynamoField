@@ -12,7 +12,7 @@ from dynamofield.utils import dynamo_utils
 from dynamofield.utils import json_utils
 from dynamofield.utils import dict_utils
 
-
+from dynamofield.db import key_utils
 from dynamofield.field import field_table
 
 
@@ -91,7 +91,7 @@ class DataImporter:
         #     key = self.data_type
         else:
             key = f"{self.data_type}_{index}"
-        sort_key = field_table.create_sort_key(key)
+        sort_key = key_utils.create_sort_key(key)
         return sort_key
 
 
@@ -115,7 +115,7 @@ class DataImporter:
         offset = self.create_offset(df_trials, append, field_trial)
         self.partition_key_collection = set()
         for trial_id, df_group in df_trials:
-            partition_key = field_table.create_partition_key(trial_id)
+            partition_key = key_utils.create_partition_key(trial_id)
             self.partition_key_collection.add(trial_id)
             # is_single_row = df_group.shape[0] == 1
             for index_raw, dfrow in df_group.reset_index().iterrows():

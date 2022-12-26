@@ -7,6 +7,7 @@ import pandas as pd
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
+from dynamofield.db import key_utils
 from dynamofield.utils import dict_utils, dynamo_utils
 from dynamofield.utils import json_utils
 
@@ -91,7 +92,7 @@ class FieldTable:
 
     def convert_partition_key_collection_dynamo_json(self, partition_key_collection):
         json_list = []
-        partition_key = create_partition_key(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        partition_key = key_utils.create_partition_key(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
         for t in partition_key_collection:
             sort_key = create_sort_key(t)
             json_data = dict_utils.merge_dicts(partition_key, sort_key, {})
@@ -152,67 +153,67 @@ class FieldTable:
 
     def get_all_plots(self, trial_ids):
         """
-        Scans all plots and return data
-        :return: The list of plots
+        High level function. Retrieve all plots information for a list of trial_ids
         """
-        if not isinstance(trial_ids, list):
-            trial_ids = [trial_ids]
-        results = list()
-        sort_key = Key(FieldTable.SORT_KEY).begins_with("plot_")
-        for trial_id in trial_ids:
-            partn_key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
-            scan_kwargs = {
-                'FilterExpression': partn_key & sort_key
-            }
-            results.extend(self.template_scan(scan_kwargs))
+        results = self.get_multi_trial_id(trial_ids, sort_key="plot_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
 
 
-    def get_all_treatments(self, trial_id):
+    def get_all_treatments(self, trial_ids):
         """
-        Scans all plots and return data
-        :return: The list of plots
+        High level function. Retrieve all treatment information for a list of trial_ids
         """
-        partn_key = Key(FieldTable.PARTITION_KEY).eq(trial_id)
-        sort_key = Key(FieldTable.SORT_KEY).begins_with("trt_")
-        scan_kwargs = {
-            # "KeyConditionExpression": Keys,
-            # 'ProjectionExpression': "#yr, title, info.rating",
-            'FilterExpression': partn_key & sort_key
-        }
-        results = self.template_scan(scan_kwargs)
+        results = self.get_multi_trial_id(trial_ids, sort_key="trt_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
 
 
-    def get_by_sort_key(self, sort_key, exact=False):
-        if exact:
-            sort_keys = Key(FieldTable.SORT_KEY).eq(sort_key)
-        else:
-            sort_keys = Key(FieldTable.SORT_KEY).begins_with(sort_key)
-        scan_kwargs = {
-            'FilterExpression': sort_keys
-        }
-        results = self.template_scan(scan_kwargs)
-        df = json_utils.result_list_to_df(results)
-
-        return df
 
 
-    def get_by_trial_id(self, trial_id, sort_key=None):
+    def get_by_trial_id(self, trial_id, sort_key=None, exact=False):
         """
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
         """
-        keys = Key(FieldTable.PARTITION_KEY).eq(trial_id)
+        keys_exprs = Key(FieldTable.PARTITION_KEY).eq(trial_id)
         if sort_key is not None:
-            keys = keys & Key(FieldTable.SORT_KEY).eq(sort_key)
-        keywords = {"KeyConditionExpression": keys}
+            sort_key_exprs = key_utils.parse_sort_key_expression(sort_key, exact)
+            keys_exprs = keys_exprs & sort_key_exprs
+        keywords = {"KeyConditionExpression": keys_exprs}
 
         response = self.template_query(keywords)
         return response['Items']
 
+    def get_multi_trial_id(self, trial_ids, sort_key=None, exact=False):
+        if not isinstance(trial_ids, list):
+            trial_ids = [trial_ids]
+        results = list()
+        for trial_id in trial_ids:
+            temp = self.get_by_trial_id(trial_id, sort_key=sort_key, exact=exact)
+            results.extend(temp)
+        # df = json_utils.result_list_to_df(results)
+        return results
+
+
+    def get_by_sort_key(self, sort_key, exact=False):
+        sort_key_exprs = key_utils.parse_sort_key_expression(sort_key, exact)
+        scan_kwargs = {
+            'FilterExpression': sort_key_exprs
+        }
+        results = self.template_scan(scan_kwargs)
+        df = json_utils.result_list_to_df(results)
+
+        return df
+
+
+
+    # def parse_sort_key_expression(sort_key, exact):
+    #     if exact:
+    #             sort_keys = Key(FieldTable.SORT_KEY).eq(sort_key)
+    #     else:
+    #         sort_keys = Key(FieldTable.SORT_KEY).begins_with(sort_key)
+    #     return(sort_keys)
 
     def get_all_trial_id(self):
         response = self.get_by_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
@@ -224,23 +225,11 @@ class FieldTable:
         # try:
         current_data = self.get_by_sort_key(data_type)
         current_data_split = current_data.groupby(FieldTable.PARTITION_KEY)
-        offset = current_data_split["info"].aggregate(lambda x : FieldTable._find_offset_sort_key_list(x))
+        offset = current_data_split["info"].aggregate(lambda x : key_utils.find_offset_sort_key_list(x))
         # except NameError:
         #     offest = 
         return offset
 
-
-    def _find_offset_sort_key_list(x):
-        index = [int(s.rsplit("_")[1]) for s in x]
-        offset = max(index)
-        return(offset)
-
-    @staticmethod
-    def extract_sort_key_prefix(x):
-        sort_keys_prefix = [s.rsplit("_")[0] for s in x]
-        sort_keys_prefix = list(set(sort_keys_prefix))
-        # offset = max(index)
-        return(sort_keys_prefix)
 
 
     @DeprecationWarning

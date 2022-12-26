@@ -50,27 +50,58 @@ def test_get_by_trial_id(field_trial):
 
     # field_trial.get_by_trial_id(trial_id=["trial_3C", "trial_2B"], sort_key="plot_0202") # TOFIX
 
-def test_get_by_trial_id_sort_key(field_trial):
+def test_get_by_trial_id_sort_key_exact(field_trial):
 
     trial_id = "trial_2B"
     result = field_trial.get_by_trial_id(trial_id=trial_id, sort_key="meta_0")
     expected = [{'soil_ph': Decimal('5.2'), 'trial_id': 'trial_2B', 'soil_type': 'sandy', 'location': 'Loc_0', 'irrigation': 'No', 'info': 'meta_0'}]
     assert result == expected
 
-    result = field_trial.get_by_trial_id(trial_id=trial_id, sort_key="contact_0")
+    result = field_trial.get_by_trial_id(trial_id=trial_id, sort_key="contact_0", exact=True)
     expected = [{'trial_id': 'trial_2B', 'phone': '234-567-890', 'person': 'John', 'info': 'contact_0'}]
     assert result == expected
-
     
-    result = field_trial.get_by_trial_id(trial_id, sort_key="management_1")
+    result = field_trial.get_by_trial_id(trial_id, sort_key="management_1", exact=True)
     expected = [{'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'}]
     assert result == expected
 
-    result = field_trial.get_by_trial_id(trial_id, sort_key="management")
+    result = field_trial.get_by_trial_id(trial_id, sort_key="management", exact=True)
     assert result == []
 
     result = field_trial.get_by_trial_id(trial_id, sort_key="aoeuXYZ")
     assert result == []
+
+
+def test_get_by_trial_id_sort_key_prefix(field_trial):
+
+    trial_id = "trial_2B"
+    # result = field_trial.get_by_trial_id(trial_id=trial_id, sort_key="meta_0")
+    # expected = [{'soil_ph': Decimal('5.2'), 'trial_id': 'trial_2B', 'soil_type': 'sandy', 'location': 'Loc_0', 'irrigation': 'No', 'info': 'meta_0'}]
+    # assert result == expected
+
+    # result = field_trial.get_by_trial_id(trial_id=trial_id, sort_key="contact_0", exact=True)
+    # expected = [{'trial_id': 'trial_2B', 'phone': '234-567-890', 'person': 'John', 'info': 'contact_0'}]
+    # assert result == expected
+    
+    # result = field_trial.get_by_trial_id(trial_id, sort_key="management_1", exact=True)
+    # expected = [{'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'}]
+    # assert result == expected
+
+    result = field_trial.get_by_trial_id(trial_id, sort_key="management", exact=False)
+    expected = [
+        {'trial_id': 'trial_2B', 'amount': Decimal('14.1'), 'solid_or_powder': 'solid', 'type': 'NPK_1', 'fertilizer': 'N', 'info': 'management_0'},
+        {'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'},
+        {'trial_id': 'trial_2B', 'amount': Decimal('37.1'), 'solid_or_powder': 'solid', 'fertilizer': 'P', 'info': 'management_2'},
+        {'trial_id': 'trial_2B', 'amount': Decimal('33'), 'solid_or_powder': 'solid', 'fertilizer': 'P', 'info': 'management_3'},]
+    
+    result = field_trial.get_by_trial_id(trial_id, sort_key="management", exact=False)
+    assert result == expected
+
+    result = field_trial.get_by_trial_id(trial_id, sort_key="management_", exact=False)
+    assert result == expected
+
+    result = field_trial.get_by_trial_id(trial_id, sort_key="managemen", exact=False)
+    assert result == expected
 
 
 def test_list_all_sort_keys(field_trial):
@@ -158,6 +189,5 @@ def test_get_by_sort_key(field_trial):
             'info': {0: 'management_0', 1: 'management_1', 2: 'management_2', 3: 'management_3', 4: 'management_0', 5: 'management_1', 6: 'management_2', 7: 'management_3', 8: 'management_0', 9: 'management_1', 10: 'management_2', 11: 'management_3'}}
     expected = pd.DataFrame(data)
     assert_frame_equal(result, expected)
-
 
 

@@ -15,14 +15,15 @@ import dash
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from dash import Dash, dcc, html
-from dash.dependencies import ClientsideFunction, Input, Output
+from dash import Dash, dcc, html, ctx, dash_table
+from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
 from dynamofield.db import dynamodb_init
 
 from dynamofield.db import init_db, table_utils
 from dynamofield.field import field_table, importer
+from dynamofield.utils import json_utils
 
 
 def init_field_trial():
@@ -43,6 +44,8 @@ app = Dash(__name__)
 
 
 df = pd.read_csv('gdp-life-exp-2007.csv')
+# df = pd.read_csv('https://git.io/Juf1t')
+
 
 fig = px.scatter(df, x="gdp per capita", y="life expectancy",
                  size="population", color="continent", hover_name="country",
@@ -181,7 +184,8 @@ def build_upper_left_panel():
 # app.layout = html.Div([
 #     html.Div(children=[
 #         html.Label('Dropdown'),
-#         dcc.Dropdown(['New York City', 'Montréal', 'San Francisco'], 'Montréal'),
+# dcc.Dropdown(['New York City', 'Montréal', 'San Francisco'],
+# 'Montréal'),
 
 #         html.Br(),
 #         html.Label('Multi-Select Dropdown'),
@@ -324,7 +328,8 @@ app.layout = html.Div(
                                      html.B(
                                          "Patient Wait Time and Satisfactory Scores"),
                                      html.Hr(),
-                                     # html.Div(id="wait_time_table", children=initialize_table()),
+                                     # html.Div(id="wait_time_table",
+                                     # children=initialize_table()),
                                  ],
                              ),
                          ],
@@ -346,48 +351,59 @@ app.layout = html.Div(
         ),
         html.Div([
             html.Div(
-                [
-                    # html.Label('Select trial ID'),
+                children=[
+                    html.Label('Select trial ID'),
+                    html.Br(),
                     dcc.Dropdown(options=ids, multi=False, id="select_trial"),
-                    
-                    html.Div(id='dd-output-info'),
-                ]),
-            # html.Div(children=[
-            #     dcc.Dropdown(options=ids, id='demo-dropdown'),
-            #     # html.Br(),
-            #     html.Div(id='dd-output-container')
-            # ]),
-            html.Div(children=[
-                html.Br(),
-                html.Label('Multi-Select Information related to this trial'),
-                dcc.Dropdown(id="update_info_list",
-                             multi=True),
+                ],
+                style={'padding': 10, 'flex': 1}
+            ),
+            html.Div(
+                children=[
+                    html.Label(
+                        'Multi-Select Information related to this trial'),
+                    html.Br(),
+                    dcc.Dropdown(id="update_info_list", multi=True),
+                    html.Button('Select All', id='button_info_all', n_clicks=0),
+                    html.Button('Select None', id='button_info_none', n_clicks=0),
+                ],
+                style={'padding': 10, 'flex': 1}
+            ),
+        ],
+            style={'display': 'flex', 'flex-direction': 'row'}
+        ),
 
-                html.Br(),
-                html.Label('Radio Items'),
-                dcc.RadioItems(['New York City', 'Montréal',
-                                'San Francisco'], 'Montréal'),
-            ], style={'padding': 10, 'flex': 1}),
+        html.Div(children=[
+            html.Br(),
+            html.Label('Radio Items'),
+            dcc.RadioItems(['New York City', 'Montréal',
+                            'San Francisco'], 'Montréal'),
+        ], style={'padding': 10, 'flex': 1}),
 
-            html.Div(children=[
-                html.Label('Checkboxes'),
-                dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
-                              ['Montréal', 'San Francisco']
-                              ),
+        html.Div(children=[
+            html.Label('Checkboxes'),
+            dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
+                          ['Montréal', 'San Francisco']
+                          ),
 
-                html.Br(),
-                html.Label('Text Input'),
-                dcc.Input(value='MTL', type='text'),
+            html.Br(),
+            html.Label('Text Input'),
+            dcc.Input(value='MTL', type='text'),
+            html.Button('Fetch data', id='fetch_data', n_clicks=0),
+        ], style={'padding': 10, 'flex': 1}
+        ),
+        dash_table.DataTable(id="data_table",
+            # data=df.to_dict('records'),
+            # columns=[{"name": i, "id": i} for i in df.columns]
+        )
+    ]
+)  # ,  # style={'display': 'flex', 'flex-direction': 'row'})
 
-            ], style={'padding': 10, 'flex': 1})
-        ]),# style={'display': 'flex', 'flex-direction': 'row'})
+# ]
+# )
 
-    ])
-
-
-
-
-@app.callback(
+info_global = []  # FIXME: HACK:
+@ app.callback(
     Output('update_info_list', 'options'),
     Input('select_trial', 'value')
 )
@@ -396,11 +412,43 @@ def update_output_info(value):
         raise PreventUpdate
     # if value is not No?ne:
     info = field_trial.list_all_sort_keys(value)
-    info = field_table.FieldTable.extract_sort_key_prefix(info)
-    print(info[0])
-    return info
+    info_global = field_table.FieldTable.extract_sort_key_prefix(info)
+    print(info_global[0])
+    return info_global
     # return f"aoeuaoeu {value}"
 
+
+@app.callback(
+    Output('update_info_list', 'value'),
+    Input('button_info_all', 'n_clicks'),
+    Input('button_info_none', 'n_clicks'),
+    State('update_info_list', 'options'),
+)
+def update_output(b1, b2, options):
+    if "button_info_all" == ctx.triggered_id:
+        return options
+    elif "button_info_none" == ctx.triggered_id:
+        return None
+
+
+
+
+@app.callback(
+    [Output("data_table", "columns"), Output("data_table", "data")],
+    [Input("fetch_data", "n_clicks")],
+    State('select_trial', 'value'),
+    State('update_info_list', 'value'),
+)
+def update_data_table(click, trial_id, info_list):
+    if not trial_id:
+        raise PreventUpdate
+    print(trial_id)
+    print(info_list)
+    data = field_trial.get_by_trial_id(trial_id)#, info_list[0])
+    df = json_utils.result_list_to_df(data)
+    print(df)
+    columns = [{"name": i, "id": i} for i in df.columns]
+    return columns, df.to_dict('records')
 
 
 # @app.callback(
@@ -409,7 +457,6 @@ def update_output_info(value):
 # )
 # def update_output(value):
 #     return f'You have selected {value}'
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
