@@ -15,7 +15,7 @@ from statsmodels.formula.api import ols
 
 # response_list=["yields", "meta"]
 
-def summary_plots(field_trial, trial_id, response_list=["yields"]):
+def summary_table(field_trial, trial_id, response_list=["yields"]):
     df = field_trial.get_all_plots(trial_id)
     trt = df["treatment"]
     responses = df[response_list]

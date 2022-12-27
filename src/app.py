@@ -40,7 +40,7 @@ def init_field_trial():
 
 field_trial = init_field_trial()
 
-app = Dash(__name__)
+app = Dash(__name__, suppress_callback_exceptions=True)
 
 
 df = pd.read_csv('gdp-life-exp-2007.csv')
@@ -50,178 +50,6 @@ df = pd.read_csv('gdp-life-exp-2007.csv')
 fig = px.scatter(df, x="gdp per capita", y="life expectancy",
                  size="population", color="continent", hover_name="country",
                  log_x=True, size_max=60)
-
-# app.layout = html.Div([
-#     dcc.Graph(
-#         id='life-exp-vs-gdp',
-#         figure=fig
-#     )
-# ])
-
-
-def build_upper_left_panel():
-    return html.Div(
-        id="upper-left",
-        className="six columns",
-        children=[
-            html.P(
-                className="section-title",
-                children="Choose hospital on the map or procedures from the list below to see costs",
-            ),
-            html.Div(
-                className="control-row-1",
-                children=[
-                    html.Div(
-                        id="state-select-outer",
-                        children=[
-                            html.Label("Select a State"),
-                            dcc.Dropdown(
-                                id="state-select",
-                                # options=[{"label": i, "value": i} for i in state_list],
-                                # value=state_list[1],
-                            ),
-                        ],
-                    ),
-                    html.Div(
-                        id="select-metric-outer",
-                        children=[
-                            html.Label("Choose a Cost Metric"),
-                            dcc.Dropdown(
-                                id="metric-select",
-                                # options=[{"label": i, "value": i} for i in cost_metric],
-                                # value=cost_metric[0],
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            html.Div(
-                id="region-select-outer",
-                className="control-row-2",
-                children=[
-                    html.Label("Pick a Region"),
-                    html.Div(
-                        id="checklist-container",
-                        children=dcc.Checklist(
-                            id="region-select-all",
-                            options=[
-                                {"label": "Select All Regions", "value": "All"}],
-                            value=[],
-                        ),
-                    ),
-                    html.Div(
-                        id="region-select-dropdown-outer",
-                        children=dcc.Dropdown(
-                            id="region-select", multi=True, searchable=True,
-                        ),
-                    ),
-                ],
-            ),
-            html.Div(
-                id="table-container",
-                className="table-container",
-                children=[
-                    html.Div(
-                        id="table-upper",
-                        children=[
-                            html.P("Hospital Charges Summary"),
-                            dcc.Loading(
-                                children=html.Div(
-                                    id="cost-stats-container")),
-                        ],
-                    ),
-                    html.Div(
-                        id="table-lower",
-                        children=[
-                            html.P("Procedure Charges Summary"),
-                            dcc.Loading(
-                                children=html.Div(
-                                    id="procedure-stats-container")
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    )
-
-
-# app.layout = html.Div(
-#     # className="container scalable",
-#     id="app-container",
-#     children=[
-#         html.Div(
-#             id="banner",
-#             className="banner",
-#             children=[
-#                 html.H6("Dash Clinical Analytics"),
-#                 # html.Img(src=app.get_asset_url("plotly_logo_white.png")),
-#             ],
-#         ),
-#         html.Div(
-#             id="left-column",
-#             # className="row",
-#             className="four columns",
-#             children=[
-#                 build_upper_left_panel()
-#             ]
-#         ),
-#       html.Div(
-#             id="right-column",
-#             className="eight columns",
-#             children=[
-#                 dcc.Graph(
-#                     id="procedure-plot",
-#                     # figure=generate_procedure_plot(
-#                     #     data_dict[state_list[1]], cost_metric[0], init_region, []
-#                     # ),
-#                 )
-#             ],
-#         ),
-
-#     ])
-
-# app.layout = html.Div([
-#     html.Div(children=[
-#         html.Label('Dropdown'),
-# dcc.Dropdown(['New York City', 'Montréal', 'San Francisco'],
-# 'Montréal'),
-
-#         html.Br(),
-#         html.Label('Multi-Select Dropdown'),
-#         dcc.Dropdown(['New York City', 'Montréal', 'San Francisco'],
-#                      ['Montréal', 'San Francisco'],
-#                      multi=True),
-
-#         html.Br(),
-#         html.Label('Radio Items'),
-#         dcc.RadioItems(['New York City', 'Montréal', 'San Francisco'], 'Montréal'),
-#     ], style={'padding': 10, 'flex': 1}),
-
-#     html.Div(children=[
-#         html.Label('Checkboxes'),
-#         dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
-#                       ['Montréal', 'San Francisco']
-#         ),
-
-#         html.Br(),
-#         html.Label('Text Input'),
-#         dcc.Input(value='MTL', type='text'),
-
-#         html.Br(),
-#         html.Label('Slider'),
-#         dcc.Slider(
-#             min=0,
-#             max=9,
-#             marks={i: f'Label {i}' if i == 1 else str(i) for i in range(1, 6)},
-#             value=5,
-#         ),
-#     ], style={'padding': 10, 'flex': 1}),
-#     dcc.Graph(
-#         id='life-exp-vs-gdp',
-#         figure=fig
-#     )
-# ], style={'display': 'flex', 'flex-direction': 'row'})
 
 
 def description_panel():
@@ -237,69 +65,6 @@ def description_panel():
         ],
     )
 
-
-trial_list = [1, 3, 4]
-def generate_import_panel():
-    return [html.Div(children=[
-            html.Br(),
-            html.Label('Radio Items'),
-            dcc.RadioItems(['New York City', 'Montréal',
-                            'San Francisco'], 'Montréal'),
-        ], style={'padding': 10, 'flex': 1}),
-        html.Div(children=[
-            html.Label('Checkboxes'),
-            dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
-                          ['Montréal', 'San Francisco']
-                          ),
-
-            html.Br(),
-            html.Label('Text Input'),
-            dcc.Input(value='MTL', type='text'),
-            
-        ], style={'padding': 10, 'flex': 1}
-        )]
-
-
-def generate_query_panel():
-    return [
-        html.Div(id="query_panel", children=[
-            html.Div(
-                children=[
-                    html.Label('Select trial ID'),
-                    html.Br(),
-                    dcc.Dropdown(
-                        options=ids, multi=False, id="select_trial"),
-                ],
-                style={'padding': 10, 'flex': 1}
-            ),
-            html.Div(
-                children=[
-                    html.Label(
-                        'Multi-Select Information related to this trial'),
-                    html.Br(),
-                    dcc.Dropdown(id="update_info_list", multi=True),
-                    html.Button(
-                        'Select All',
-                        id='button_info_all',
-                        n_clicks=0),
-                    html.Button(
-                        'Select None',
-                        id='button_info_none',
-                        n_clicks=0),
-                ],
-                style={'padding': 10, 'flex': 1}
-            ),
-        ],
-            style={'display': 'flex', 'flex-direction': 'row'}
-        ),
-        html.Br(),html.Br(),
-        html.Button('Fetch data', id='fetch_data', n_clicks=0),
-        html.Br(),html.Br(),
-        dash_table.DataTable(id="data_table",
-            # data=df.to_dict('records'),
-            # columns=[{"name": i, "id": i} for i in df.columns]
-        )
-    ]
 
 
 def generate_control_panel():
@@ -399,11 +164,97 @@ app.layout = html.Div(
     ]
 )
 
+
+trial_list = [1, 3, 4]
+def generate_import_panel():
+    return [html.Div(children=[
+            html.Br(),
+            html.Label('Radio Items'),
+            dcc.RadioItems(['New York City', 'Montréal',
+                            'San Francisco'], 'Montréal'),
+        ], style={'padding': 10, 'flex': 1}),
+        html.Div(children=[
+            html.Label('Checkboxes'),
+            dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
+                          ['Montréal', 'San Francisco']
+                          ),
+
+            html.Br(),
+            html.Label('Text Input'),
+            dcc.Input(value='MTL', type='text'),
+            
+        ], style={'padding': 10, 'flex': 1}
+        )]
+
+btn_style = {"margin-right": "10px", "margin-left": "10px", "margin-top": 3}
+def generate_query_panel():
+    return [
+        html.Div(id="query_panel", children=[
+            html.Div(children=[
+                html.Label('Select trial ID'),
+                html.Br(),
+                dcc.Dropdown(options=ids, multi=False, id="select_trial"),
+                html.Button('Fetch data', id='fetch_data', n_clicks=0, style=btn_style),
+            ],
+                style={'padding': 10, 'flex': 1}
+            ),
+            html.Div(children=[
+                html.Label('Multi-Select Information related to this trial'),
+                html.Br(),
+                dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
+                html.Button('Select All', id='button_info_all', n_clicks=0, style=btn_style),
+                html.Button('Select None', id='button_info_none', n_clicks=0, style=btn_style),
+            ],
+                style={'padding': 10, 'flex': 1}
+            ),
+        ],
+            style={'display': 'flex', 'flex-direction': 'row'}
+        ),
+        
+        
+        html.Hr(),
+        # html.Button('Fetch plot info', id='fetch_plot', n_clicks=0, style=btn_style),
+        # html.H1("Figure"),
+        html.Div(children=[
+            html.Div(children=[
+                dcc.Markdown("**X-axis**\n"),
+                # html.Div("<b>aoeuaoeu</b>"),
+                dcc.Dropdown(id="dropdown_xaxis", multi=False),
+                html.Br(),
+                html.Label('Plot types:'),
+                dcc.RadioItems(["Scatter", "Line", "Bar"], "Scatter", id="raido-plot-type"),
+            ], style={'padding': 10, 'flex': 1}),
+            html.Div(children=[
+                dcc.Markdown("**Y-axis**\n"),
+                dcc.Dropdown(id="dropdown_yaxis", multi=False),
+                html.Button("Plot data", id="btn_plot", style=btn_style),
+            ], style={'padding': 10, 'flex': 1}),
+        ], style={'display': 'flex', 'padding': 10, 'flex-direction': 'row'}),
+        html.Hr(),
+        html.H5("Table"),
+        html.Br(),html.Br(),
+        html.Button("Export data table (CSV)", id="btn_export", style=btn_style),
+        dcc.Download(id="export_data"),
+        
+        # html.Div(
+        #     "To download the figure, hover over the graph and click the camera icon.",
+        #     style={"textAlign": "right"},
+        # ),
+        html.Br(),
+        dash_table.DataTable(id="data_table", 
+            page_size=30,  # we have less data in this example, so setting to 20
+            style_table={'height': '300px', 'overflowY': 'auto'},
+            export_format='csv'),
+        dcc.Graph(id='data_figure'),
+    
+    ]
+
+
+
 ids = field_trial.get_all_trial_id()
     
 app.layout = html.Div(
-    id="app-container",
-
+    id="db",
     children=[
         # Banner
         html.Div(
@@ -411,26 +262,32 @@ app.layout = html.Div(
             className="banner",
             children=[html.H2("FT database.")],
         ),
-        dcc.Tabs(id='tabs-function-1', value='tab-1', children=[
-            dcc.Tab(label='Query database', value='tab-query',
-                children=generate_query_panel()
-            ),
-            dcc.Tab(label='Import data', value='tab-import', 
-                children=generate_import_panel()
-            ),
-            dcc.Tab(label='Initialise database', value='tab-init-db', children=[]),
+        dcc.Tabs(id='tabs-function-1', value='tab-query', children=[
+            dcc.Tab(label='Query database', value='tab-query'),
+            dcc.Tab(label='Import data', value='tab-import'),
+            dcc.Tab(label='Initialise database', value='tab-init-db'),
         ]),
+        html.Div(id='tabs-function-content-1')
 
-   
     ]
-)  # ,  # style={'display': 'flex', 'flex-direction': 'row'})
+)
 
-# ]
-# )
 
-info_global = []  # FIXME: HACK:
+@app.callback(
+    Output('tabs-function-content-1', 'children'),
+    Input('tabs-function-1', 'value')
+)
+def render_panels(tab):
+    if tab == "tab-query":
+        return generate_query_panel()
+    elif tab == "tab-import":
+        return generate_import_panel()
+    elif tab == "tab_init_db":
+        return  html.Div([])
+
+
 @ app.callback(
-    Output('update_info_list', 'options'),
+    Output('dropdown_info_sortkey', 'options'),
     Input('select_trial', 'value')
 )
 def update_output_info(value):
@@ -445,12 +302,14 @@ def update_output_info(value):
 
 
 @app.callback(
-    Output('update_info_list', 'value'),
+    Output('dropdown_info_sortkey', 'value'),
     Input('button_info_all', 'n_clicks'),
     Input('button_info_none', 'n_clicks'),
-    State('update_info_list', 'options'),
+    State('dropdown_info_sortkey', 'options'),
 )
 def update_output(b1, b2, options):
+    if not options:
+        raise PreventUpdate
     if "button_info_all" == ctx.triggered_id:
         return options
     elif "button_info_none" == ctx.triggered_id:
@@ -460,10 +319,11 @@ def update_output(b1, b2, options):
 
 
 @app.callback(
-    [Output("data_table", "columns"), Output("data_table", "data")],
-    [Input("fetch_data", "n_clicks")],
+    Output("data_table", "columns"), Output("data_table", "data"),
+    Output("dropdown_xaxis", "options"), Output("dropdown_yaxis", "options"),
+    Input("fetch_data", "n_clicks"),
     State('select_trial', 'value'),
-    State('update_info_list', 'value'),
+    State('dropdown_info_sortkey', 'value'),
 )
 def update_data_table(click, trial_id, info_list):
     if not trial_id:
@@ -474,8 +334,47 @@ def update_data_table(click, trial_id, info_list):
     df = json_utils.result_list_to_df(data)
     # print(df)
     columns = [{"name": i, "id": i} for i in df.columns]
-    return columns, df.to_dict('records')
+    return columns, df.to_dict('records'), df.columns, df.columns
 
+
+@app.callback(
+    Output("export_data", "data"),
+    Input("btn_export", "n_clicks"),
+    State("data_table", "data"),
+    prevent_initial_call=True,
+)
+def export_dataframe(n_clicks, df):
+    if not df:
+        raise PreventUpdate
+    df2 = pd.DataFrame(df)
+    #  df.to_csv('df.csv', index=False, encoding='utf-8')
+    # datetime
+    return dcc.send_data_frame(df2.to_csv, filename="hello.csv")
+
+
+@app.callback(
+    Output('data_figure', 'figure'),
+    Input('btn_plot', 'n_clicks'),
+    State("data_table", "data"),
+    State('dropdown_xaxis', 'value'), State('dropdown_yaxis', 'value'),
+    State("raido-plot-type", "value"),
+    prevent_initial_call=True,
+    )
+def update_figure(n_clicks, df, var_x, var_y, plot_type):
+    # filtered_df = df[df.year == selected_year]
+    if not var_x and not var_y:
+        raise PreventUpdate
+    df2 = pd.DataFrame(df)
+    if plot_type == "Bar":
+        fig = px.bar(df2, x=var_x, y=var_y)
+    elif plot_type == "Line":
+        fig = px.line(df2, x=var_x, y=var_y)
+    elif plot_type == "Scatter":
+        fig = px.scatter(df2, x=var_x, y=var_y)
+        
+    fig.update_layout(transition_duration=500)
+
+    return fig
 
 # @app.callback(
 #     Output('dd-output-container', 'children'),
