@@ -7,6 +7,9 @@ import datetime
 import importlib
 import os
 from datetime import datetime as dt
+import base64
+import datetime
+import io
 
 import boto3
 import dash
@@ -24,7 +27,7 @@ from dynamofield.db import dynamodb_init, key_utils
 from dynamofield.db import init_db, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
-
+from app_import_panel import *
 
 def init_field_trial():
 
@@ -40,151 +43,134 @@ def init_field_trial():
 
 field_trial = init_field_trial()
 
-app = Dash(__name__, suppress_callback_exceptions=True)
+app = Dash(__name__, 
+    # use_pages=True,
+    suppress_callback_exceptions=True)
 
 
-df = pd.read_csv('gdp-life-exp-2007.csv')
+# df = pd.read_csv('gdp-life-exp-2007.csv')
 # df = pd.read_csv('https://git.io/Juf1t')
 
 
-fig = px.scatter(df, x="gdp per capita", y="life expectancy",
-                 size="population", color="continent", hover_name="country",
-                 log_x=True, size_max=60)
+# fig = px.scatter(df, x="gdp per capita", y="life expectancy",
+#                  size="population", color="continent", hover_name="country",
+#                  log_x=True, size_max=60)
 
 
-def description_panel():
-    return html.Div(
-        id="description-panel",
-        children=[
-            # html.H5("Field trial analysis"),
-            html.H3("Welcome to the interactive Dashboard"),
-            html.Div(
-                id="intro",
-                children="Explore clinic patient volume by time of day, waiting time, and care score. Click on the heatmap to visualize patient experience at different time points.",
-            ),
-        ],
-    )
+# def description_panel():
+#     return html.Div(
+#         id="description-panel",
+#         children=[
+#             # html.H5("Field trial analysis"),
+#             html.H3("Welcome to the interactive Dashboard"),
+#             html.Div(
+#                 id="intro",
+#                 children="Explore clinic patient volume by time of day, waiting time, and care score. Click on the heatmap to visualize patient experience at different time points.",
+#             ),
+#         ],
+#     )
 
 
 
-def generate_control_panel():
-    """
-    :return: A Div containing controls for graphs.
-    """
-    return html.Div(
-        id="control-card",
-        children=[
-            html.P("Select Clinic"),
-            dcc.Dropdown(
-                id="clinic-select",
-                # options=[{"label": i, "value": i} for i in trial_list],
-                # value=clinic_list[0],
-            ),
-            html.Br(),
-            # html.P("Select info"),
-            # dcc.DatePickerRange(
-            #     id="date-picker-select",
-            #     start_date=dt(2014, 1, 1),
-            #     end_date=dt(2014, 1, 15),
-            #     min_date_allowed=dt(2014, 1, 1),
-            #     max_date_allowed=dt(2014, 12, 31),
-            #     initial_visible_month=dt(2014, 1, 1),
-            # ),
-            html.Br(),
-            # html.Br(),
-            html.P("Select Info"),
-            dcc.Dropdown(
-                id="admit-select",
-                # options=[{"label": i, "value": i} for i in admit_list],
-                # value=admit_list[:],
-                multi=True,
-            ),
-            html.Br(),
-            html.Div(
-                id="reset-btn-outer",
-                children=html.Button(
-                    id="reset-btn", children="Reset", n_clicks=0),
-            ),
-        ],
-    )
+# def generate_control_panel():
+#     """
+#     :return: A Div containing controls for graphs.
+#     """
+#     return html.Div(
+#         id="control-card",
+#         children=[
+#             html.P("Select Clinic"),
+#             dcc.Dropdown(
+#                 id="clinic-select",
+#                 # options=[{"label": i, "value": i} for i in trial_list],
+#                 # value=clinic_list[0],
+#             ),
+#             html.Br(),
+#             # html.P("Select info"),
+#             # dcc.DatePickerRange(
+#             #     id="date-picker-select",
+#             #     start_date=dt(2014, 1, 1),
+#             #     end_date=dt(2014, 1, 15),
+#             #     min_date_allowed=dt(2014, 1, 1),
+#             #     max_date_allowed=dt(2014, 12, 31),
+#             #     initial_visible_month=dt(2014, 1, 1),
+#             # ),
+#             html.Br(),
+#             # html.Br(),
+#             html.P("Select Info"),
+#             dcc.Dropdown(
+#                 id="admit-select",
+#                 # options=[{"label": i, "value": i} for i in admit_list],
+#                 # value=admit_list[:],
+#                 multi=True,
+#             ),
+#             html.Br(),
+#             html.Div(
+#                 id="reset-btn-outer",
+#                 children=html.Button(
+#                     id="reset-btn", children="Reset", n_clicks=0),
+#             ),
+#         ],
+#     )
 
 
-app.layout = html.Div(
-    id="app-container",
-    children=[
-        # Banner
-        html.Div(
-            id="banner",
-            className="banner",
-            children=[html.H4("Field trial database.")],
-        ),
-        # Left column
-        html.Div(className='row',
-                 children=[
-                     html.Div(
-                         id="left-column",
-                         className="six columns",
-                         children=[
-                             description_panel(),
-                             generate_control_panel()]
-                         # + [
-                         #     html.Div(
-                         #         ["initial child"], id="output-clientside", style={"display": "none"}
-                         #     )
-                         # ],
-                     ),
-                     # Right column
-                     html.Div(
-                         id="right-column",
-                         className="six columns",
-                         children=[
-                             # Patient Volume Heatmap
-                             html.Div(
-                                 id="patient_volume_card",
-                                 children=[
-                                     html.B("Patient Volume"),
-                                     html.Hr(),
-                                     # dcc.Graph(id="patient_volume_hm"),
-                                 ],
-                             ),
-                             # Patient Wait time by Department
-                             html.Div(
-                                 id="wait_time_card",
-                                 children=[
-                                     html.B(
-                                         "Patient Wait Time and Satisfactory Scores"),
-                                     html.Hr(),
-                                     # html.Div(id="wait_time_table",
-                                     # children=initialize_table()),
-                                 ],
-                             ),
-                         ],
-                     ),
-                 ]),
-    ]
-)
+# app.layout = html.Div(
+#     id="app-ft-db",
+#     children=[
+#         # Banner
+#         html.Div(
+#             id="banner",
+#             className="banner",
+#             children=[html.H4("Field trial database.")],
+#         ),
+#         # Left column
+#         html.Div(className='row',
+#                  children=[
+#                      html.Div(
+#                          id="left-column",
+#                          className="six columns",
+#                          children=[
+#                              description_panel(),
+#                              generate_control_panel()]
+#                          # + [
+#                          #     html.Div(
+#                          #         ["initial child"], id="output-clientside", style={"display": "none"}
+#                          #     )
+#                          # ],
+#                      ),
+#                      # Right column
+#                      html.Div(
+#                          id="right-column",
+#                          className="six columns",
+#                          children=[
+#                              # Patient Volume Heatmap
+#                              html.Div(
+#                                  id="patient_volume_card",
+#                                  children=[
+#                                      html.B("Patient Volume"),
+#                                      html.Hr(),
+#                                      # dcc.Graph(id="patient_volume_hm"),
+#                                  ],
+#                              ),
+#                              # Patient Wait time by Department
+#                              html.Div(
+#                                  id="wait_time_card",
+#                                  children=[
+#                                      html.B(
+#                                          "Patient Wait Time and Satisfactory Scores"),
+#                                      html.Hr(),
+#                                      # html.Div(id="wait_time_table",
+#                                      # children=initialize_table()),
+#                                  ],
+#                              ),
+#                          ],
+#                      ),
+#                  ]),
+#     ]
+# )
 
+item_counts = field_trial.get_item_count()
 
-trial_list = [1, 3, 4]
-def generate_import_panel():
-    return [html.Div(children=[
-            html.Br(),
-            html.Label('Radio Items'),
-            dcc.RadioItems(['New York City', 'Montréal',
-                            'San Francisco'], 'Montréal'),
-        ], style={'padding': 10, 'flex': 1}),
-        html.Div(children=[
-            html.Label('Checkboxes'),
-            dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
-                          ['Montréal', 'San Francisco']
-                          ),
-
-            html.Br(),
-            html.Label('Text Input'),
-            dcc.Input(value='MTL', type='text'),
-            
-        ], style={'padding': 10, 'flex': 1}
-        )]
 
 btn_style = {"margin-right": "10px", "margin-left": "10px", "margin-top": 3}
 def generate_query_panel():

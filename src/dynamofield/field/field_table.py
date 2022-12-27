@@ -136,7 +136,10 @@ class FieldTable:
                     batch.put_item(Item=j)
         except Exception as e:
             print(e)
-        
+    
+    def get_item_count(self):
+        self.res_table.reload()
+        return self.res_table.item_count
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
         key = FieldTable.PARTITION_KEY.eq(trial_id)

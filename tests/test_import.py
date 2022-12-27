@@ -79,8 +79,8 @@ def test_import(field_trial):
     expected_total = dict(zip(expected_length.keys(), total))
     
     # for data_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
-    field_trial.res_table.reload()
-    assert field_trial.res_table.item_count == 0
+    count = field_trial.get_item_count()
+    assert count == 0
     for data_type in expected_length.keys():
         print(data_type)
         file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
