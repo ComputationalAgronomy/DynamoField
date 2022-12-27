@@ -175,7 +175,7 @@ class FieldTable:
         """
         High level function. Retrieve all plots information for a list of trial_ids
         """
-        results = self.get_multi_trial_id(trial_ids, sort_key="plot_", exact=False)
+        results = self.get_by_trial_ids(trial_ids, sort_keys="plot_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
 
@@ -184,33 +184,46 @@ class FieldTable:
         """
         High level function. Retrieve all treatment information for a list of trial_ids
         """
-        results = self.get_multi_trial_id(trial_ids, sort_key="trt_", exact=False)
+        results = self.get_by_trial_ids(trial_ids, sort_keys="trt_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
 
 
 
 
-    def get_by_trial_id(self, trial_id, sort_key=None, exact=False):
+    def get_by_single_trial_id(self, trial_id, sort_keys=[], exact=False):
         """
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
         """
-        keys_exprs = FieldTable.PARTITION_KEY.eq(trial_id)
-        if sort_key is not None:
-            sort_key_exprs = FieldTable.parse_sort_key_condition(sort_key, exact)
-            keys_exprs = keys_exprs & sort_key_exprs
-        keywords = {"KeyConditionExpression": keys_exprs}
+        sort_keys = key_utils.check_sort_keys(sort_keys)
+        parti_key_exprs = FieldTable.PARTITION_KEY.eq(trial_id)
+        # if not isinstance(sort_keys, list) and len(sort_keys) > 0:
+        #     sort_keys = [sort_keys]
+        # if sort_keys is not None:
+        #     sort_key_exprs = FieldTable.parse_sort_key_condition(sort_keys, exact)
+        #     keys_exprs = keys_exprs & sort_key_exprs
+        results = list()
+        for s in sort_keys:
+            sort_key_exprs = FieldTable.parse_sort_key_condition(s, exact)
+            keys_exprs = parti_key_exprs & sort_key_exprs
+            keywords = {"KeyConditionExpression": keys_exprs}
+            response = self.template_query(keywords)
+            results.extend(response['Items'])
+        if len(sort_keys) == 0:
+            keywords = {"KeyConditionExpression": parti_key_exprs}
+            response = self.template_query(keywords)
+            results.extend(response['Items'])
+        return results
 
-        response = self.template_query(keywords)
-        return response['Items']
 
-    def get_multi_trial_id(self, trial_ids, sort_key=None, exact=False):
+    def get_by_trial_ids(self, trial_ids, sort_keys=[], exact=False):
         if not isinstance(trial_ids, list):
             trial_ids = [trial_ids]
+        sort_keys = key_utils.check_sort_keys(sort_keys)
         results = list()
         for trial_id in trial_ids:
-            temp = self.get_by_trial_id(trial_id, sort_key=sort_key, exact=exact)
+            temp = self.get_by_single_trial_id(trial_id, sort_keys=sort_keys, exact=exact)
             results.extend(temp)
         # df = json_utils.result_list_to_df(results)
         return results
@@ -236,7 +249,7 @@ class FieldTable:
     #     return(sort_keys)
 
     def get_all_trial_id(self):
-        response = self.get_by_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        response = self.get_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
         all_ids = [t["info"] for t in response]
         return all_ids
 

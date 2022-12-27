@@ -43,3 +43,10 @@ def extract_sort_key_prefix(x):
     return(sort_keys_prefix)
 
 
+def check_sort_keys(sort_keys):
+    # if not isinstance(sort_keys, list) and len(sort_keys) > 0:
+    if sort_keys is None or len(sort_keys) == 0:
+        sort_keys = []
+    if not isinstance(sort_keys, list):# and len(sort_keys) > 0:
+        sort_keys = [sort_keys]
+    return sort_keys

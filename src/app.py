@@ -19,7 +19,7 @@ from dash import Dash, dcc, html, ctx, dash_table
 from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from dynamofield.db import dynamodb_init
+from dynamofield.db import dynamodb_init, key_utils
 
 from dynamofield.db import init_db, table_utils
 from dynamofield.field import field_table, importer
@@ -239,6 +239,67 @@ def description_panel():
 
 
 trial_list = [1, 3, 4]
+def generate_import_panel():
+    return [html.Div(children=[
+            html.Br(),
+            html.Label('Radio Items'),
+            dcc.RadioItems(['New York City', 'Montréal',
+                            'San Francisco'], 'Montréal'),
+        ], style={'padding': 10, 'flex': 1}),
+        html.Div(children=[
+            html.Label('Checkboxes'),
+            dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
+                          ['Montréal', 'San Francisco']
+                          ),
+
+            html.Br(),
+            html.Label('Text Input'),
+            dcc.Input(value='MTL', type='text'),
+            
+        ], style={'padding': 10, 'flex': 1}
+        )]
+
+
+def generate_query_panel():
+    return [
+        html.Div(id="query_panel", children=[
+            html.Div(
+                children=[
+                    html.Label('Select trial ID'),
+                    html.Br(),
+                    dcc.Dropdown(
+                        options=ids, multi=False, id="select_trial"),
+                ],
+                style={'padding': 10, 'flex': 1}
+            ),
+            html.Div(
+                children=[
+                    html.Label(
+                        'Multi-Select Information related to this trial'),
+                    html.Br(),
+                    dcc.Dropdown(id="update_info_list", multi=True),
+                    html.Button(
+                        'Select All',
+                        id='button_info_all',
+                        n_clicks=0),
+                    html.Button(
+                        'Select None',
+                        id='button_info_none',
+                        n_clicks=0),
+                ],
+                style={'padding': 10, 'flex': 1}
+            ),
+        ],
+            style={'display': 'flex', 'flex-direction': 'row'}
+        ),
+        html.Br(),html.Br(),
+        html.Button('Fetch data', id='fetch_data', n_clicks=0),
+        html.Br(),html.Br(),
+        dash_table.DataTable(id="data_table",
+            # data=df.to_dict('records'),
+            # columns=[{"name": i, "id": i} for i in df.columns]
+        )
+    ]
 
 
 def generate_control_panel():
@@ -339,63 +400,28 @@ app.layout = html.Div(
 )
 
 ids = field_trial.get_all_trial_id()
-
+    
 app.layout = html.Div(
     id="app-container",
+
     children=[
         # Banner
         html.Div(
             id="banner",
             className="banner",
-            children=[html.H4("Field trial database.")],
+            children=[html.H2("FT database.")],
         ),
-        html.Div([
-            html.Div(
-                children=[
-                    html.Label('Select trial ID'),
-                    html.Br(),
-                    dcc.Dropdown(options=ids, multi=False, id="select_trial"),
-                ],
-                style={'padding': 10, 'flex': 1}
+        dcc.Tabs(id='tabs-function-1', value='tab-1', children=[
+            dcc.Tab(label='Query database', value='tab-query',
+                children=generate_query_panel()
             ),
-            html.Div(
-                children=[
-                    html.Label(
-                        'Multi-Select Information related to this trial'),
-                    html.Br(),
-                    dcc.Dropdown(id="update_info_list", multi=True),
-                    html.Button('Select All', id='button_info_all', n_clicks=0),
-                    html.Button('Select None', id='button_info_none', n_clicks=0),
-                ],
-                style={'padding': 10, 'flex': 1}
+            dcc.Tab(label='Import data', value='tab-import', 
+                children=generate_import_panel()
             ),
-        ],
-            style={'display': 'flex', 'flex-direction': 'row'}
-        ),
+            dcc.Tab(label='Initialise database', value='tab-init-db', children=[]),
+        ]),
 
-        html.Div(children=[
-            html.Br(),
-            html.Label('Radio Items'),
-            dcc.RadioItems(['New York City', 'Montréal',
-                            'San Francisco'], 'Montréal'),
-        ], style={'padding': 10, 'flex': 1}),
-
-        html.Div(children=[
-            html.Label('Checkboxes'),
-            dcc.Checklist(['New York City', 'Montréal', 'San Francisco'],
-                          ['Montréal', 'San Francisco']
-                          ),
-
-            html.Br(),
-            html.Label('Text Input'),
-            dcc.Input(value='MTL', type='text'),
-            html.Button('Fetch data', id='fetch_data', n_clicks=0),
-        ], style={'padding': 10, 'flex': 1}
-        ),
-        dash_table.DataTable(id="data_table",
-            # data=df.to_dict('records'),
-            # columns=[{"name": i, "id": i} for i in df.columns]
-        )
+   
     ]
 )  # ,  # style={'display': 'flex', 'flex-direction': 'row'})
 
@@ -412,7 +438,7 @@ def update_output_info(value):
         raise PreventUpdate
     # if value is not No?ne:
     info = field_trial.list_all_sort_keys(value)
-    info_global = field_table.FieldTable.extract_sort_key_prefix(info)
+    info_global = key_utils.extract_sort_key_prefix(info)
     print(info_global[0])
     return info_global
     # return f"aoeuaoeu {value}"
@@ -444,9 +470,9 @@ def update_data_table(click, trial_id, info_list):
         raise PreventUpdate
     print(trial_id)
     print(info_list)
-    data = field_trial.get_multi_trial_id(trial_id)#, info_list[0])
+    data = field_trial.get_by_trial_ids(trial_id, info_list)
     df = json_utils.result_list_to_df(data)
-    print(df)
+    # print(df)
     columns = [{"name": i, "id": i} for i in df.columns]
     return columns, df.to_dict('records')
 

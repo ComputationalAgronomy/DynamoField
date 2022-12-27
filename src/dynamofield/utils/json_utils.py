@@ -7,7 +7,6 @@ class DecimalEncoder(json.JSONEncoder):
     '''
     Usage: json.dumps(some_object, cls=DecimalEncoder)
     '''
-
     def default(self, obj):
         if isinstance(obj, Decimal):
             return float(obj)
@@ -18,6 +17,15 @@ def result_list_to_df(results):
     # df_list = [pd.DataFrame.from_dict(r, orient='index') for r in results]
     # df = pd.concat(df_list, axis=1).transpose()
     df = pd.read_json(json.dumps(results, cls=DecimalEncoder))
+    cols = list(df.columns.values)
+    new_col = ["trial_id", "info"]
+    try:
+        [cols.remove(c) for c in new_col]
+        new_col.extend(cols)
+        df = df[new_col]
+    except ValueError:
+        pass
+    
     return df
 
 
