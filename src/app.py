@@ -13,8 +13,6 @@ import io
 
 import boto3
 import dash
-# import dash_core_components as dcc
-# import dash_html_components as html
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -48,126 +46,6 @@ app = Dash(__name__,
     suppress_callback_exceptions=True)
 
 
-# df = pd.read_csv('gdp-life-exp-2007.csv')
-# df = pd.read_csv('https://git.io/Juf1t')
-
-
-# fig = px.scatter(df, x="gdp per capita", y="life expectancy",
-#                  size="population", color="continent", hover_name="country",
-#                  log_x=True, size_max=60)
-
-
-# def description_panel():
-#     return html.Div(
-#         id="description-panel",
-#         children=[
-#             # html.H5("Field trial analysis"),
-#             html.H3("Welcome to the interactive Dashboard"),
-#             html.Div(
-#                 id="intro",
-#                 children="Explore clinic patient volume by time of day, waiting time, and care score. Click on the heatmap to visualize patient experience at different time points.",
-#             ),
-#         ],
-#     )
-
-
-
-# def generate_control_panel():
-#     """
-#     :return: A Div containing controls for graphs.
-#     """
-#     return html.Div(
-#         id="control-card",
-#         children=[
-#             html.P("Select Clinic"),
-#             dcc.Dropdown(
-#                 id="clinic-select",
-#                 # options=[{"label": i, "value": i} for i in trial_list],
-#                 # value=clinic_list[0],
-#             ),
-#             html.Br(),
-#             # html.P("Select info"),
-#             # dcc.DatePickerRange(
-#             #     id="date-picker-select",
-#             #     start_date=dt(2014, 1, 1),
-#             #     end_date=dt(2014, 1, 15),
-#             #     min_date_allowed=dt(2014, 1, 1),
-#             #     max_date_allowed=dt(2014, 12, 31),
-#             #     initial_visible_month=dt(2014, 1, 1),
-#             # ),
-#             html.Br(),
-#             # html.Br(),
-#             html.P("Select Info"),
-#             dcc.Dropdown(
-#                 id="admit-select",
-#                 # options=[{"label": i, "value": i} for i in admit_list],
-#                 # value=admit_list[:],
-#                 multi=True,
-#             ),
-#             html.Br(),
-#             html.Div(
-#                 id="reset-btn-outer",
-#                 children=html.Button(
-#                     id="reset-btn", children="Reset", n_clicks=0),
-#             ),
-#         ],
-#     )
-
-
-# app.layout = html.Div(
-#     id="app-ft-db",
-#     children=[
-#         # Banner
-#         html.Div(
-#             id="banner",
-#             className="banner",
-#             children=[html.H4("Field trial database.")],
-#         ),
-#         # Left column
-#         html.Div(className='row',
-#                  children=[
-#                      html.Div(
-#                          id="left-column",
-#                          className="six columns",
-#                          children=[
-#                              description_panel(),
-#                              generate_control_panel()]
-#                          # + [
-#                          #     html.Div(
-#                          #         ["initial child"], id="output-clientside", style={"display": "none"}
-#                          #     )
-#                          # ],
-#                      ),
-#                      # Right column
-#                      html.Div(
-#                          id="right-column",
-#                          className="six columns",
-#                          children=[
-#                              # Patient Volume Heatmap
-#                              html.Div(
-#                                  id="patient_volume_card",
-#                                  children=[
-#                                      html.B("Patient Volume"),
-#                                      html.Hr(),
-#                                      # dcc.Graph(id="patient_volume_hm"),
-#                                  ],
-#                              ),
-#                              # Patient Wait time by Department
-#                              html.Div(
-#                                  id="wait_time_card",
-#                                  children=[
-#                                      html.B(
-#                                          "Patient Wait Time and Satisfactory Scores"),
-#                                      html.Hr(),
-#                                      # html.Div(id="wait_time_table",
-#                                      # children=initialize_table()),
-#                                  ],
-#                              ),
-#                          ],
-#                      ),
-#                  ]),
-#     ]
-# )
 
 item_counts = field_trial.get_item_count()
 
@@ -362,12 +240,6 @@ def update_figure(n_clicks, df, var_x, var_y, plot_type):
 
     return fig
 
-# @app.callback(
-#     Output('dd-output-container', 'children'),
-#     Input('demo-dropdown', 'value')
-# )
-# def update_output(value):
-#     return f'You have selected {value}'
 
 if __name__ == '__main__':
     app.run_server(debug=True)
