@@ -3,29 +3,21 @@
 
 
 import datetime
-# import field
-import importlib
-import os
-from datetime import datetime as dt
-import base64
-import datetime
 import io
+import os
 
-import boto3
 import dash
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from dash import Dash, dcc, html, ctx, dash_table
-from dash.dependencies import ClientsideFunction, Input, Output, State
+from dash import Dash, ctx, dash_table, dcc, html
+from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from dynamofield.db import dynamodb_init, key_utils
-
-from dynamofield.db import init_db, table_utils
+from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
-from app_import_panel import *
+
 
 def init_field_trial():
 
@@ -40,11 +32,6 @@ def init_field_trial():
 
 
 field_trial = init_field_trial()
-
-app = Dash(__name__, 
-    # use_pages=True,
-    suppress_callback_exceptions=True)
-
 
 
 item_counts = field_trial.get_item_count()
@@ -117,40 +104,9 @@ def generate_query_panel():
 
 ids = field_trial.get_all_trial_id()
     
-app.layout = html.Div(
-    id="db",
-    children=[
-        # Banner
-        html.Div(
-            id="banner",
-            className="banner",
-            children=[html.H2("FT database.")],
-        ),
-        dcc.Tabs(id='tabs-function-1', value='tab-query', children=[
-            dcc.Tab(label='Query database', value='tab-query'),
-            dcc.Tab(label='Import data', value='tab-import'),
-            dcc.Tab(label='Initialise database', value='tab-init-db'),
-        ]),
-        html.Div(id='tabs-function-content-1')
-
-    ]
-)
 
 
-@app.callback(
-    Output('tabs-function-content-1', 'children'),
-    Input('tabs-function-1', 'value')
-)
-def render_panels(tab):
-    if tab == "tab-query":
-        return generate_query_panel()
-    elif tab == "tab-import":
-        return generate_import_panel()
-    elif tab == "tab_init_db":
-        return  html.Div([])
-
-
-@ app.callback(
+@dash.callback(
     Output('dropdown_info_sortkey', 'options'),
     Input('select_trial', 'value')
 )
@@ -165,7 +121,7 @@ def update_output_info(value):
     # return f"aoeuaoeu {value}"
 
 
-@app.callback(
+@dash.callback(
     Output('dropdown_info_sortkey', 'value'),
     Input('button_info_all', 'n_clicks'),
     Input('button_info_none', 'n_clicks'),
@@ -182,7 +138,7 @@ def update_output(b1, b2, options):
 
 
 
-@app.callback(
+@dash.callback(
     Output("data_table", "columns"), Output("data_table", "data"),
     Output("dropdown_xaxis", "options"), Output("dropdown_yaxis", "options"),
     Input("fetch_data", "n_clicks"),
@@ -201,7 +157,7 @@ def update_data_table(click, trial_id, info_list):
     return columns, df.to_dict('records'), df.columns, df.columns
 
 
-@app.callback(
+@dash.callback(
     Output("export_data", "data"),
     Input("btn_export", "n_clicks"),
     State("data_table", "data"),
@@ -216,7 +172,7 @@ def export_dataframe(n_clicks, df):
     return dcc.send_data_frame(df2.to_csv, filename="hello.csv")
 
 
-@app.callback(
+@dash.callback(
     Output('data_figure', 'figure'),
     Input('btn_plot', 'n_clicks'),
     State("data_table", "data"),
@@ -240,6 +196,3 @@ def update_figure(n_clicks, df, var_x, var_y, plot_type):
 
     return fig
 
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
