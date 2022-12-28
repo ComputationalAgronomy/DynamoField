@@ -136,6 +136,7 @@ class FieldTable:
                     batch.put_item(Item=j)
         except Exception as e:
             print(e)
+        return len(id_json)
     
     def get_item_count(self):
         self.res_table.reload()

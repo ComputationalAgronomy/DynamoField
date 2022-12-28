@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from dash import Dash, dcc, html, ctx, dash_table
+import dash_bootstrap_components as dbc
 from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -28,25 +29,16 @@ from dynamofield.utils import json_utils
 from app_import_panel import *
 from app_query_panel import *
 
-# def init_field_trial():
 
-#     table_name = "ft_db"
-#     # client = dynamodb_init.init_dynamodb_client()
-#     # table_utils.delete_all_items(client, table_name)
-#     dynamodb_server = dynamodb_init.DynamodbServer()
-#     # client = dynamodb_server.init_dynamodb_client()
-#     dynamodb_res = dynamodb_server.init_dynamodb_resources()
-#     field_trial = field_table.FieldTable(dynamodb_res, table_name)
-#     return field_trial
-
-
-# field_trial = init_field_trial()
-# item_counts = field_trial.get_item_count()
+# theme = dbc.themes.ZEPHYR
+external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 app = Dash(__name__, 
     # use_pages=True,
-    suppress_callback_exceptions=True)
-
+    suppress_callback_exceptions=True,
+    assets_folder='assetsX',
+    external_stylesheets=external_stylesheets\
+)
 
 
 app.layout = html.Div(
@@ -58,20 +50,20 @@ app.layout = html.Div(
             className="banner",
             children=[html.H2("FT database.")],
         ),
-        dcc.Tabs(id='tabs-function-1', value='tab-query', children=[
+        dcc.Tabs(id='tabs-function', value='tab-query', children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),
             dcc.Tab(label='Initialise database', value='tab-init-db'),
         ]),
-        html.Div(id='tabs-function-content-1')
+        html.Div(id='tabs-function-content')
 
     ]
 )
 
 
 @app.callback(
-    Output('tabs-function-content-1', 'children'),
-    Input('tabs-function-1', 'value')
+    Output('tabs-function-content', 'children'),
+    Input('tabs-function', 'value')
 )
 def render_panels(tab):
     if tab == "tab-query":

@@ -18,92 +18,88 @@ from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
+from app_data import field_trial
 
-def init_field_trial():
-
-    table_name = "ft_db"
-    # client = dynamodb_init.init_dynamodb_client()
-    # table_utils.delete_all_items(client, table_name)
-    dynamodb_server = dynamodb_init.DynamodbServer()
-    # client = dynamodb_server.init_dynamodb_client()
-    dynamodb_res = dynamodb_server.init_dynamodb_resources()
-    field_trial = field_table.FieldTable(dynamodb_res, table_name)
-    return field_trial
+import app_style
 
 
-field_trial = init_field_trial()
-
-
-item_counts = field_trial.get_item_count()
-
-
-btn_style = {"margin-right": "10px", "margin-left": "10px", "margin-top": 3}
+ids = field_trial.get_all_trial_id()
 def generate_query_panel():
     return [
-        html.Div(id="query_panel", children=[
-            html.Div(children=[
+        html.Div(id="query_panel", style={'display': 'flex', 'padding': 10, 'flex-direction': 'row'},
+                 children=[
+            html.Div(style={'padding': 10, 'flex': 1},
+                     children=[
                 html.Label('Select trial ID'),
                 html.Br(),
-                dcc.Dropdown(options=ids, multi=False, id="select_trial"),
-                html.Button('Fetch data', id='fetch_data', n_clicks=0, style=btn_style),
-            ],
-                style={'padding': 10, 'flex': 1}
-            ),
-            html.Div(children=[
+                dcc.Dropdown(options=ids, multi=False,
+                             id="select_trial"),
+                html.Button('Fetch data', id='fetch_data',
+                            n_clicks=0, style=app_style.btn_style),
+            ]),
+            html.Div(style={'padding': 10, 'flex': 1},
+                     children=[
                 html.Label('Multi-Select Information related to this trial'),
                 html.Br(),
                 dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
-                html.Button('Select All', id='button_info_all', n_clicks=0, style=btn_style),
-                html.Button('Select None', id='button_info_none', n_clicks=0, style=btn_style),
-            ],
-                style={'padding': 10, 'flex': 1}
-            ),
+                html.Button('Select All', id='button_info_all',
+                            n_clicks=0, style=app_style.btn_style),
+                html.Button('Select None', id='button_info_none',
+                            n_clicks=0, style=app_style.btn_style),
+            ]),
         ],
-            style={'display': 'flex', 'flex-direction': 'row'}
         ),
-        
-        
+
         html.Hr(),
         # html.Button('Fetch plot info', id='fetch_plot', n_clicks=0, style=btn_style),
         # html.H1("Figure"),
-        html.Div(children=[
-            html.Div(children=[
-                dcc.Markdown("**X-axis**\n"),
-                # html.Div("<b>aoeuaoeu</b>"),
-                dcc.Dropdown(id="dropdown_xaxis", multi=False),
-                html.Br(),
-                html.Label('Plot types:'),
-                dcc.RadioItems(["Scatter", "Line", "Bar"], "Scatter", id="raido-plot-type"),
-            ], style={'padding': 10, 'flex': 1}),
-            html.Div(children=[
-                dcc.Markdown("**Y-axis**\n"),
-                dcc.Dropdown(id="dropdown_yaxis", multi=False),
-                html.Button("Plot data", id="btn_plot", style=btn_style),
-            ], style={'padding': 10, 'flex': 1}),
-        ], style={'display': 'flex', 'padding': 10, 'flex-direction': 'row'}),
+        # html.Div(style={'display': 'flex', 'padding': 10, 'flex-direction': 'row'},
+        #          children=[
+            html.Div(#style={'padding': 10, 'flex': 1}, 
+                    className="row",
+                    children=[
+                html.Div(className="three columns", children=[   
+                    dcc.Markdown("**X-axis**\n"),
+                    dcc.Dropdown(id="dropdown_xaxis", multi=False),
+                ], ),
+                html.Div(className="three columns", children=[   
+                    # dcc.Markdown("**Y-axis**\n"),
+                    html.Div(" html.div **Y-axis**\n"),
+                    dcc.Dropdown(id="dropdown_yaxis", multi=False),
+                ],),
+                html.Div(className="two columns", children=[   
+                    html.Label('html.Label <b>Plot types:</b>'),
+                    dcc.RadioItems(["Scatter", "Line", "Bar"], "Scatter", 
+                        id="raido-plot-type", style={"display": "flex"}),
+                ]),
+                html.Button("Plot data", id="btn_plot", 
+                    style=app_style.btn_style, className="two columns",
+                )
+
+        ], ),
+        # ]),
         html.Hr(),
         html.H5("Table"),
-        html.Br(),html.Br(),
-        html.Button("Export data table (CSV)", id="btn_export", style=btn_style),
+        html.Br(), html.Br(),
+        html.Button("Export data table (CSV)",
+                    id="btn_export",
+                    style=app_style.btn_style),
         dcc.Download(id="export_data"),
-        
+
         # html.Div(
         #     "To download the figure, hover over the graph and click the camera icon.",
         #     style={"textAlign": "right"},
         # ),
         html.Br(),
-        dash_table.DataTable(id="data_table", 
-            page_size=30,  # we have less data in this example, so setting to 20
-            style_table={'height': '300px', 'overflowY': 'auto'},
-            export_format='csv'),
+        dash_table.DataTable(id="data_table",
+                             page_size=30,  # we have less data in this example, so setting to 20
+                             style_table={
+                                 'height': '300px', 'overflowY': 'auto'},
+                             export_format='csv'),
         dcc.Graph(id='data_figure'),
-    
+
     ]
 
-
-
-ids = field_trial.get_all_trial_id()
-    
 
 
 @dash.callback(
@@ -134,8 +130,6 @@ def update_output(b1, b2, options):
         return options
     elif "button_info_none" == ctx.triggered_id:
         return None
-
-
 
 
 @dash.callback(
@@ -179,7 +173,7 @@ def export_dataframe(n_clicks, df):
     State('dropdown_xaxis', 'value'), State('dropdown_yaxis', 'value'),
     State("raido-plot-type", "value"),
     prevent_initial_call=True,
-    )
+)
 def update_figure(n_clicks, df, var_x, var_y, plot_type):
     # filtered_df = df[df.year == selected_year]
     if not var_x and not var_y:
@@ -191,8 +185,7 @@ def update_figure(n_clicks, df, var_x, var_y, plot_type):
         fig = px.line(df2, x=var_x, y=var_y)
     elif plot_type == "Scatter":
         fig = px.scatter(df2, x=var_x, y=var_y)
-        
+
     fig.update_layout(transition_duration=500)
 
     return fig
-

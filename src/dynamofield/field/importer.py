@@ -32,9 +32,12 @@ class DataImporter:
         "Column": "column",
     }
 
-    def __init__(self, file_name, data_type, import_column=[]):
+    def __init__(self, input, data_type, import_column=[]):
         # self.res_table = res_table
-        self.df = pd.read_csv(file_name)
+        if isinstance(input, pd.DataFrame):
+            self.df = input
+        else:
+            self.df = pd.read_csv(input)
         self.data_type = data_type  # sort_key
         self.import_column = import_column
         self.dynamo_json_list = []
