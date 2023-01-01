@@ -22,8 +22,8 @@ from dynamofield.db import dynamodb_init, key_utils
 from dynamofield.db import init_db, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
-from app_import_panel import *
-from app_query_panel import *
+from app_panel_import import *
+from app_panel_query import *
 
 
 btn_style = {
