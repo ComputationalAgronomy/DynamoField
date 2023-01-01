@@ -67,5 +67,6 @@ def start_dynamodb_server(path=".", jar="DynamoDBLocal.jar", lib="DynamoDBLocal_
     _ = subprocess.run(command, shell=True)
 
 
-
+def check_table_exist(dynamodb_res, table_name):
+    pass
 

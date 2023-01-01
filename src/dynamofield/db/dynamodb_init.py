@@ -25,6 +25,8 @@ class DynamodbServer:
             # test = next(dynamodb_res.tables.pages())
         except botocore.exceptions.EndpointConnectionError as e:
             print(f"Invalid DynamoDB connection or server: {e}")
+            print(f"Attempt to restart the local server")
+            return "RETRY"
         return dynamodb_res
 
     def init_dynamodb_resources_table(self, table_name):

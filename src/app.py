@@ -28,7 +28,8 @@ from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 from app_import_panel import *
 from app_query_panel import *
-
+from app_db_status_panel import *
+from callbacks import *
 
 # theme = dbc.themes.ZEPHYR
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
@@ -53,7 +54,7 @@ app.layout = html.Div(
         dcc.Tabs(id='tabs-function', value='tab-query', children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),
-            dcc.Tab(label='Initialise database', value='tab-init-db'),
+            dcc.Tab(label='Database Status', value='tab-db-status'),
         ]),
         html.Div(id='tabs-function-content')
 
@@ -70,8 +71,8 @@ def render_panels(tab):
         return generate_query_panel()
     elif tab == "tab-import":
         return generate_import_panel()
-    elif tab == "tab_init_db":
-        return  html.Div([])
+    elif tab == "tab-db-status":
+        return generate_db_status_panel()
 
 
 if __name__ == '__main__':

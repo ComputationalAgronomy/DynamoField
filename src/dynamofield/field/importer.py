@@ -128,7 +128,6 @@ class DataImporter:
                 json_data = dict_utils.merge_dicts(
                     partition_key, sort_key, attributes_data)
                 json_list.append(json_data)
-
         self.dynamo_json_list = [
             json_utils.reload_dynamo_json(j) for j in json_list]
         # return dynamo_json_list, partition_key_collection

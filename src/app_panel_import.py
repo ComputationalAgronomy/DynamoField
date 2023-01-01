@@ -18,19 +18,20 @@ from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
 from app_data import field_trial
+# from callbacks import *
 import app_style
 
-item_counts = field_trial.get_item_count()
+# item_counts = field_trial.get_item_count()
 
 def generate_import_panel():
     return [
         html.Div(style={'padding': 10, 'flex': 1},
                  children=[
             html.Br(),
-            html.Div(f"Total item count: {item_counts}", id="get_item_count"),            
+            html.Div(id="get_item_count"),            
             dcc.RadioItems(['New York City', 'Montréal',
                             'San Francisco'], 'Montréal'),
-            html.Div(f"Total item count: {item_counts}", id="nths"),
+            # html.Div(f"Total item count: {item_counts}", id="nths"),
             dcc.RadioItems(['New York City', 'Montréal',
                             'San Francisco'], 'Montréal'),
 
@@ -59,7 +60,11 @@ def generate_import_panel():
                 dcc.Input(id="importing_type", type="text", 
                     minLength=3, 
                     required=True, placeholder="", debounce=True,
-                    className="four columns"),
+                    className="three columns"),
+                dcc.RadioItems(id="import_is_append",
+                    options={"False": "Insert new data", "True": "Replace existing"},
+                    value="False",
+                    className="three columns"),
                 html.Button('Import data', id='import_data',
                     n_clicks=0, #style=app_style.btn_style,
                     className="four columns"),
@@ -84,25 +89,11 @@ def generate_import_panel():
     ]
 
 
-@dash.callback(
-    Output('get_item_count', 'children'),
-    Input('tabs-function', 'value')
-)
-def update_item_count(x):
-    # if not value:
-    #     raise PreventUpdate
-    # # if value is not No?ne:
-    # info = field_trial.list_all_sort_keys(value)
-    # info_global = key_utils.extract_sort_key_prefix(info)
-    # print(info_global[0])
-    item_counts = field_trial.get_item_count()
-    print(item_counts)
-    return f"Total item count: {item_counts}"
 
-
-def parse_contents(contents, filename, date, data_type):
+def parse_contents(contents, filename, date, data_type, is_append):
 
     content_type, content_string = contents.split(',')
+    print(3)
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
@@ -113,21 +104,23 @@ def parse_contents(contents, filename, date, data_type):
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded))
+        print(df)
         data_importer = importer.DataImporter(df, data_type)
-        data_importer.parse_df_to_dynamo_json(append=True, field_trial=field_trial)
+        print(2222, is_append, type(is_append))
+        data_importer.parse_df_to_dynamo_json(append=is_append, field_trial=field_trial)
+        print(3333)
         import_len = field_trial.import_batch_field_data_res(data_importer) # How to test this effectively?
     except Exception as e:
         print(e)
         return html.Div([
-            'There was an error processing this file.'
+            f'There was an error processing this file.\n{e}'
         ])
 
     return html.Div([
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),
         html.H6(f"Imported {import_len} rows and store in info={data_type}."),
-        dash_table.DataTable(
-            df.to_dict('records'),
+        dash_table.DataTable(df.to_dict('records'),
             [{'name': i, 'id': i} for i in df.columns]
         ),
 
@@ -135,7 +128,7 @@ def parse_contents(contents, filename, date, data_type):
 
         # For debugging, display the raw contents provided by the web browser
         html.Div('Raw Content'),
-        html.Pre(contents[0:100] + '...', style={
+        html.Pre(contents[0:10] + '...', style={
             'whiteSpace': 'pre-wrap',
             'wordBreak': 'break-all'
         })
@@ -144,19 +137,23 @@ def parse_contents(contents, filename, date, data_type):
 
 @dash.callback(Output("upload-data", "children"),
                Output("import_markdown", "children"),
-               Input("upload-data", "filename")
+               Input("upload-data", "filename"),
+               Input("importing_type", "value"),
               )
-def update_uploader_info(filename):
+def update_uploader_info(filename, data_type):
     parsed_name = ""
+    parsed_data_type = "Import data type:"
     if filename is not None:
         parsed_name = f"\nCurrent files: {filename}"
+    if data_type is not None:
+        parsed_data_type = f"{parsed_data_type} {data_type}"
     return [
         html.Div([
             'Drag and Drop or ',
             html.A('Select Files    '),
             parsed_name
         ]),
-        f"Import data type:  {parsed_name} "
+        f"{parsed_data_type}  {parsed_name} "
     ]
 
 @dash.callback(Output('output-data-upload', 'children'),
@@ -165,10 +162,14 @@ def update_uploader_info(filename):
                State('upload-data', 'filename'),
                State('upload-data', 'last_modified'),
                State('importing_type', 'value'),
+               State("import_is_append", "value")
               )
-def update_output(n_clicks, list_of_contents, list_of_names, list_of_dates, data_type):
+def update_output(n_clicks, list_of_contents, list_of_names, list_of_dates,
+                  data_type, is_append):
+    is_append = eval(is_append)
+    print(f"{data_type}, {is_append}, {list_of_names}")
     if list_of_contents is not None:
-        children = [
-            parse_contents(c, n, d, data_type) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
+        children = [parse_contents(c, n, d, data_type, is_append)
+                    for c, n, d in
+                    zip(list_of_contents, list_of_names, list_of_dates)]
         return children
