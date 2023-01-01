@@ -23,21 +23,27 @@ import app_style
 
 # item_counts = field_trial.get_item_count()
 
+
 def generate_db_status_panel():
     return [
         html.Div(style={'padding': 10, 'flex': 1},
                  children=[
             html.Br(),
             html.Div("aoeuaoeu"),
-            html.Div(id="get_item_count_db"),          
+            html.Div(id="get_item_count_db"),
             html.Br(),
-            # html.Div(id="get_item_count"),            
+            # html.Div(id="get_item_count"),
             dcc.RadioItems(['New York City', 'Montréal',
                             'San Francisco'], 'Montréal'),
             # html.Div(f"Total item count: {item_counts}", id="nths"),
             dcc.RadioItems(['New York City', 'Montréal',
                             'San Francisco'], 'Montréal'),
-  
+            # dcc.textinput(value="endpoint_url='http://localhost:8000')"),
+            html.Button('Start database', id='btn_db_start',
+                        n_clicks=0,  # style=app_style.btn_style,
+                        className="two columns"
+                        ),
+
         ],),
     ]
 
@@ -55,4 +61,3 @@ def generate_db_status_panel():
 #     # print(info_global[0])
 #     item_counts = field_trial.get_item_count()
 #     return f"Total item count: {item_counts}"
-

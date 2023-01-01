@@ -20,9 +20,16 @@ def init_field_trial():
     return field_trial
 
 
-field_trial = init_field_trial()
+
+try:
+    field_trial = init_field_trial()
+except:
+    print("Database offline")
 
 def update_item_count():
-    item_counts = field_trial.get_item_count()
-    output = f"Total item count: {item_counts}"
+    try:
+        item_counts = field_trial.get_item_count()
+        output = f"Total item count: {item_counts}"
+    except:
+        output = f"Database offline."
     return output

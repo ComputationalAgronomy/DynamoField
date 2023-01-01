@@ -51,7 +51,7 @@ app.layout = html.Div(
             className="banner",
             children=[html.H2("FT database.")],
         ),
-        dcc.Tabs(id='tabs-function', value='tab-query', children=[
+        dcc.Tabs(id='tabs-function', value='tab-db-status', children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),
             dcc.Tab(label='Database Status', value='tab-db-status'),

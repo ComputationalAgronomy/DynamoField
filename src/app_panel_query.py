@@ -80,7 +80,7 @@ def generate_query_panel():
         # ]),
         html.Hr(),
         html.H5("Table"),
-        html.Br(), html.Br(),
+        html.Div(id="table_info"), html.Br(),
         html.Button("Export data table (CSV)",
                     id="btn_export",
                     style=app_style.btn_style),
@@ -112,7 +112,7 @@ def update_output_info(value):
     # if value is not No?ne:
     info = field_trial.list_all_sort_keys(value)
     info_global = key_utils.extract_sort_key_prefix(info)
-    print(info_global[0])
+    info_global.sort()
     return info_global
     # return f"aoeuaoeu {value}"
 
@@ -135,6 +135,7 @@ def update_output(b1, b2, options):
 @dash.callback(
     Output("data_table", "columns"), Output("data_table", "data"),
     Output("dropdown_xaxis", "options"), Output("dropdown_yaxis", "options"),
+    Output("table_info", "children"),
     Input("fetch_data", "n_clicks"),
     State('select_trial', 'value'),
     State('dropdown_info_sortkey', 'value'),
@@ -148,7 +149,8 @@ def update_data_table(click, trial_id, info_list):
     df = json_utils.result_list_to_df(data)
     # print(df)
     columns = [{"name": i, "id": i} for i in df.columns]
-    return columns, df.to_dict('records'), df.columns, df.columns
+    table_info = f"Table contains {df.shape[0]} rows, {df.shape[1]} columns."
+    return columns, df.to_dict('records'), df.columns, df.columns, table_info
 
 
 @dash.callback(
