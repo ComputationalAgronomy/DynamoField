@@ -136,8 +136,9 @@ class FieldTable:
                     batch.put_item(Item=j)
         except Exception as e:
             print(e)
-        print(id_json)
-        return len(id_json)
+            print(data_importer.dynamo_json_list)
+            print(id_json)
+        return len(data_importer.dynamo_json_list)
     
     def get_item_count(self):
         self.res_table.reload()

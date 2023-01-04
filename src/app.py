@@ -51,6 +51,12 @@ app.layout = html.Div(
             className="banner",
             children=[html.H2("FT database.")],
         ),
+        dcc.Store(id='store_server', storage_type='local'),
+        dcc.Store(id='store_table', storage_type='local'),
+        dcc.Store(id='store_endpoint', storage_type='session', clear_data=False),
+        dcc.Store(id='store_tablename', storage_type='session', clear_data=False),
+        dcc.Store(id='store_db_status', storage_type='session', clear_data=False),
+        dcc.Store(id='store_table_status', storage_type='session', clear_data=False),
         dcc.Tabs(id='tabs-function', value='tab-db-status', children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),

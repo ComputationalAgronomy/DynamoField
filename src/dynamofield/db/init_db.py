@@ -67,6 +67,19 @@ def start_dynamodb_server(path=".", jar="DynamoDBLocal.jar", lib="DynamoDBLocal_
     _ = subprocess.run(command, shell=True)
 
 
-def check_table_exist(dynamodb_res, table_name):
-    pass
+def test_local_dynamodb():
+    # allp = [p.info["cmdline"] for p in psutil.process_iter(["cmdline"])]
+    useful_info = ["cmdline", "pid", "name", "cwd", "exe"]
+    java_proc = [p.info for p in psutil.process_iter(useful_info) if "python3" in p.info["cmdline"]]
+    # cmd = java_proc[0]["cmdline"]
+    db_exist = [search_dynamodblocal(proc["cmdline"]) for proc in java_proc]
+    any_java_db = any(db_exist)
+    return any_java_db
+
+
+def search_dynamodblocal(cmd):
+    is_jar = any(["DynamoDBLocal.jar" in i for i in cmd])
+    is_lib = any(["DynamoDBLocal_lib" in i for i in cmd])
+    is_shared = any(["-sharedDb" in i for i in cmd])
+    return is_jar #+is_lib
 

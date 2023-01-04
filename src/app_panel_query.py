@@ -18,12 +18,13 @@ from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
-from app_data import field_trial
+from app_data import *
 
 import app_style
 
 
-ids = field_trial.get_all_trial_id()
+# ids = field_trial.get_all_trial_id()
+ids = ""
 def generate_query_panel():
     return [
         html.Div(id="query_panel", style={'display': 'flex', 'padding': 10, 'flex-direction': 'row'},

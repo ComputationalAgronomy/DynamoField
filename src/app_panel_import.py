@@ -17,7 +17,7 @@ from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
-from app_data import field_trial
+from app_data import *
 # from callbacks import *
 import app_style
 
@@ -82,13 +82,13 @@ def generate_import_panel():
                 dcc.RadioItems(id="import_is_append",
                     options={"False": "Insert new data", "True": "Replace existing"},
                     value="False",
-                    className="two columns"),
+                    className="three columns"),
 
                 # html.Div(className="two columns", children=[
                     # html.Br(),
                     html.Button('Import data', id='btn_import',
                         n_clicks=0, #style=app_style.btn_style,
-                        className="two columns"
+                        className="three columns"
                     ),
                 # ]),
             ]),
@@ -202,7 +202,7 @@ def import_dataframe(contents, filename, date, data_type, is_append):
     return html.Div([
         html.H5(filename),
         # html.H6(datetime.datetime.fromtimestamp(date)),
-        html.H6(f"Imported {import_len} rows and store in info={data_type}."),
+        dcc.Markdown(f"Imported **{import_len}** rows and store in info={data_type}."),
         # dash_table.DataTable(df.to_dict('records'),
         #     [{'name': i, 'id': i} for i in df.columns]
         # ),
