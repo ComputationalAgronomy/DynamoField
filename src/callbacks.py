@@ -11,35 +11,53 @@ from app_data import *
 
 @dash.callback(
     Output('get_item_count', 'children'),
-    Input('tabs-function', 'value')
+    Input('tabs-function', 'value'),
+        State('store_endpoint', 'data'),
+    State('store_table_name', 'data'),
+
 )
-def update_item_count_import(x):
+def update_item_count_import(x, endpoint, table_name):
     return update_item_count()
 
 
 @dash.callback(
     Output('get_item_count_db', 'children'),
-    Input('tabs-function', 'value')
+    Input('tabs-function', 'value'),
+        State('store_endpoint', 'data'),
+    State('store_table_name', 'data'),
+
 )
-def update_item_count_db(x):
+def update_item_count_db(x, endpoint, table_name):
     return update_item_count()
 
 
 
 @dash.callback(
     Output('data_endpoint', 'children'),
-    Output('data_tablename', 'children'),
-    # Output("loading_update_db", "children"),
-    # Output('store_endpoint', 'data'),
-    # Output('store_table_name', 'data'),
-    # Input('btn_endpoint', 'n_clicks'),
+    Output('data_table_name', 'children'),
+    Output('data_db_status', 'children'),
+    Output('data_table_status', 'children'),
+    # Output('store_db_info', 'data'),
     Input("refresh-graph-interval", "n_intervals"),
     State('store_endpoint', 'data'),
-    State('store_tablename', 'data'),
+    State('store_table_name', 'data'),
+    State('store_db_status', 'data'),
+    State('store_table_status', 'data'),
+    State('store_db_info', 'data'),
 )
-def get_memory_data(x, endpoint, tablename):
-    print("memory:", endpoint, tablename, x)
-    return endpoint, tablename
+def get_memory_data(x, endpoint, table_name, db_status, table_status, info):
+    print("memory:", endpoint, table_name, db_status, table_status, x)
+    # info = {
+    #     "endpoint": endpoint,
+    #     "table_name": table_name,
+    #     "db_status":db_status,
+    #     "table_status": table_status,
+    #     endpoint: db_status,
+    #     table_name: table_status
+    # }
+    for k, v in info.items():
+        print("\t", k, v)
+    return endpoint, table_name, str(db_status), str(table_status)
 
 
 
@@ -47,45 +65,47 @@ def get_memory_data(x, endpoint, tablename):
 
 @dash.callback(
     Output('db_endpoint', 'value'),
-    Output('db_tablename', 'value'),
+    Output('db_table_name', 'value'),
     Output('store_endpoint', 'data'),
-    Output('store_tablename', 'data'),
+    Output('store_table_name', 'data'),
     Output('store_db_status', 'data'),
     Output('store_table_status', 'data'),
     Output("loading_update_db", "children"),
-    Input('btn_endpoint', 'n_clicks'),
+    Output('store_db_info', 'data'),
+    Input('btn_connect_db', 'n_clicks'),
     State('db_endpoint', 'value'),
-    State('db_tablename', 'value'),
+    State('db_table_name', 'value'),
     State('store_endpoint', 'data'),
-    State('store_tablename', 'data'),
+    State('store_table_name', 'data'),
     running=[
-        (Output("btn_endpoint", "disabled"), True, False),
+        (Output("btn_connect_db", "disabled"), True, False),
     ],
 )
 def update_db_status(btn, ep, name, m_ep, m_name):
     # if not ep:
     #     raise PreventUpdate
     # update_endpoint
-    print(f"Start: ={ep}= ={name}=\t\tmemory: {m_ep} {m_name}")
+    print(f"Start: ={ep}=={name}=\tmemory:{m_ep}=={m_name}=")
     if ep == m_ep and name == m_name:
+        print("No update")
         raise PreventUpdate
 
     endpoint = None
-    tablename = None
+    table_name = None
     if ep:
         endpoint = ep
     elif m_ep:
         endpoint = m_ep
 
     if name:
-        tablename = name
+        table_name = name
     elif m_name:
-        tablename = m_name
+        table_name = m_name
     # if not ep and not name:
     #     endpoint = "http://localhost:8000"
-    #     tablename = "ft_db"
-    print(f"update: {endpoint} {tablename}")
-    if not endpoint or not tablename:
+    #     table_name = "ft_db"
+    print(f"Update: {endpoint} {table_name}")
+    if not endpoint or not table_name:
         raise PreventUpdate
 
     # if ep is None and m_ep:
@@ -94,15 +114,22 @@ def update_db_status(btn, ep, name, m_ep, m_name):
     db_status = dynamodb_server.is_online
     table_status = False
     if db_status:
-        table_status = dynamodb_server.is_table_exist(tablename)
+        table_status = dynamodb_server.is_table_exist(table_name)
     print("Status:\t", db_status, table_status)
     # field_trial = init_field_trial(
     #     dynamodb_server,
     #     table_name=table_name_default)
     # dynamodb_server.update_endpoint(endpoint)
-    # print(f"update: {endpoint} {tablename}")
-
-    return endpoint, tablename, endpoint, tablename, db_status, table_status, True
+    # print(f"update: {endpoint} {table_name}")
+    info = {
+        "endpoint": endpoint,
+        "table_name": table_name,
+        "db_status":db_status,
+        "table_status": table_status,
+        endpoint: db_status,
+        table_name: table_status
+    }
+    return endpoint, table_name, endpoint, table_name, db_status, table_status, True, info
 
 
 

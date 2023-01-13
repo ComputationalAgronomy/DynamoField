@@ -26,18 +26,18 @@ def update_status_panel():
     return html.Div(children=[
         dcc.Markdown(id="db_markdown",
                      dangerously_allow_html=True),
-        dcc.RadioItems(id="radio_db_status", 
-                       style={'display': 'flex', "margin-right": "5pt"},
-                       inline=False,
-                       options=[
-            {'label': html.Div('DB Online', style={"color": "Green", "font-size": 16}), 'value': True}, #, 'disabled': True},
-            {'label': html.Div(['DB Offline'], style={"color": "Red", "font-size": 16}), 'value': False},# , 'disabled': True},
-            # {
-            # "label": html.Div(['London'], style={'color': 'LightGreen', 'font-size': 20}),
-            # "value": "London",
-        # },
+        # dcc.RadioItems(id="radio_db_status", 
+        #                style={'display': 'flex', "margin-right": "5pt"},
+        #                inline=False,
+        #                options=[
+        #     {'label': html.Div('DB Online', style={"color": "Green", "font-size": 16}), 'value': True}, #, 'disabled': True},
+        #     {'label': html.Div(['DB Offline'], style={"color": "Red", "font-size": 16}), 'value': False},# , 'disabled': True},
+        #     # {
+        #     # "label": html.Div(['London'], style={'color': 'LightGreen', 'font-size': 20}),
+        #     # "value": "London",
+        # # },
           
-        ],),
+        # ],),
     ],)
 
 def update_config_panel():
@@ -56,12 +56,12 @@ def update_config_panel():
         html.Div(className="three columns", children=[
             html.Label("Table name:"),
             html.Label("Default: ft_db"),
-            dcc.Input(id="db_tablename", type="text",
+            dcc.Input(id="db_table_name", type="text",
                       placeholder="ft_db", debounce=True,
             ),
         ]),
         html.Button(className="three columns",
-                    children='Connect Database', id='btn_endpoint',
+                    children='Connect Database', id='btn_connect_db',
                     n_clicks=0,  # style=app_style.btn_style,
                     style={"height":"200%"}
         ),
@@ -101,7 +101,7 @@ def generate_db_status_panel():
         html.Hr(),
         html.Table([
             html.Thead([
-                html.Tr(html.Th('Click to store in:', colSpan="3")),
+                html.Tr(html.Th('Info stored in memory', colSpan="4")),
                 # html.Tr([
                 #     html.Th(html.Button('memory', id='memory-button')),
                 #     html.Th(html.Button('localStorage', id='local-button')),
@@ -109,15 +109,17 @@ def generate_db_status_panel():
                 # ]),
                 html.Tr([
                     html.Th('Endpoint'),
-                    html.Th('tablename'),
-                    html.Th('Session clicks')
+                    html.Th('table_name'),
+                    html.Th('DB status'),
+                    html.Th('Table status')
                 ])
             ]),
             html.Tbody([
                 html.Tr([
-                    html.Td(0, id='data_endpoint'),
-                    html.Td(0, id='data_tablename'),
-                    # html.Td(0, id='session-clicks')
+                    html.Td(id='data_endpoint'),
+                    html.Td(id='data_table_name'),
+                    html.Td(id='data_db_status'),
+                    html.Td(id='data_table_status'),
                 ])
             ])
         ])
@@ -137,43 +139,39 @@ def generate_db_status_panel():
 
 
 
+def check_status(status):
+    if status:
+        colour = "green"
+        status_text = "ONLINE"
+    else:
+        colour = "red"
+        status_text = "OFFLINE"
+    status_html = status_template_text(colour, status_text)
+    return status_html
+
+def status_template_text(colour, text):
+    status_html = f"""<b><span style="color: {colour}">{text}</span></b>"""
+    return status_html
+
+
 @dash.callback(
-    Output('radio_db_status', 'value'),
+    # Output('radio_db_status', 'value'),
     Output("db_markdown", "children"),
     # Output("loading-output-ep", "children"),
     Input("refresh-graph-interval", "n_intervals"),
+    State('store_db_status', 'data'),
+    State('store_table_status', 'data'),
 )
-def update_endpoint(btn):
-    
-    if dynamodb_server.is_online:
-        # status = "ONLINE"
-        colour = "green"
-        # status = f"""<span style="color: green">ONLINE</span>"""
-        # # prefix = f"""<b><span style="color: {colour}">"""
-        status = "ONLINE"
-    else:
-        # status = "**OFFLINE**"
-        colour = "red"
-        # status = """<span style="color: red">OFFLINE</span>"""
-        status = "OFFLINE"
-    # print(status)
-    prefix = f"""<b><span style="color: {colour}">"""
-    suffix = "</span></b>"
-    md = f"""<p style="margin: 0;font-size:20pt">
-    Database status: {prefix}{status}{suffix}
+def update_endpoint(btn, db_status, table_status):
+
+    md_db = check_status(db_status)
+    md_table = check_status(table_status)
+
+    md_output = f"""<p style="margin: 0;font-size:20pt">
+    Database status: {md_db}\t\t\tTable status: {md_table}
     </p>"""
-    # print(md)
-    # md = f"""
-    # <p style="margin: 0"> I am c<span style="color: purple">purple</span>.</p>
-    # """
-    # md = f"""
-    # ### Database Status: <span style="color: purple">purple</span>.</p>
-    # """
-    # if not ep:
-    #     raise PreventUpdate
-    # update_endpoint
-    # print(f"Start: {ep}")
-    return dynamodb_server.is_online, md
+
+    return md_output
 
 
 # radio_db_status

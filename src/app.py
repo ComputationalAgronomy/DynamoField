@@ -53,8 +53,10 @@ app.layout = html.Div(
         ),
         dcc.Store(id='store_server', storage_type='local'),
         dcc.Store(id='store_table', storage_type='local'),
+        
+        dcc.Store(id='store_db_info', storage_type='session', clear_data=False),
         dcc.Store(id='store_endpoint', storage_type='session', clear_data=False),
-        dcc.Store(id='store_tablename', storage_type='session', clear_data=False),
+        dcc.Store(id='store_table_name', storage_type='session', clear_data=False),
         dcc.Store(id='store_db_status', storage_type='session', clear_data=False),
         dcc.Store(id='store_table_status', storage_type='session', clear_data=False),
         dcc.Tabs(id='tabs-function', value='tab-db-status', children=[

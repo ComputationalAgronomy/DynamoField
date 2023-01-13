@@ -4,6 +4,7 @@ import subprocess
 import boto3
 import botocore
 import botocore.exceptions
+import psutil
 import requests
 import tarfile 
 

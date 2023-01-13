@@ -23,8 +23,6 @@ from app_data import *
 import app_style
 
 
-# ids = field_trial.get_all_trial_id()
-ids = ""
 def generate_query_panel():
     return [
         html.Div(id="query_panel", style={'display': 'flex', 'padding': 10, 'flex-direction': 'row'},
@@ -33,7 +31,7 @@ def generate_query_panel():
                      children=[
                 html.Label('Select trial ID'),
                 html.Br(),
-                dcc.Dropdown(options=ids, multi=False,
+                dcc.Dropdown(multi=False,
                              id="select_trial"),
                 html.Button('Fetch data', id='fetch_data',
                             n_clicks=0, style=app_style.btn_style),
@@ -104,13 +102,34 @@ def generate_query_panel():
 
 
 @dash.callback(
-    Output('dropdown_info_sortkey', 'options'),
-    Input('select_trial', 'value')
+    Output('select_trial', 'options'),
+    Input('tabs-function', 'value'),
+    State('store_db_info', 'data'),
 )
-def update_output_info(value):
+def get_id_list(tab, db_info):
+    if tab != "tab-query" or not db_info["db_status"] or not db_info["table_status"]:
+        raise PreventUpdate
+    
+    field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+    ids = field_trial.get_all_trial_id()
+    # field_trial = init_field_trial(endpoint, table_name)
+    # data = field_trial.get_by_trial_ids(trial_id, info_list)
+    return ids
+
+
+
+
+
+@dash.callback(
+    Output('dropdown_info_sortkey', 'options'),
+    Input('select_trial', 'value'),        
+    State('store_db_info', 'data'),
+)
+def update_output_info(value, db_info):
     if not value:
         raise PreventUpdate
     # if value is not No?ne:
+    field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
     info = field_trial.list_all_sort_keys(value)
     info_global = key_utils.extract_sort_key_prefix(info)
     info_global.sort()
@@ -140,12 +159,15 @@ def update_output(b1, b2, options):
     Input("fetch_data", "n_clicks"),
     State('select_trial', 'value'),
     State('dropdown_info_sortkey', 'value'),
+    State('store_db_info', 'data'),
 )
-def update_data_table(click, trial_id, info_list):
-    if not trial_id:
+def update_data_table(click, trial_id, info_list, db_info):
+    if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
     print(trial_id)
     print(info_list)
+    field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+    # field_trial = init_field_trial(endpoint, table_name)
     data = field_trial.get_by_trial_ids(trial_id, info_list)
     df = json_utils.result_list_to_df(data)
     # print(df)
