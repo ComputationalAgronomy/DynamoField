@@ -49,16 +49,23 @@ app.layout = html.Div(
         html.Div(
             id="banner",
             className="banner",
-            children=[html.H2("FT database.")],
+            children=[
+                html.H2("FT database."),
+                dcc.Markdown(id="db_markdown",
+                    dangerously_allow_html=True)
+            ],
         ),
+        html.Div(children=[
+            dcc.Interval(id="refresh-graph-interval", disabled=False, interval=10000),
+        ]),
         dcc.Store(id='store_server', storage_type='local'),
         dcc.Store(id='store_table', storage_type='local'),
         
         dcc.Store(id='store_db_info', storage_type='session', clear_data=False),
-        dcc.Store(id='store_endpoint', storage_type='session', clear_data=False),
-        dcc.Store(id='store_table_name', storage_type='session', clear_data=False),
-        dcc.Store(id='store_db_status', storage_type='session', clear_data=False),
-        dcc.Store(id='store_table_status', storage_type='session', clear_data=False),
+        # dcc.Store(id='store_endpoint', storage_type='session', clear_data=False),
+        # dcc.Store(id='store_table_name', storage_type='session', clear_data=False),
+        # dcc.Store(id='store_db_status', storage_type='session', clear_data=False),
+        # dcc.Store(id='store_table_status', storage_type='session', clear_data=False),
         dcc.Tabs(id='tabs-function', value='tab-db-status', children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),
@@ -75,6 +82,7 @@ app.layout = html.Div(
     Input('tabs-function', 'value')
 )
 def render_panels(tab):
+    print(tab)
     if tab == "tab-query":
         return generate_query_panel()
     elif tab == "tab-import":

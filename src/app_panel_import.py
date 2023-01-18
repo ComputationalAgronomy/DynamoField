@@ -13,13 +13,12 @@ from dash import Dash, ctx, dash_table, dcc, html
 from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
+# from callbacks import *
+import app_style
+from app_data import *
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
-
-from app_data import *
-# from callbacks import *
-import app_style
 
 # item_counts = field_trial.get_item_count()
 
@@ -28,10 +27,10 @@ def generate_import_panel():
         html.Div(style={'padding': 10, 'flex': 1},
                  className="row",
                  children=[
-            html.Br(),
-            html.Div(id="get_item_count"),            
-            dcc.RadioItems(['New York City', 'Montréal',
-                            'San Francisco'], 'Montréal'),
+            # html.Br(),
+            # html.Div(id="get_item_count"),            
+            # dcc.RadioItems(['New York City', 'Montréal',
+            #                 'San Francisco'], 'Montréal'),
             html.Hr(),
             # # html.Div(f"Total item count: {item_counts}", id="nths"),
             # dcc.RadioItems(['New York City', 'Montréal',
@@ -142,7 +141,7 @@ def update_uploader_info(filename, data_type):
     ]
 
     
-def parse_contents(contents, filename, date):
+def parse_contents(contents, filename, date=None):
 
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
@@ -155,11 +154,17 @@ def parse_contents(contents, filename, date):
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded))
+        else:
+            raise Exception("Invalid file type.")
     except Exception as e:
         print(e)
-        return html.Div([
-            f'There was an error processing this file.\n{e}'
-        ])
+        df = pd.DataFrame({
+            'There was an error processing this file': 
+                f"Error message: {str(e)}"
+            }, index=[0])
+        # return html.Div([
+        #     f'There was an error processing this file.\n{e}'
+        # ])
 
     return df
 
@@ -177,19 +182,19 @@ def preview_content(contents, filename, date):
         html.Hr(),  # horizontal line
         # For debugging, display the raw contents provided by the web browser
         html.Div('Raw Content'),
-        html.Pre(contents[0:100] + '...', style={
+        html.Pre(contents[0:200] + '...', style={
             'whiteSpace': 'pre-wrap',
             'wordBreak': 'break-all'
         })
     ])
 
 
-def import_dataframe(contents, filename, date, data_type, is_append):
+def import_dataframe(contents, filename, data_type, is_append, field_trial):
     #     content_type, content_string = contents.split(',')
     # decoded = base64.b64decode(content_string)
     
     try:
-        df = parse_contents(contents, filename, date)
+        df = parse_contents(contents, filename)
         data_importer = importer.DataImporter(df, data_type)
         data_importer.parse_df_to_dynamo_json(append=is_append, field_trial=field_trial)
         import_len = field_trial.import_batch_field_data_res(data_importer) # How to test this effectively?
@@ -216,24 +221,26 @@ def import_dataframe(contents, filename, date, data_type, is_append):
                State('upload-data', 'filename'),
                State('upload-data', 'last_modified'),
                State('importing_type', 'value'),
-               State("import_is_append", "value")
-              )
-def update_output(btn_1, btn_2, 
+               State("import_is_append", "value"),
+               State('store_db_info', 'data'),
+               )
+def update_output(btn_1, btn_2,
                   list_of_contents, list_of_names, list_of_dates,
-                  data_type, is_append):
+                  data_type, is_append, db_info):
     is_append = eval(is_append)
     print(f"{data_type}, {is_append}, {list_of_names}")
     if list_of_contents is not None:
         if "btn_preview" == ctx.triggered_id:
-            children = [preview_content(c, n, d)
-                for c, n, d in
-                zip(list_of_contents, list_of_names, list_of_dates)]
-            return children
-        elif "btn_import" == ctx.triggered_id:
-            if data_type is not None:
-                children = [import_dataframe(c, n, d, data_type, is_append)
-                        for c, n, d in
+            children = [preview_content(c, n, d) for c, n, d in
                         zip(list_of_contents, list_of_names, list_of_dates)]
+        elif "btn_import" == ctx.triggered_id:
+            if not db_info["db_status"] or not db_info["table_status"]:
+                children = ([html.H5("Database not available")])
+            elif data_type is not None:
+                field_trial = connect_db_table(db_info)
+                children = [import_dataframe(c, n, data_type, is_append, field_trial)
+                            for c, n, in
+                            zip(list_of_contents, list_of_names)]
             else:
                 children = html.Div([html.H5("Please enter data type")])
         return children

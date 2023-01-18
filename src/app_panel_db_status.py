@@ -13,13 +13,12 @@ from dash import Dash, ctx, dash_table, dcc, html
 from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
+# from callbacks import *
+import app_style
+from app_data import *  # dynamodb_server  # field_trial
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
-
-from app_data import * #dynamodb_server  # field_trial
-# from callbacks import *
-import app_style
 
 
 def update_status_panel():
@@ -72,10 +71,10 @@ def generate_db_status_panel():
     return [
         html.Div(#style={'padding': 10, 'flex': 1},
                  children=[
-            html.Br(),
-            html.Div("aoeuaoeu"),
-            dcc.RadioItems(['New York City', 'Montréal',
-                            'San Francisco'], 'Montréal'),
+            # html.Br(),
+            # html.Div("aoeuaoeu"),
+            # dcc.RadioItems(['New York City', 'Montréal',
+            #                 'San Francisco'], 'Montréal'),
             html.Div(id="get_item_count_db"),
             html.Br(),
             # dcc.Store(id='store_server', storage_type='local'),
@@ -88,8 +87,8 @@ def generate_db_status_panel():
             children=html.Div(id="loading_update_db")
         ),
         html.Hr(),
-        dcc.Interval(id="refresh-graph-interval", disabled=False, interval=10000),
-        update_status_panel(),
+        
+        # update_status_panel(),
         html.Hr(),
         update_config_panel(),
         html.Hr(),
@@ -99,9 +98,10 @@ def generate_db_status_panel():
                     ),
         # ],),
         html.Hr(),
+        html.Hr(),
         html.Table([
             html.Thead([
-                html.Tr(html.Th('Info stored in memory', colSpan="4")),
+                html.Tr(html.Th('DEBUG: Info stored in memory', colSpan="4")),
                 # html.Tr([
                 #     html.Th(html.Button('memory', id='memory-button')),
                 #     html.Th(html.Button('localStorage', id='local-button')),
@@ -137,42 +137,4 @@ def generate_db_status_panel():
 
 
 
-
-
-def check_status(status):
-    if status:
-        colour = "green"
-        status_text = "ONLINE"
-    else:
-        colour = "red"
-        status_text = "OFFLINE"
-    status_html = status_template_text(colour, status_text)
-    return status_html
-
-def status_template_text(colour, text):
-    status_html = f"""<b><span style="color: {colour}">{text}</span></b>"""
-    return status_html
-
-
-@dash.callback(
-    # Output('radio_db_status', 'value'),
-    Output("db_markdown", "children"),
-    # Output("loading-output-ep", "children"),
-    Input("refresh-graph-interval", "n_intervals"),
-    State('store_db_status', 'data'),
-    State('store_table_status', 'data'),
-)
-def update_endpoint(btn, db_status, table_status):
-
-    md_db = check_status(db_status)
-    md_table = check_status(table_status)
-
-    md_output = f"""<p style="margin: 0;font-size:20pt">
-    Database status: {md_db}\t\t\tTable status: {md_table}
-    </p>"""
-
-    return md_output
-
-
-# radio_db_status
 

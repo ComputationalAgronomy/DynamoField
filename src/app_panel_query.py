@@ -1,6 +1,3 @@
-# Run this app with `python app.py` and
-# visit http://127.0.0.1:8050/ in your web browser.
-
 
 import datetime
 import io
@@ -14,13 +11,11 @@ from dash import Dash, ctx, dash_table, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
+import app_style
+from app_data import *
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
-
-from app_data import *
-
-import app_style
 
 
 def generate_query_panel():
@@ -103,18 +98,26 @@ def generate_query_panel():
 
 @dash.callback(
     Output('select_trial', 'options'),
+    Output('select_trial', 'disabled'),
     Input('tabs-function', 'value'),
     State('store_db_info', 'data'),
 )
 def get_id_list(tab, db_info):
-    if tab != "tab-query" or not db_info["db_status"] or not db_info["table_status"]:
+    if tab != "tab-query" or db_info is None:
         raise PreventUpdate
-    
-    field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
-    ids = field_trial.get_all_trial_id()
-    # field_trial = init_field_trial(endpoint, table_name)
-    # data = field_trial.get_by_trial_ids(trial_id, info_list)
-    return ids
+    if not db_info["db_status"] or not db_info["table_status"]:
+        print(f"Database offline")
+        ids = [False]
+        is_disabled = True
+    else:
+        # field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+        field_trial = connect_db_table(db_info)
+        ids = field_trial.get_all_trial_id()
+        is_disabled = False
+        # field_trial = init_field_trial(endpoint, table_name)
+        # data = field_trial.get_by_trial_ids(trial_id, info_list)
+    print(f"{ids}")
+    return ids, is_disabled
 
 
 
@@ -128,8 +131,8 @@ def get_id_list(tab, db_info):
 def update_output_info(value, db_info):
     if not value:
         raise PreventUpdate
-    # if value is not No?ne:
-    field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+    # if value is not None:
+    field_trial = connect_db_table(db_info)
     info = field_trial.list_all_sort_keys(value)
     info_global = key_utils.extract_sort_key_prefix(info)
     info_global.sort()
@@ -143,7 +146,7 @@ def update_output_info(value, db_info):
     Input('button_info_none', 'n_clicks'),
     State('dropdown_info_sortkey', 'options'),
 )
-def update_output(b1, b2, options):
+def update_info_selection_btn(b1, b2, options):
     if not options:
         raise PreventUpdate
     if "button_info_all" == ctx.triggered_id:

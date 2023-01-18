@@ -33,6 +33,15 @@ def init_field_trial(endpoint, table_name):
 # # print("ZZ:", dynamodb_server.is_online, dynamodb_server.dynamodb_res)
 # field_trial = init_field_trial(dynamodb_server, table_name = table_name_default)
 
+def connect_db_table(db_info):
+    try:
+        field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+        return field_trial
+    except Exception as e:
+        print(f"Database offline: {e}")
+        
+
+
 
 def start_db():
     try:
@@ -41,8 +50,10 @@ def start_db():
         print("Database offline")
 
 
-def update_item_count():
+def update_item_count(info):
+
     try:
+        field_trial = info
         item_counts = field_trial.get_item_count()
         output = f"Total item count: {item_counts}"
     except:

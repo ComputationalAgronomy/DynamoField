@@ -1,2 +1,8 @@
 boto3
+dash
+dash_bootstrap_components
+dash[celery]
+dash[diskcache]
+pandas
+pytest
 requests
