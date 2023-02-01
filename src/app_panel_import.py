@@ -7,6 +7,7 @@ import os
 from datetime import datetime as dt
 
 import dash
+import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 from dash import Dash, ctx, dash_table, dcc, html
@@ -57,7 +58,7 @@ def generate_import_panel():
                     # Allow multiple files to be uploaded
                     multiple=True
                 ),
-                html.Button('Preview file', id='btn_preview',
+                dbc.Button('Preview file', id='btn_preview',
                         n_clicks=0, #style=app_style.btn_style,
                         className="three columns"
                 ),
@@ -70,11 +71,16 @@ def generate_import_panel():
                 html.Div(className="three columns", children=[
                     html.H5("Import data type"),
                     # html.Br(),
-                    dcc.Input(id="importing_type", type="text", 
-                        minLength=3, 
-                        required=True, placeholder="data-type", 
-                        debounce=True,
-                        style={'width': '100%'}
+                    dbc.Input(id="importing_type",
+                        type="text", 
+                        required="required",
+                        minlength=3, #maxLength=-1,
+                        # type="number",
+                        #  placeholder="input with range",
+            # min=10, max=100, step=3,
+                        # placeholder=?"data-type", 
+                        # debounce=True,
+                        # style={'width': '100%'}
                         # className="three columns"
                     ),
                 ]),        
@@ -85,7 +91,7 @@ def generate_import_panel():
 
                 # html.Div(className="two columns", children=[
                     # html.Br(),
-                    html.Button('Import data', id='btn_import',
+                    dbc.Button('Import data', id='btn_import',
                         n_clicks=0, #style=app_style.btn_style,
                         className="three columns"
                     ),
@@ -141,6 +147,26 @@ def update_uploader_info(filename, data_type):
     ]
 
     
+
+@dash.callback(Output("btn_import", "disabled"),
+               Input("importing_type", "value"),
+               Input("importing_type", "required"),
+               Input("importing_type", "style"),
+              )
+def update_uploader_info(data_type, r, s):
+    is_disabled = True
+    print(r)
+    print(s)
+    if data_type is not None:
+        is_disabled = False
+    # else if 
+    #     print(f"data_type:{data_type}={data_type is not None}={len(data_type)>1}={is_disabled}")
+    print(f"data_type:{data_type}={data_type is not None}=={is_disabled}")
+    return is_disabled    
+
+
+
+
 def parse_contents(contents, filename, date=None):
 
     content_type, content_string = contents.split(',')
@@ -178,7 +204,6 @@ def preview_content(contents, filename, date):
         dash_table.DataTable(df.to_dict('records'),
             [{'name': i, 'id': i} for i in df.columns]
         ),
-
         html.Hr(),  # horizontal line
         # For debugging, display the raw contents provided by the web browser
         html.Div('Raw Content'),
@@ -201,7 +226,7 @@ def import_dataframe(contents, filename, data_type, is_append, field_trial):
     except Exception as e:
         print(e)
         return html.Div([
-            f'There was an error processing this file.\n{e}'
+            f'There was an error processing this file.<br>{e}'
         ])
 
     return html.Div([
@@ -234,13 +259,13 @@ def update_output(btn_1, btn_2,
             children = [preview_content(c, n, d) for c, n, d in
                         zip(list_of_contents, list_of_names, list_of_dates)]
         elif "btn_import" == ctx.triggered_id:
-            if not db_info["db_status"] or not db_info["table_status"]:
-                children = ([html.H5("Database not available")])
-            elif data_type is not None:
-                field_trial = connect_db_table(db_info)
-                children = [import_dataframe(c, n, data_type, is_append, field_trial)
-                            for c, n, in
-                            zip(list_of_contents, list_of_names)]
-            else:
-                children = html.Div([html.H5("Please enter data type")])
+            # if not db_info["db_status"] or not db_info["table_status"]:
+            #     children = ([html.H5("Database not available")])
+            print(f"data_type_{data_type}")
+            field_trial = connect_db_table(db_info)
+            children = [import_dataframe(c, n, data_type, is_append, field_trial)
+                        for c, n, in
+                        zip(list_of_contents, list_of_names)]
+            # else:
+                # children = html.Div([html.H5("Please enter data type")])
         return children

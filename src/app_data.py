@@ -34,11 +34,10 @@ def init_field_trial(endpoint, table_name):
 # field_trial = init_field_trial(dynamodb_server, table_name = table_name_default)
 
 def connect_db_table(db_info):
-    try:
+    field_trial = None
+    if db_info["table_status"]:
         field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
-        return field_trial
-    except Exception as e:
-        print(f"Database offline: {e}")
+    return field_trial
         
 
 

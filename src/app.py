@@ -13,6 +13,7 @@ import io
 
 import boto3
 import dash
+import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -31,8 +32,10 @@ from app_panel_query import *
 from app_panel_db_status import *
 from callbacks import *
 
-# theme = dbc.themes.ZEPHYR
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+theme = dbc.themes.ZEPHYR
+external_stylesheets = [theme, "https://codepen.io/chriddyp/pen/bWLwgP.css"]
+
+STORAGE_CLEAN_DATA = False
 
 app = Dash(__name__, 
     # use_pages=True,
@@ -61,11 +64,7 @@ app.layout = html.Div(
         dcc.Store(id='store_server', storage_type='local'),
         dcc.Store(id='store_table', storage_type='local'),
         
-        dcc.Store(id='store_db_info', storage_type='session', clear_data=False),
-        # dcc.Store(id='store_endpoint', storage_type='session', clear_data=False),
-        # dcc.Store(id='store_table_name', storage_type='session', clear_data=False),
-        # dcc.Store(id='store_db_status', storage_type='session', clear_data=False),
-        # dcc.Store(id='store_table_status', storage_type='session', clear_data=False),
+        dcc.Store(id='store_db_info', storage_type='session', clear_data=STORAGE_CLEAN_DATA),
         dcc.Tabs(id='tabs-function', value='tab-db-status', children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),
