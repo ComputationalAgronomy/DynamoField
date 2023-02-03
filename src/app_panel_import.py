@@ -26,7 +26,7 @@ from dynamofield.utils import json_utils
 def generate_import_panel():
     return [
         html.Div(style={'padding': 10, 'flex': 1},
-                 className="row",
+                #  className="row",
                  children=[
             # html.Br(),
             # html.Div(id="get_item_count"),            
@@ -36,39 +36,52 @@ def generate_import_panel():
             # # html.Div(f"Total item count: {item_counts}", id="nths"),
             # dcc.RadioItems(['New York City', 'Montréal',
             #                 'San Francisco'], 'Montréal'),
-            html.Div(className="row", children=[
-                dcc.Upload(
-                    id='upload-data',
-                    className="five columns",
-                    children=html.Div([
-                        'Drag and Drop or ',
-                        html.A('Select Files')
-                    ]
-                    ),
-                    style={
-                        # 'width': '50%',
-                        'height': '60px',
-                        'lineHeight': '60px',
-                        'borderWidth': '1px',
-                        'borderStyle': 'dashed',
-                        'borderRadius': '5px',
-                        'textAlign': 'center',
-                        'margin': '10px'
-                    },
-                    # Allow multiple files to be uploaded
-                    multiple=True
-                ),
-                dbc.Button('Preview file', id='btn_preview',
-                        n_clicks=0, #style=app_style.btn_style,
-                        className="three columns"
-                ),
+            dbc.Row([
+                dbc.Col([
+            # html.Div(className="row", children=[
+                    dcc.Upload(
+                        id='upload-data',
+                        # className="five columns",
+                        children=html.Div([
+                            'Drag and Drop or ',
+                            html.A('Select Files')
+                        ]
+                        ),
+                        style={
+                            'width': '100%',
+                            'height': '60px',
+                            'lineHeight': '60px',
+                            'borderWidth': '1px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'margin': '5px'
+                        },
+                        # Allow multiple files to be uploaded
+                        multiple=True
+                    )
+                ], width=4),
+                dbc.Col([
+                    dbc.Button('Preview file', id='btn_preview',
+                            n_clicks=0, size="lg",
+                            # className="me-2",
+                            style={
+                                "margin":"5px", 'margin-top': '0px', 
+                                "width":"200px", "height":"60px", 
+                                'align-items': 'center', 
+                                'justify-content': 'center'
+                            }, 
+                    )
+                ], width="auto"),
             ]),
-            html.Div(className="row", 
-                     style={
-                        'margin': '10px'
-                     },
-                     children=[
-                html.Div(className="three columns", children=[
+            dbc.Row([
+                dbc.Col([
+            # html.Div(className="row", 
+            #          style={
+            #             'margin': '10px'
+            #          },
+            #          children=[
+            #     html.Div(className="three columns", children=[
                     html.H5("Import data type"),
                     # html.Br(),
                     dbc.Input(id="importing_type",
@@ -76,26 +89,30 @@ def generate_import_panel():
                         required="required",
                         minlength=3, #maxLength=-1,
                         # type="number",
-                        #  placeholder="input with range",
-            # min=10, max=100, step=3,
-                        # placeholder=?"data-type", 
-                        # debounce=True,
-                        # style={'width': '100%'}
-                        # className="three columns"
+                        
                     ),
-                ]),        
-                dcc.RadioItems(id="import_is_append",
-                    options={"False": "Insert new data", "True": "Replace existing"},
-                    value="False",
-                    className="three columns"),
-
-                # html.Div(className="two columns", children=[
-                    # html.Br(),
+                ], width=3),
+                dbc.Col([
+                    dcc.RadioItems(id="import_is_append",
+                        options={"False": "Insert new data", "True": "Replace existing"},
+                        value="False",
+                        style={
+                            "margin":"30px", 'margin-top': '20px', 
+                        }
+                        ),
+                ], width=3),
+                dbc.Col([
                     dbc.Button('Import data', id='btn_import',
-                        n_clicks=0, #style=app_style.btn_style,
-                        className="three columns"
+                        n_clicks=0, size="lg",
+                        className="me-2",
+                        style={
+                            "margin":"10px", 'margin-top': '20px', 
+                            "width":"200px", "height":"60px", 
+                            'align-items': 'center', 'justify-content': 'center'
+                        }, 
                     ),
                 # ]),
+                ], width=3),
             ]),
             html.Hr(),
             html.Div(className="row", children=[
@@ -137,30 +154,32 @@ def update_uploader_info(filename, data_type):
         parsed_name = f"\nCurrent files: {filename}"
     if data_type is not None:
         parsed_data_type = f"{parsed_data_type} {data_type}"
+    markdown_text = f"{parsed_data_type}  {parsed_name}"
     return [
         html.Div([
             'Drag and Drop or ',
             html.A('Select Files    '),
             parsed_name
         ]),
-        f"{parsed_data_type}  {parsed_name} "
+        markdown_text
     ]
 
     
 
 @dash.callback(Output("btn_import", "disabled"),
                Input("importing_type", "value"),
+               Input('upload-data', 'filename'),
                Input("importing_type", "required"),
                Input("importing_type", "style"),
               )
-def update_uploader_info(data_type, r, s):
+def update_uploader_info(data_type, filenames, r, s):
     is_disabled = True
-    print(r)
-    print(s)
-    if data_type is not None:
+    if data_type is not None and filenames is not None:
         is_disabled = False
     # else if 
     #     print(f"data_type:{data_type}={data_type is not None}={len(data_type)>1}={is_disabled}")
+    print(r, s)
+    print(f"validate import button: {data_type}___{filenames}")
     print(f"data_type:{data_type}={data_type is not None}=={is_disabled}")
     return is_disabled    
 
@@ -252,7 +271,9 @@ def import_dataframe(contents, filename, data_type, is_append, field_trial):
 def update_output(btn_1, btn_2,
                   list_of_contents, list_of_names, list_of_dates,
                   data_type, is_append, db_info):
+    children = []
     is_append = eval(is_append)
+    
     print(f"{data_type}, {is_append}, {list_of_names}")
     if list_of_contents is not None:
         if "btn_preview" == ctx.triggered_id:
@@ -268,4 +289,4 @@ def update_output(btn_1, btn_2,
                         zip(list_of_contents, list_of_names)]
             # else:
                 # children = html.Div([html.H5("Please enter data type")])
-        return children
+    return children

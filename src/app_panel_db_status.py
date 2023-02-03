@@ -7,6 +7,7 @@ import os
 from datetime import datetime as dt
 
 import dash
+import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 from dash import Dash, ctx, dash_table, dcc, html
@@ -39,90 +40,121 @@ def update_status_panel():
         # ],),
     ],)
 
+
 def update_config_panel():
-    return html.Div(className="row",
-                    style={
-                        'margin': '10px'
-                    },
+    return html.Div(style={'padding': 10},
                     children=[
-        html.Div(className="three columns", children=[
-            html.Label("Database endpoint:"),
-            html.Label("Default: http://localhost:8000/"),
-            dcc.Input(id="db_endpoint", type="text",
-                      placeholder="http://localhost:8000/", debounce=True,
-            ),
-        ]),
-        html.Div(className="three columns", children=[
-            html.Label("Table name:"),
-            html.Label("Default: ft_db"),
-            dcc.Input(id="db_table_name", type="text",
-                      placeholder="ft_db", debounce=True,
-            ),
-        ]),
-        html.Button(className="three columns",
+        dbc.Row(children=[
+            html.H4("Connect to existing database:"),
+            dbc.Col([
+                # html.Div(className="three columns", children=[
+                html.Label("Database endpoint:"),
+                html.Label("Default: http://localhost:8000/"),
+                dcc.Input(id="db_endpoint", type="text",
+                            placeholder="http://localhost:8000/", debounce=True,
+                            ),
+            ], width="auto"),
+            dbc.Col([
+                # html.Div(className="three columns", children=[
+                html.Label("Table name:"),
+                html.Label("Default: ft_db"),
+                dcc.Input(id="db_table_name", type="text",
+                            placeholder="ft_db", debounce=True,
+                            ),
+            ], width="auto"),
+            dbc.Col([
+                dbc.Button(  # className="three columns",
                     children='Connect Database', id='btn_connect_db',
-                    n_clicks=0,  # style=app_style.btn_style,
-                    style={"height":"200%"}
-        ),
+                    n_clicks=0, size="lg",  # style=app_style.btn_style,
+                    style={
+                        "margin": "20px",  # 'margin-top': '0px',
+                        "height": "50px", "width": "200px",
+                    }
+                ),
+            ], width="auto"),
+            ])
     ])
 
 
+def create_new_table_panel():
+    return dbc.Row(style={'padding': 10},
+                   children=[
+        html.H4("New table"),
+        dbc.Col([
+            dbc.Button(id="btn_list_tables", children="List existing tables", 
+                    n_clicks=0, size="lg")
+        ], width="auto"),
+        dbc.Col([
+            dcc.Input(id="new_table_name", type="text", minLength=3)
+        ], width="auto"),
+        dbc.Col([
+            dbc.Button(id="btn_create_new_table", children="Create new table", 
+                    n_clicks=0, size="lg")
+        ], width="auto"),
+        dcc.Markdown(id="db_table_list",
+                     dangerously_allow_html=True),
+
+    ])
+
+
+def db_debug_panel():
+    return html.Table([
+        html.Thead([
+            html.Tr(html.Th('DEBUG: Info stored in memory', colSpan="4")),
+            # html.Tr([
+            #     html.Th(html.Button('memory', id='memory-button')),
+            #     html.Th(html.Button('localStorage', id='local-button')),
+            #     html.Th(html.Button('sessionStorage', id='session-button'))
+            # ]),
+            html.Tr([
+                    html.Th('Endpoint'),
+                    html.Th('table_name'),
+                    html.Th('DB status'),
+                    html.Th('Table status')
+                    ])
+        ]),
+        html.Tbody([
+            html.Tr([
+                    html.Td(id='data_endpoint'),
+                    html.Td(id='data_table_name'),
+                    html.Td(id='data_db_status'),
+                    html.Td(id='data_table_status'),
+                    ])
+        ])
+    ])
+
 def generate_db_status_panel():
     return [
-        html.Div(#style={'padding': 10, 'flex': 1},
-                 children=[
-            # html.Br(),
-            # html.Div("aoeuaoeu"),
-            # dcc.RadioItems(['New York City', 'Montréal',
-            #                 'San Francisco'], 'Montréal'),
-            html.Div(id="get_item_count_db"),
-            html.Br(),
-            # dcc.Store(id='store_server', storage_type='local'),
-            # dcc.Store(id='store_table', storage_type='local'),
-
-        ]),
+        # html.Div(#style={'padding': 10, 'flex': 1},
+        #          children=[
+        #     # html.Br(),
+        #     html.Div(id="get_item_count_db"),
+        # ]),
         dcc.Loading(
             id="loading-ep",
             type="default",
             children=html.Div(id="loading_update_db")
         ),
-        html.Hr(),
-        
-        # update_status_panel(),
+        # html.Hr(),
+        update_status_panel(),
         html.Hr(),
         update_config_panel(),
         html.Hr(),
-        html.Button('Start database', id='btn_db_start',
-                    n_clicks=0,  # style=app_style.btn_style,
-                    className="two columns"
-                    ),
+        dbc.Button('Start database', id='btn_db_start',
+                    n_clicks=0,  size="lg", # style=app_style.btn_style,
+                    # className="two columns"
+                    style={
+                        # "padding":"5px",
+                        "margin":"10px", #'margin-top': '0px', 
+                        "height":"50px",  "width":"200px", 
+                    }
+        ),
         # ],),
         html.Hr(),
+        create_new_table_panel(),
         html.Hr(),
-        html.Table([
-            html.Thead([
-                html.Tr(html.Th('DEBUG: Info stored in memory', colSpan="4")),
-                # html.Tr([
-                #     html.Th(html.Button('memory', id='memory-button')),
-                #     html.Th(html.Button('localStorage', id='local-button')),
-                #     html.Th(html.Button('sessionStorage', id='session-button'))
-                # ]),
-                html.Tr([
-                    html.Th('Endpoint'),
-                    html.Th('table_name'),
-                    html.Th('DB status'),
-                    html.Th('Table status')
-                ])
-            ]),
-            html.Tbody([
-                html.Tr([
-                    html.Td(id='data_endpoint'),
-                    html.Td(id='data_table_name'),
-                    html.Td(id='data_db_status'),
-                    html.Td(id='data_table_status'),
-                ])
-            ])
-        ])
+        db_debug_panel(),
+        
     ]
 
 

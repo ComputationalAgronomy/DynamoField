@@ -18,13 +18,13 @@ def update_item_count_import(x, info):
     return update_item_count(info)
 
 
-@dash.callback(
-    Output('get_item_count_db', 'children'),
-    Input('tabs-function', 'value'),
-    State('store_db_info', 'data'),
-)
-def update_item_count_db(x, info):
-    return update_item_count(info)
+# @dash.callback(
+#     Output('get_item_count_db', 'children'),
+#     Input('tabs-function', 'value'),
+#     State('store_db_info', 'data'),
+# )
+# def update_item_count_db(x, info):
+#     return update_item_count(info)
 
 
 
@@ -55,6 +55,8 @@ def status_template_text(colour, text):
     Input('store_db_info', 'data'),
 )
 def update_status_interval(n, db_info):
+    if db_info is None:
+        raise PreventUpdate
     try:
         md_db = check_status(db_info["db_status"])
         md_table = check_status(db_info["table_status"])
@@ -115,14 +117,16 @@ def update_db_status(btn, ep, name, info): #m_ep, m_name):
     # if not ep:
     #     raise PreventUpdate
     # update_endpoint
-    
+    if info is None:
+        print(f"No update: info:{info}")
+        raise PreventUpdate
     try:
         m_ep = info["endpoint"]
         m_name = info["table_name"]
     except Exception:
         m_ep = None
         m_name = None
-    print(f"Start: ={ep}=={name}=\tmemory:{m_ep}=={m_name}=")
+    print(f"Start: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
     if ep == m_ep and name == m_name:
         print("No update")
         raise PreventUpdate
