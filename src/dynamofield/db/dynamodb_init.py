@@ -1,5 +1,6 @@
 import boto3
 import botocore.exceptions
+from dynamofield.db import init_db
 
 class DynamodbServer:
 
@@ -18,6 +19,12 @@ class DynamodbServer:
         self.endpoint_url = endpoint
         self.init_dynamodb_resources()
 
+    def create_new_table(self, tablename):
+        client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
+        response = init_db.add_db_table(client, tablename)
+        return response
+    
+
     def init_dynamodb_client(self):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
         # client.describe_table(TableName=table_name)["Table"]["ItemCount"]
@@ -28,10 +35,12 @@ class DynamodbServer:
             print(f"Invalid DynamoDB connection or server: {e}")
         return client
 
+    def list_tables(self):
+        return list(self.dynamodb_res.tables.all())
 
     def is_dynamodb_online(self):
         try:
-            test = list(self.dynamodb_res.tables.all())
+            temp = self.list_tables()
             self.is_online = True
             # test = next(dynamodb_res.tables.pages())
         except botocore.exceptions.EndpointConnectionError as e:

@@ -273,7 +273,6 @@ def update_output(btn_1, btn_2,
                   data_type, is_append, db_info):
     children = []
     is_append = eval(is_append)
-    
     print(f"{data_type}, {is_append}, {list_of_names}")
     if list_of_contents is not None:
         if "btn_preview" == ctx.triggered_id:

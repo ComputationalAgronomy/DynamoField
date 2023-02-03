@@ -8,34 +8,40 @@ import psutil
 import requests
 import tarfile 
 
-def init_db_table(client, table_name):
-    response = client.create_table(
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'trial_id',
-                'AttributeType': 'S'
+def add_db_table(client, tablename):
+    try:
+        response = client.create_table(
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'trial_id',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'info',
+                    'AttributeType': 'S'
+                }
+            ],
+            TableName=tablename,
+            KeySchema=[
+                {
+                    'AttributeName': 'trial_id',
+                    'KeyType': 'HASH'
+                },
+                {
+                    'AttributeName': 'info',
+                    'KeyType': 'RANGE'
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
             },
-            {
-                'AttributeName': 'info',
-                'AttributeType': 'S'
-            }
-        ],
-        TableName=table_name,
-        KeySchema=[
-            {
-                'AttributeName': 'trial_id',
-                'KeyType': 'HASH'
-            },
-            {
-                'AttributeName': 'info',
-                'KeyType': 'RANGE'
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 10,
-            'WriteCapacityUnits': 10
-        },
-    )    
+        )    
+        response = f"New table created: {tablename}."
+    except botocore.exceptions.ClientError as e:
+        response = f"Table already exist Tablename: {tablename}. {e}"
+    print(response)
+    return response
 
 def remove_table(client, table_name):
     try:

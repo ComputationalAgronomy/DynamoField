@@ -27,6 +27,58 @@ def update_item_count_import(x, info):
 #     return update_item_count(info)
 
 
+@dash.callback(
+    Output('db_table_md', 'children'),
+    Output("dt_list_table", "columns"), 
+    Output("dt_list_table", "data"),
+    Input('btn_create_table', 'n_clicks'),
+    Input('btn_list_tables', 'n_clicks'),
+    State('store_db_info', 'data'),
+    State('new_table_name', 'value'),
+)
+def add_new_table(btn_create, btn_list, db_info, tablename):
+    print("Table info:", tablename, db_info, dash.callback_context.triggered_id)
+    if not db_info["db_status"]:
+        raise PreventUpdate
+    md = "" # "Database offline."
+    columns = None
+    data = None
+    list_tables = db_list_table(db_info)    
+    if dash.callback_context.triggered_id == 'btn_create_table':        
+        # if tablename is None or len(tablename) == 0:
+        #     md = "Please enter a name for the new table (min length > 3)."
+        #     print(md)
+        #     raise PreventUpdate
+        # # TODO: Check table not already exist
+        try:
+            md = create_new_table(db_info, tablename)
+        except Exception as e:
+            md = f"Please enter a name for the new table (min length > 3).<br>{e}"
+        
+    elif dash.callback_context.triggered_id == 'btn_list_tables':
+        # md = f"List of available tables:\n<br>"
+        # md = "" #+= "<br> - ".join([t.name for t in list_tables])
+        data = [{"table_name": t.name} for t in list_tables]
+        table_names = [t.name for t in list_tables]
+        columns = [{"name": "Table name", "id": "table_name"}]
+    return md, columns, data
+
+
+
+# @dash.callback(
+#     Output("dt_list_table", "columns"), 
+#     Output("dt_list_table", "data"),
+
+#     State('store_db_info', 'data'),
+#     prevent_initial_call=True,
+# )
+# def update_list_table(btn_list, db_info):
+#     print(db_info, dash.callback_context.triggered_id)
+#     columns = None
+#     data = None
+#     if db_info["db_status"]:
+      
+
 
 
 
@@ -83,12 +135,13 @@ def update_status_interval(n, db_info):
     Input("refresh-graph-interval", "n_intervals"),
     State('store_db_info', 'data'),
 )
-def get_memory_data(x, info):
-    if info is not None:
-        print("memory:", info["endpoint"], info["table_name"], info["db_status"], info["table_status"], x)
-        for k, v in info.items():
-            print("\t", k, v)
-        return info["endpoint"], info["table_name"], str(info["db_status"]), str(info["table_status"])
+def get_memory_data(x, db_info):
+    if db_info is not None:
+        print(f"memory: {db_info}")
+        # print("memory:", db_info["endpoint"], db_info["table_name"], db_info["db_status"], db_info["table_status"], x)
+        # for k, v in db_info.items():
+        #     print("\t", k, v)
+        return db_info["endpoint"], db_info["table_name"], str(db_info["db_status"]), str(db_info["table_status"])
     return False, False, False, False
 
 
@@ -117,16 +170,16 @@ def update_db_status(btn, ep, name, info): #m_ep, m_name):
     # if not ep:
     #     raise PreventUpdate
     # update_endpoint
-    if info is None:
-        print(f"No update: info:{info}")
-        raise PreventUpdate
+    # if info is None:
+    #     print(f"No update: info:{info}")
+    #     raise PreventUpdate
     try:
         m_ep = info["endpoint"]
         m_name = info["table_name"]
     except Exception:
         m_ep = None
         m_name = None
-    print(f"Start: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
+    print(f"Current status: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
     if ep == m_ep and name == m_name:
         print("No update")
         raise PreventUpdate

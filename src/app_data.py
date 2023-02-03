@@ -35,11 +35,24 @@ def init_field_trial(endpoint, table_name):
 
 def connect_db_table(db_info):
     field_trial = None
-    if db_info["table_status"]:
+    # if db_info["table_status"]:
+    try:
         field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+    except Exception as e:
+        print(e)
     return field_trial
         
 
+def db_list_table(db_info):
+    
+    dynamodb_server = init_dynamodb(db_info["endpoint"])#, db_info["table_name"])
+    list_tables = dynamodb_server.list_tables()
+    return list_tables
+        
+def create_new_table(db_info, tablename):
+    dynamodb_server = init_dynamodb(db_info["endpoint"])
+    response = dynamodb_server.create_new_table(tablename)
+    return response
 
 
 def start_db():

@@ -45,7 +45,7 @@ def test_creation():
     del_length = len(client.list_tables()["TableNames"])
     assert del_length == init_num_table - 1
 
-    init_db.init_db_table(client, table_name)
+    init_db.add_db_table(client, table_name)
     final_length = len(client.list_tables()["TableNames"])
     assert final_length == del_length + 1
 

@@ -51,49 +51,59 @@ def update_config_panel():
                 html.Label("Database endpoint:"),
                 html.Label("Default: http://localhost:8000/"),
                 dcc.Input(id="db_endpoint", type="text",
-                            placeholder="http://localhost:8000/", debounce=True,
-                            ),
+                          placeholder="http://localhost:8000/", debounce=True,
+                          ),
             ], width="auto"),
             dbc.Col([
                 # html.Div(className="three columns", children=[
                 html.Label("Table name:"),
                 html.Label("Default: ft_db"),
                 dcc.Input(id="db_table_name", type="text",
-                            placeholder="ft_db", debounce=True,
-                            ),
+                          placeholder="ft_db", debounce=True,
+                          ),
             ], width="auto"),
             dbc.Col([
                 dbc.Button(  # className="three columns",
                     children='Connect Database', id='btn_connect_db',
                     n_clicks=0, size="lg",  # style=app_style.btn_style,
                     style={
-                        "margin": "20px",  # 'margin-top': '0px',
+                        "margin": "20px", 'margin-top': '30px',
                         "height": "50px", "width": "200px",
                     }
                 ),
             ], width="auto"),
-            ])
+        ])
     ])
 
 
 def create_new_table_panel():
-    return dbc.Row(style={'padding': 10},
-                   children=[
-        html.H4("New table"),
-        dbc.Col([
-            dbc.Button(id="btn_list_tables", children="List existing tables", 
-                    n_clicks=0, size="lg")
-        ], width="auto"),
-        dbc.Col([
-            dcc.Input(id="new_table_name", type="text", minLength=3)
-        ], width="auto"),
-        dbc.Col([
-            dbc.Button(id="btn_create_new_table", children="Create new table", 
-                    n_clicks=0, size="lg")
-        ], width="auto"),
-        dcc.Markdown(id="db_table_list",
-                     dangerously_allow_html=True),
-
+    return html.Div(style={'padding': 10},
+                    children=[
+        html.H4("Database table information"),
+        dbc.Row([
+            
+        ]),
+        dbc.Row(dbc.Label("New table name:")),
+        dbc.Row([
+            dbc.Col([
+                dbc.Input(id="new_table_name", type="text", minLength=3)
+            ], width="auto"),
+            dbc.Col([
+                # dbc.Label("&nbsp;"),
+                dbc.Button(id="btn_create_table", children="Create new table",
+                        n_clicks=0, size="lg")
+            ], width="auto"),
+            dbc.Col([
+                dbc.Button(id="btn_list_tables", children="List existing tables",
+                        n_clicks=0, size="lg")
+            ], width={"size": "auto", "order": "last", "offset": 1}),
+        ]),
+        html.Br(),
+        dcc.Markdown(id="db_table_md",
+            dangerously_allow_html=True),
+        dash_table.DataTable(id="dt_list_table",
+            page_size=10,  # we have less data in this example, so setting to 20
+            style_table={'height': '200px', 'overflowY': 'auto', 'width': '300px'}),
     ])
 
 
@@ -136,7 +146,7 @@ def generate_db_status_panel():
             children=html.Div(id="loading_update_db")
         ),
         # html.Hr(),
-        update_status_panel(),
+        # update_status_panel(),
         html.Hr(),
         update_config_panel(),
         html.Hr(),
