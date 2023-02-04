@@ -79,25 +79,44 @@ def update_config_panel():
 def create_new_table_panel():
     return html.Div(style={'padding': 10},
                     children=[
-        html.H4("Database table information"),
+        
         dbc.Row([
-            
+            dbc.Col(html.H4("Database table information"),
+                width=3),
+            dbc.Col(html.H4("Dangour zone!", style={"color": "red"}),    
+                width={"size": 3,  "offset": 3})
         ]),
-        dbc.Row(dbc.Label("New table name:")),
+        dbc.Row([
+            dbc.Col(dbc.Label("Create a new table. Table name:"),
+                width=3),
+            dbc.Col(dbc.Label("DELETE a table. Table name:"),
+                width={"size": 3,  "offset": 3})
+        ]),
         dbc.Row([
             dbc.Col([
                 dbc.Input(id="new_table_name", type="text", minLength=3)
-            ], width="auto"),
+            ], width=2),
+            
+            dbc.Col([
+                dbc.Input(id="text_delete_tablename", type="text")
+            ], width={"size": 2, "offset": 4}),
+        ], style={"margin-bottom": "10pt"}), 
+        dbc.Row([
             dbc.Col([
                 # dbc.Label("&nbsp;"),
                 dbc.Button(id="btn_create_table", children="Create new table",
                         n_clicks=0, size="lg")
-            ], width="auto"),
+            ], width=2),
             dbc.Col([
                 dbc.Button(id="btn_list_tables", children="List existing tables",
                         n_clicks=0, size="lg")
-            ], width={"size": "auto", "order": "last", "offset": 1}),
+            ], width={"size": 2, "offset": 1}),
+            dbc.Col([
+                dbc.Button(id="btn_delete_table", children="DELETE this table",
+                        n_clicks=0, size="lg", color="danger")
+            ], width={"size": 2, "offset": 1}),
         ]),
+
         html.Br(),
         dcc.Markdown(id="db_table_md",
             dangerously_allow_html=True),
@@ -105,6 +124,16 @@ def create_new_table_panel():
             page_size=10,  # we have less data in this example, so setting to 20
             style_table={'height': '200px', 'overflowY': 'auto', 'width': '300px'}),
     ])
+
+
+
+def delete_table_panel():
+    return  html.Div(style={'padding': 10},
+                    children=[
+        
+    ])
+
+
 
 
 def db_debug_panel():
@@ -132,6 +161,7 @@ def db_debug_panel():
                     ])
         ])
     ])
+
 
 def generate_db_status_panel():
     return [
@@ -162,8 +192,10 @@ def generate_db_status_panel():
         # ],),
         html.Hr(),
         create_new_table_panel(),
+        delete_table_panel(),
         html.Hr(),
         db_debug_panel(),
+
         
     ]
 

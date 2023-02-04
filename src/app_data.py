@@ -49,9 +49,16 @@ def db_list_table(db_info):
     list_tables = dynamodb_server.list_tables()
     return list_tables
         
+
 def create_new_table(db_info, tablename):
     dynamodb_server = init_dynamodb(db_info["endpoint"])
     response = dynamodb_server.create_new_table(tablename)
+    return response
+
+
+def delete_existing_table(db_info, tablename):
+    dynamodb_server = init_dynamodb(db_info["endpoint"])
+    response = dynamodb_server.delete_table(tablename)
     return response
 
 

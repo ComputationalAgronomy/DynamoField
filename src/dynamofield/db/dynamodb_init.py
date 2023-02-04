@@ -24,7 +24,11 @@ class DynamodbServer:
         response = init_db.add_db_table(client, tablename)
         return response
     
-
+    def delete_table(self, tablename):
+        client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
+        response = init_db.remove_table(client, tablename)
+        return response
+    
     def init_dynamodb_client(self):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
         # client.describe_table(TableName=table_name)["Table"]["ItemCount"]

@@ -33,11 +33,14 @@ def update_item_count_import(x, info):
     Output("dt_list_table", "data"),
     Input('btn_create_table', 'n_clicks'),
     Input('btn_list_tables', 'n_clicks'),
+    Input('btn_delete_table', 'n_clicks'),
     State('store_db_info', 'data'),
     State('new_table_name', 'value'),
+    State('text_delete_tablename', 'value'),
 )
-def add_new_table(btn_create, btn_list, db_info, tablename):
-    print("Table info:", tablename, db_info, dash.callback_context.triggered_id)
+def add_new_table(btn_create, btn_list, btn_delete,
+                  db_info, tablename, delete_tablename):
+    print("Table info:", tablename, delete_tablename, db_info, dash.callback_context.triggered_id)
     if not db_info["db_status"]:
         raise PreventUpdate
     md = "" # "Database offline."
@@ -54,14 +57,24 @@ def add_new_table(btn_create, btn_list, db_info, tablename):
             md = create_new_table(db_info, tablename)
         except Exception as e:
             md = f"Please enter a name for the new table (min length > 3).<br>{e}"
-        
     elif dash.callback_context.triggered_id == 'btn_list_tables':
         # md = f"List of available tables:\n<br>"
         # md = "" #+= "<br> - ".join([t.name for t in list_tables])
         data = [{"table_name": t.name} for t in list_tables]
         table_names = [t.name for t in list_tables]
         columns = [{"name": "Table name", "id": "table_name"}]
+    elif dash.callback_context.triggered_id == 'btn_delete_table':
+        # TODO: Pop up confirmation message
+
+        try:
+            md = delete_existing_table(db_info, delete_tablename)
+        except Exception as e:
+            md = f"Please enter a name to delete table.<br>{e}"
+        print(md)
     return md, columns, data
+
+
+
 
 
 

@@ -43,11 +43,14 @@ def add_db_table(client, tablename):
     print(response)
     return response
 
-def remove_table(client, table_name):
+def remove_table(client, tablename):
     try:
-        client.delete_table(TableName=table_name)
+        response = client.delete_table(TableName=tablename)
+        response = f"Successfully delete table: {tablename}."
     except botocore.exceptions.ClientError as e:
-        print(f"Table does NOT exist: {table_name}. Error: {e}")
+        response = (f"Table does NOT exist: {tablename}. Error: {e}")
+        print(response)
+    return response
     
 
 
