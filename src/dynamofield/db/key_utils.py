@@ -38,7 +38,7 @@ def find_offset_sort_key_list(sort_key):
 
 def extract_sort_key_prefix(x):
     sort_keys_prefix = [s.rsplit("_")[0] for s in x]
-    sort_keys_prefix = list(set(sort_keys_prefix))
+    sort_keys_prefix = set(sort_keys_prefix)
     # offset = max(index)
     return(sort_keys_prefix)
 

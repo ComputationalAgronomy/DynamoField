@@ -27,7 +27,8 @@ from app_panel_query import *
 
 
 btn_style = {
-    "margin-right": "25px",
-    "margin-left": "1px",
+    # "margin-right": "0px",
+    # "margin-left": "5px",
     "margin-top": "5px"
+    # "margin": "5px"
 }

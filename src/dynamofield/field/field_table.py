@@ -194,7 +194,26 @@ class FieldTable:
         df = json_utils.result_list_to_df(results)
         return df
 
+    def get_plot_treatment(self, trial_ids):
+        df_plots = self.get_all_plots(trial_ids)
+        df_trt = self.get_all_treatments(trial_ids)
+        df_merged = pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
+        return df_merged
 
+
+    def merge_by_two_info(self, trial_ids, info_1, info_2, merged_by):
+        df = {}
+        results = self.get_by_trial_ids(trial_ids, sort_keys=f"{info_1}_", exact=False)
+        df[info_1] = json_utils.result_list_to_df(results)
+        results = self.get_by_trial_ids(trial_ids, sort_keys=f"{info_2}_", exact=False)
+        df[info_2] = json_utils.result_list_to_df(results)
+        df_merged = pd.merge(df[info_1], df[info_2], how="inner", on=["trial_id", merged_by])
+        return df_merged
+            
+    def get_all_trial_id(self):
+        response = self.get_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        all_ids = [t["info"] for t in response]
+        return all_ids
 
 
     def get_by_single_trial_id(self, trial_id, sort_keys=[], exact=False):
@@ -254,10 +273,6 @@ class FieldTable:
     #         sort_keys = Key(FieldTable.SORT_KEY).begins_with(sort_key)
     #     return(sort_keys)
 
-    def get_all_trial_id(self):
-        response = self.get_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
-        all_ids = [t["info"] for t in response]
-        return all_ids
 
 
     def find_offset(self, data_type):

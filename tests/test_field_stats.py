@@ -8,10 +8,10 @@ from src.dynamofield.field import field_table, importer
 @pytest.fixture
 def field_trial():
     table_name = "ft_db"
-    dynamodb_server = dynamodb_init.DynamodbServer()
-    dynamodb_res = dynamodb_server.init_dynamodb_resources()
-    field_trial = field_table.FieldTable(dynamodb_res, table_name)
+    dynamodb = dynamodb_init.DynamodbServer()
+    field_trial = field_table.FieldTable(dynamodb.dynamodb_res, table_name)
     return field_trial
+
 
 
 def test_get_all_plots(field_trial):

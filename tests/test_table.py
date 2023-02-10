@@ -24,7 +24,7 @@ def field_trial():
     dynamodb_server = dynamodb_init.DynamodbServer()
     # client = dynamodb_server.init_dynamodb_client()
     dynamodb_res = dynamodb_server.init_dynamodb_resources()
-    field_trial = field_table.FieldTable(dynamodb_res, table_name)
+    field_trial = field_table.FieldTable(dynamodb_server.dynamodb_res, table_name)
     return field_trial
 
 

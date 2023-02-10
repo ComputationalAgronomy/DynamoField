@@ -32,10 +32,13 @@ from app_panel_query import *
 from app_panel_db_status import *
 from callbacks import *
 
-theme = dbc.themes.ZEPHYR
+theme = dbc.themes.COSMO
 external_stylesheets = [theme, "https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 STORAGE_CLEAN_DATA = False
+
+TAB_DEFAULT = 'tab-db-status'
+TAB_DEFAULT = 'tab-query'
 
 app = Dash(__name__, 
     # use_pages=True,
@@ -65,7 +68,7 @@ app.layout = html.Div(
         dcc.Store(id='store_table', storage_type='local'),
         
         dcc.Store(id='store_db_info', storage_type='session', clear_data=STORAGE_CLEAN_DATA),
-        dcc.Tabs(id='tabs-function', value='tab-db-status', children=[
+        dcc.Tabs(id='tabs-function', value=TAB_DEFAULT, children=[
             dcc.Tab(label='Query database', value='tab-query'),
             dcc.Tab(label='Import data', value='tab-import'),
             dcc.Tab(label='Database Status', value='tab-db-status'),
