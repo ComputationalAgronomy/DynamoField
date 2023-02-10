@@ -140,9 +140,6 @@ class FieldTable:
             print(id_json)
         return len(data_importer.dynamo_json_list)
     
-    def get_item_count(self):
-        self.res_table.reload()
-        return self.res_table.item_count
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
         key = FieldTable.PARTITION_KEY.eq(trial_id)
@@ -161,6 +158,11 @@ class FieldTable:
         return sort_key_list
 
 
+    def get_item_count(self):
+        self.res_table.reload()
+        return self.res_table.item_count
+
+
     def get_all_non_standard_info(self, trial_id):
         list_sort_keys = self.list_all_sort_keys(trial_id, prune_common=True)
 
@@ -176,47 +178,46 @@ class FieldTable:
 
         return other_info_dict
 
+    def get_all_trial_id(self):
+        response = self.query_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
+        all_ids = [t["info"] for t in response]
+        return all_ids
 
-    def get_all_plots(self, trial_ids):
+    def query_df_all_plots(self, trial_ids):
         """
         High level function. Retrieve all plots information for a list of trial_ids
         """
-        results = self.get_by_trial_ids(trial_ids, sort_keys="plot_", exact=False)
+        results = self.query_by_trial_ids(trial_ids, sort_keys="plot_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
 
 
-    def get_all_treatments(self, trial_ids):
+    def query_df_all_treatments(self, trial_ids) -> pd.DataFrame:
         """
         High level function. Retrieve all treatment information for a list of trial_ids
         """
-        results = self.get_by_trial_ids(trial_ids, sort_keys="trt_", exact=False)
+        results = self.query_by_trial_ids(trial_ids, sort_keys="trt_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
 
-    def get_plot_treatment(self, trial_ids):
-        df_plots = self.get_all_plots(trial_ids)
-        df_trt = self.get_all_treatments(trial_ids)
+    def query_df_plot_treatment(self, trial_ids):
+        df_plots = self.query_df_all_plots(trial_ids)
+        df_trt = self.query_df_all_treatments(trial_ids)
         df_merged = pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
         return df_merged
 
 
-    def merge_by_two_info(self, trial_ids, info_1, info_2, merged_by):
+    def query_df_by_two_sort_keys(self, trial_ids, info_1, info_2, merged_by):
         df = {}
-        results = self.get_by_trial_ids(trial_ids, sort_keys=f"{info_1}_", exact=False)
+        results = self.query_by_trial_ids(trial_ids, sort_keys=f"{info_1}_", exact=False)
         df[info_1] = json_utils.result_list_to_df(results)
-        results = self.get_by_trial_ids(trial_ids, sort_keys=f"{info_2}_", exact=False)
+        results = self.query_by_trial_ids(trial_ids, sort_keys=f"{info_2}_", exact=False)
         df[info_2] = json_utils.result_list_to_df(results)
         df_merged = pd.merge(df[info_1], df[info_2], how="inner", on=["trial_id", merged_by])
         return df_merged
             
-    def get_all_trial_id(self):
-        response = self.get_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
-        all_ids = [t["info"] for t in response]
-        return all_ids
 
-
-    def get_by_single_trial_id(self, trial_id, sort_keys=[], exact=False):
+    def query_by_single_trial_id(self, trial_id, sort_keys=[], exact=False):
         """
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
@@ -242,13 +243,13 @@ class FieldTable:
         return results
 
 
-    def get_by_trial_ids(self, trial_ids, sort_keys=[], exact=False):
+    def query_by_trial_ids(self, trial_ids, sort_keys=[], exact=False):
         if not isinstance(trial_ids, list):
             trial_ids = [trial_ids]
         sort_keys = key_utils.check_sort_keys(sort_keys)
         results = list()
         for trial_id in trial_ids:
-            temp = self.get_by_single_trial_id(trial_id, sort_keys=sort_keys, exact=exact)
+            temp = self.query_by_single_trial_id(trial_id, sort_keys=sort_keys, exact=exact)
             results.extend(temp)
         # df = json_utils.result_list_to_df(results)
         return results
@@ -263,8 +264,6 @@ class FieldTable:
         df = json_utils.result_list_to_df(results)
 
         return df
-
-
 
     # def parse_sort_key_expression(sort_key, exact):
     #     if exact:

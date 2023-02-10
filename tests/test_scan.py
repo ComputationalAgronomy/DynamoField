@@ -22,13 +22,13 @@ def field_trial():
 
 
 
-def test_get_by_single_trial_id(field_trial):
+def test_query_by_single_trial_id(field_trial: field_table.FieldTable):
     # field_trial = field_trial
     trial_id = "trial_3C"
     trial_id = "trial_2B"
 
 
-    result = field_trial.get_by_single_trial_id(trial_id)
+    result = field_trial.query_by_single_trial_id(trial_id)
     expected = [{'trial_id': 'trial_2B', 'phone': '234-567-890', 'person': 'John', 'info': 'contact_0'},
         {'trial_id': 'trial_2B', 'phone': '234-567-891', 'person': 'Jane', 'info': 'contact_1'},
         {'trial_id': 'trial_2B', 'amount': Decimal('14.1'), 'solid_or_powder': 'solid', 'type': 'NPK_1', 'fertilizer': 'N', 'info': 'management_0'},
@@ -46,83 +46,83 @@ def test_get_by_single_trial_id(field_trial):
     result_subset = sorted(result_subset, key=lambda x : x["info"])
     assert result_subset == expected
 
-    # field_trial.get_by_single_trial_id(trial_id=["trial_3C", "trial_2B"], sort_keys="plot_0202") # TOFIX
+    # field_trial.query_by_single_trial_id(trial_id=["trial_3C", "trial_2B"], sort_keys="plot_0202") # TOFIX
 
-def test_get_by_single_trial_id_sort_key_exact(field_trial):
+def test_query_by_single_trial_id_sort_key_exact(field_trial: field_table.FieldTable):
 
     trial_id = "trial_2B"
-    result = field_trial.get_by_single_trial_id(trial_id=trial_id, sort_keys="meta_0", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id=trial_id, sort_keys="meta_0", exact=True)
     expected = [{'soil_ph': Decimal('5.2'), 'trial_id': 'trial_2B', 'soil_type': 'sandy', 'location': 'Loc_0', 'irrigation': 'No', 'info': 'meta_0'}]
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id=trial_id, sort_keys="contact_0", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id=trial_id, sort_keys="contact_0", exact=True)
     expected = [{'trial_id': 'trial_2B', 'phone': '234-567-890', 'person': 'John', 'info': 'contact_0'}]
     assert result == expected
     
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management_1", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management_1", exact=True)
     expected = [{'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'}]
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management", exact=True)
     assert result == []
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="aoeuXYZ", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="aoeuXYZ", exact=True)
     assert result == []
 
 
-def test_get_by_single_trial_id_sort_key_prefix(field_trial):
+def test_query_by_single_trial_id_sort_key_prefix(field_trial: field_table.FieldTable):
 
     trial_id = "trial_2B"
     
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management_1", exact=False)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management_1", exact=False)
     expected = [{'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'}]
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management", exact=False)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management", exact=False)
     expected = [
         {'trial_id': 'trial_2B', 'amount': Decimal('14.1'), 'solid_or_powder': 'solid', 'type': 'NPK_1', 'fertilizer': 'N', 'info': 'management_0'},
         {'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'},
         {'trial_id': 'trial_2B', 'amount': Decimal('37.1'), 'solid_or_powder': 'solid', 'fertilizer': 'P', 'info': 'management_2'},
         {'trial_id': 'trial_2B', 'amount': Decimal('33'), 'solid_or_powder': 'solid', 'fertilizer': 'P', 'info': 'management_3'},]
     
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management", exact=False)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management", exact=False)
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management_", exact=False)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management_", exact=False)
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="managemen", exact=False)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="managemen", exact=False)
     assert result == expected
 
 
-def test_get_by_single_trial_id_multi_sort_key_exact(field_trial):
+def test_query_by_single_trial_id_multi_sort_key_exact(field_trial: field_table.FieldTable):
 
     trial_id = "trial_2B"
-    result = field_trial.get_by_single_trial_id(trial_id=trial_id, sort_keys=["meta_0", "contact_0"], exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id=trial_id, sort_keys=["meta_0", "contact_0"], exact=True)
     expected = [{'soil_ph': Decimal('5.2'), 'trial_id': 'trial_2B', 'soil_type': 'sandy', 'location': 'Loc_0', 'irrigation': 'No', 'info': 'meta_0'},
                 {'trial_id': 'trial_2B', 'phone': '234-567-890','person': 'John', 'info': 'contact_0'},
                 ]
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id=trial_id, sort_keys=["contact_0","management_1","contact_1"], exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id=trial_id, sort_keys=["contact_0","management_1","contact_1"], exact=True)
     expected = [{'trial_id': 'trial_2B', 'phone': '234-567-890', 'person': 'John', 'info': 'contact_0'},
                 {'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'},
                 {'trial_id': 'trial_2B', 'phone': '234-567-891', 'person': 'Jane', 'info': 'contact_1'},
                 ]
     assert result == expected
     
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management_1", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management_1", exact=True)
     expected = [{'trial_id': 'trial_2B', 'amount': Decimal('14.7'), 'solid_or_powder': 'powder', 'type': 'NPK_2', 'fertilizer': 'N', 'info': 'management_1'}]
     assert result == expected
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="management", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="management", exact=True)
     assert result == []
 
-    result = field_trial.get_by_single_trial_id(trial_id, sort_keys="aoeuXYZ", exact=True)
+    result = field_trial.query_by_single_trial_id(trial_id, sort_keys="aoeuXYZ", exact=True)
     assert result == []
 
 
-def test_list_all_sort_keys(field_trial):
+def test_list_all_sort_keys(field_trial: field_table.FieldTable):
     # field_trial = field_trial
     trial_id = "trial_3C"
     trial_id = "trial_2B"
@@ -139,7 +139,7 @@ def test_list_all_sort_keys(field_trial):
 
 
 
-def test_get_all_non_standard_info(field_trial):
+def test_get_all_non_standard_info(field_trial: field_table.FieldTable):
     
     trial_id = "trial_2B"
     result = field_trial.get_all_non_standard_info(trial_id)
@@ -155,7 +155,7 @@ def test_get_all_non_standard_info(field_trial):
 
 
 
-def test_get_by_sort_key_exact(field_trial):
+def test_get_by_sort_key_exact(field_trial: field_table.FieldTable):
 
     sort_key = "management"
     result = field_trial.get_by_sort_key(sort_key, exact=True)
@@ -183,7 +183,7 @@ def test_get_by_sort_key_exact(field_trial):
     assert_frame_equal(result, expected)
 
 
-def test_get_by_sort_key(field_trial):
+def test_get_by_sort_key(field_trial: field_table.FieldTable):
 
     sort_key = "meta"
     # sort_key = "trial_management"

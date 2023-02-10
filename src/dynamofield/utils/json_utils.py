@@ -13,7 +13,7 @@ class DecimalEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def result_list_to_df(results):
+def result_list_to_df(results) -> pd.DataFrame:
     # df_list = [pd.DataFrame.from_dict(r, orient='index') for r in results]
     # df = pd.concat(df_list, axis=1).transpose()
     df = pd.read_json(json.dumps(results, cls=DecimalEncoder))

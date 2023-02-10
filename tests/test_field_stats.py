@@ -14,10 +14,10 @@ def field_trial():
 
 
 
-def test_get_all_plots(field_trial):
+def test_query_df_all_plots(field_trial: field_table.FieldTable):
 
     trial_id = "trial_2B"
-    df_plots = field_trial.get_all_plots(trial_id)
+    df_plots = field_trial.query_df_all_plots(trial_id)
     data = {'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_2B', 3: 'trial_2B', 4: 'trial_2B', 5: 'trial_2B', 6: 'trial_2B', 7: 'trial_2B', 8: 'trial_2B', 9: 'trial_2B', 10: 'trial_2B', 11: 'trial_2B', 12: 'trial_2B', 13: 'trial_2B', 14: 'trial_2B', 15: 'trial_2B', 16: 'trial_2B', 17: 'trial_2B', 18: 'trial_2B', 19: 'trial_2B', 20: 'trial_2B', 21: 'trial_2B', 22: 'trial_2B', 23: 'trial_2B'},
             'info': {0: 'plot_1-1', 1: 'plot_1-2', 2: 'plot_1-3', 3: 'plot_1-4', 4: 'plot_1-5', 5: 'plot_1-6', 6: 'plot_2-1', 7: 'plot_2-2', 8: 'plot_2-3', 9: 'plot_2-4', 10: 'plot_2-5', 11: 'plot_2-6', 12: 'plot_3-1', 13: 'plot_3-2', 14: 'plot_3-3', 15: 'plot_3-4', 16: 'plot_3-5', 17: 'plot_3-6', 18: 'plot_4-1', 19: 'plot_4-2', 20: 'plot_4-3', 21: 'plot_4-4', 22: 'plot_4-5', 23: 'plot_4-6'},
             'treatment': {0: 'T3', 1: 'T1', 2: 'T4', 3: 'T6', 4: 'T3', 5: 'T1', 6: 'T4', 7: 'T5', 8: 'T3', 9: 'T2', 10: 'T1', 11: 'T2', 12: 'T6', 13: 'T6', 14: 'T1', 15: 'T5', 16: 'T2', 17: 'T5', 18: 'T5', 19: 'T3', 20: 'T4', 21: 'T6', 22: 'T4', 23: 'T2'}, 
@@ -40,10 +40,10 @@ def test_get_all_plots(field_trial):
 
 
 
-def test_get_all_plots_multi(field_trial):
+def test_query_df_all_plots_multi(field_trial: field_table.FieldTable):
 
     trial_ids = ["trial_2B", "trial_3C"]
-    df_plots = field_trial.get_all_plots(trial_ids)
+    df_plots = field_trial.query_df_all_plots(trial_ids)
     data = {'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_2B', 3: 'trial_2B', 4: 'trial_2B', 5: 'trial_2B', 6: 'trial_2B', 7: 'trial_2B', 8: 'trial_2B', 9: 'trial_2B', 10: 'trial_2B', 11: 'trial_2B', 12: 'trial_2B', 13: 'trial_2B', 14: 'trial_2B', 15: 'trial_2B', 16: 'trial_2B', 17: 'trial_2B', 18: 'trial_2B', 19: 'trial_2B', 20: 'trial_2B', 21: 'trial_2B', 22: 'trial_2B', 23: 'trial_2B', 24: 'trial_3C', 25: 'trial_3C', 26: 'trial_3C', 27: 'trial_3C', 28: 'trial_3C', 29: 'trial_3C', 30: 'trial_3C', 31: 'trial_3C', 32: 'trial_3C', 33: 'trial_3C', 34: 'trial_3C', 35: 'trial_3C', 36: 'trial_3C', 37: 'trial_3C', 38: 'trial_3C', 39: 'trial_3C', 40: 'trial_3C', 41: 'trial_3C', 42: 'trial_3C', 43: 'trial_3C', 44: 'trial_3C', 45: 'trial_3C', 46: 'trial_3C', 47: 'trial_3C'}, 
             'info': {0: 'plot_1-1', 1: 'plot_1-2', 2: 'plot_1-3', 3: 'plot_1-4', 4: 'plot_1-5', 5: 'plot_1-6', 6: 'plot_2-1', 7: 'plot_2-2', 8: 'plot_2-3', 9: 'plot_2-4', 10: 'plot_2-5', 11: 'plot_2-6', 12: 'plot_3-1', 13: 'plot_3-2', 14: 'plot_3-3', 15: 'plot_3-4', 16: 'plot_3-5', 17: 'plot_3-6', 18: 'plot_4-1', 19: 'plot_4-2', 20: 'plot_4-3', 21: 'plot_4-4', 22: 'plot_4-5', 23: 'plot_4-6', 24: 'plot_1-1', 25: 'plot_1-2', 26: 'plot_1-3', 27: 'plot_1-4', 28: 'plot_1-5', 29: 'plot_1-6', 30: 'plot_2-1', 31: 'plot_2-2', 32: 'plot_2-3', 33: 'plot_2-4', 34: 'plot_2-5', 35: 'plot_2-6', 36: 'plot_3-1', 37: 'plot_3-2', 38: 'plot_3-3', 39: 'plot_3-4', 40: 'plot_3-5', 41: 'plot_3-6', 42: 'plot_4-1', 43: 'plot_4-2', 44: 'plot_4-3', 45: 'plot_4-4', 46: 'plot_4-5', 47: 'plot_4-6'}, 
             'treatment': {0: 'T3', 1: 'T1', 2: 'T4', 3: 'T6', 4: 'T3', 5: 'T1', 6: 'T4', 7: 'T5', 8: 'T3', 9: 'T2', 10: 'T1', 11: 'T2', 12: 'T6', 13: 'T6', 14: 'T1', 15: 'T5', 16: 'T2', 17: 'T5', 18: 'T5', 19: 'T3', 20: 'T4', 21: 'T6', 22: 'T4', 23: 'T2', 24: 'T4', 25: 'T4', 26: 'T6', 27: 'T3', 28: 'T2', 29: 'T5', 30: 'T1', 31: 'T2', 32: 'T2', 33: 'T5', 34: 'T5', 35: 'T1', 36: 'T4', 37: 'T6', 38: 'T3', 39: 'T2', 40: 'T3', 41: 'T4', 42: 'T1', 43: 'T6', 44: 'T5', 45: 'T3', 46: 'T6', 47: 'T1'}, 
@@ -55,10 +55,10 @@ def test_get_all_plots_multi(field_trial):
 
 
 
-def test_get_all_trt(field_trial):
+def test_query_df_all_trt(field_trial: field_table.FieldTable):
     
     trial_id = "trial_2B"
-    df_trt = field_trial.get_all_treatments(trial_id)
+    df_trt = field_trial.query_df_all_treatments(trial_id)
     data = {'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_2B', 3: 'trial_2B', 4: 'trial_2B', 5: 'trial_2B'},
             'info': {0: 'trt_0', 1: 'trt_1', 2: 'trt_2', 3: 'trt_3', 4: 'trt_4', 5: 'trt_5'},
             'treatment': {0: 'T1', 1: 'T2', 2: 'T3', 3: 'T4', 4: 'T5', 5: 'T6'},
@@ -69,10 +69,10 @@ def test_get_all_trt(field_trial):
 
 
 
-def test_get_all_trt_multi(field_trial):
+def test_query_df_all_trt_multi(field_trial: field_table.FieldTable):
     
     trial_ids = ["trial_2B", "trial_3C"]
-    df_trt = field_trial.get_all_treatments(trial_ids)
+    df_trt = field_trial.query_df_all_treatments(trial_ids)
     data = {'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_2B', 3: 'trial_2B', 4: 'trial_2B', 5: 'trial_2B', 6: 'trial_3C', 7: 'trial_3C', 8: 'trial_3C', 9: 'trial_3C', 10: 'trial_3C', 11: 'trial_3C'}, 
             'info': {0: 'trt_0', 1: 'trt_1', 2: 'trt_2', 3: 'trt_3', 4: 'trt_4', 5: 'trt_5', 6: 'trt_0', 7: 'trt_1', 8: 'trt_2', 9: 'trt_3', 10: 'trt_4', 11: 'trt_5'}, 
             'treatment': {0: 'T1', 1: 'T2', 2: 'T3', 3: 'T4', 4: 'T5', 5: 'T6', 6: 'T1', 7: 'T2', 8: 'T3', 9: 'T4', 10: 'T5', 11: 'T6'}, 
@@ -86,6 +86,6 @@ def test_get_all_trt_multi(field_trial):
 def _temp():
     
     trial_id = "trial_2B"
-    df_plots = field_trial.get_all_plots(trial_id)
-    df_trt = field_trial.get_all_treatments(trial_id)
+    df_plots = field_trial.query_df_all_plots(trial_id)
+    df_trt = field_trial.query_df_all_treatments(trial_id)
     results = pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])

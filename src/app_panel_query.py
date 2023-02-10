@@ -202,7 +202,7 @@ def update_data_table(click, trial_id, info_list, db_info):
     # field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
     field_trial = connect_db_table(db_info)
     # field_trial = init_field_trial(endpoint, table_name)
-    data = field_trial.get_by_trial_ids(trial_id, info_list)
+    data = field_trial.query_by_trial_ids(trial_id, info_list)
     df = json_utils.result_list_to_df(data)
     # print(df)
     columns = [{"name": i, "id": i} for i in df.columns]

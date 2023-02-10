@@ -60,7 +60,7 @@ def test_creation():
     
 
 
-def test_import(field_trial):
+def test_import(field_trial: field_table.FieldTable):
     
     TEST_DATA_DIR = "./tests/test_data"
     hidden_key = 3
