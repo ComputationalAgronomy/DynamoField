@@ -180,7 +180,7 @@ def generate_db_status_panel():
         html.Hr(),
         update_config_panel(),
         html.Hr(),
-        dbc.Button('Start database', id='btn_db_start',
+        dbc.Button('Start database (TODO)', id='btn_db_start',
                     n_clicks=0,  size="lg", # style=app_style.btn_style,
                     # className="two columns"
                     style={

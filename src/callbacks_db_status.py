@@ -1,5 +1,6 @@
 
 import dash
+from dynamofield.db.init_db import start_dynamodb_server
 import numpy as np
 import pandas as pd
 from dash import Dash, ctx, dash_table, dcc, html
@@ -220,3 +221,11 @@ def update_db_status(btn, ep, name, info): #m_ep, m_name):
 
 
 
+
+
+# @dash.callback(
+#     Output('btn_db_start', 'children'),
+#     Input('btn_db_start', 'n_clicks')
+# )
+# def start_db(n_clicks):
+#     start_dynamodb_server()

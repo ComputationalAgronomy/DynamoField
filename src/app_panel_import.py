@@ -289,3 +289,13 @@ def update_output(btn_1, btn_2,
             # else:
                 # children = html.Div([html.H5("Please enter data type")])
     return children
+
+
+data_very_complex = {
+    "key_str": "value_str",
+    "key_int": 5106,
+    "Key_float": 3.1415,
+    "key_bool": False,
+    "key_list": [1, "a"],          #  list as value
+    "key_dict": {"k1": "v1", "k2": "v2"}    #  dict as value
+}

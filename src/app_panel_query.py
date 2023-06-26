@@ -56,6 +56,51 @@ def trial_selection_panel():
 
     ])
 
+
+def merging_two_info():
+    return html.Div(style={'padding': 10},
+                    children=[
+        dbc.Row(html.H6("Merging info tables")),
+        dbc.Row([
+            dbc.Col([
+                dbc.Label('First info table'),
+            ], width = {"size": 3, "offset": 0}),
+            dbc.Col([
+                dbc.Label('Second info table'),
+            ], width={"size": 3, "offset": 0.5}),
+            dbc.Col([
+                dbc.Label('Merged by column name'),
+            ], width={"size": 3, "offset": 1}),
+        ]),
+        dbc.Row([
+            dbc.Col([
+                dcc.Dropdown(id="dropdown_info_sortkey_t1", multi=False),
+            ], width={"size": 3}),
+            dbc.Col([
+                dcc.Dropdown(id="dropdown_info_sortkey_t2", multi=False),
+            ], width={"size": 3, "offset": 0.5}),
+            dbc.Col([
+                dbc.Input(id="merge_by_column", type="text")
+            ], width={"size": 3, "offset": 1})
+        ]),
+        # dbc.Row([
+        #     dbc.Col([
+        #         dbc.Button('Fetch data', id='fetch_data',
+        #                 n_clicks=0, style=app_style.btn_style),
+        #     ], width = 2),
+        #     dbc.Col([
+        #         dbc.Button('Select All', id='button_info_all',
+        #                     n_clicks=0, style=app_style.btn_style),
+        #     ], width={"size": "auto", "offset": 4}),
+        #     dbc.Col([
+        #         dbc.Button('Select None', id='button_info_none',
+        #                 n_clicks=0, size="lg",
+        #                 style=app_style.btn_style),
+        #     ], width={"size": "auto", "offset": 0})
+        # ])
+
+    ])
+
 def plotting_panel():
     return html.Div(style={'padding': 10}, 
                     children=[
@@ -95,6 +140,7 @@ def generate_query_panel():
         trial_selection_panel(),
         html.Hr(),
         dcc.Markdown(id="data_info"), 
+        merging_two_info(),
         plotting_panel(),
         # html.Hr(),
         html.H5("Table"),
@@ -165,7 +211,7 @@ def update_output_info(trial_ids, db_info):
         # print(info_global)
     info_global = list(info_global)
     info_global.sort()
-    return info_global
+    return info_global # , info_global, info_global
 
 
 @dash.callback(
@@ -184,7 +230,10 @@ def update_info_selection_btn(b1, b2, options):
 
 
 @dash.callback(
-    Output("data_table", "columns"), Output("data_table", "data"),
+    Output("data_table", "columns"), 
+    Output("data_table", "data"),
+    Output('dropdown_info_sortkey_t1', 'options'),
+    Output('dropdown_info_sortkey_t2', 'options'),
     Output("dropdown_xaxis", "options"), 
     Output("dropdown_yaxis", "options"),
     Output("dropdown_colour", "options"),
@@ -207,7 +256,28 @@ def update_data_table(click, trial_id, info_list, db_info):
     # print(df)
     columns = [{"name": i, "id": i} for i in df.columns]
     data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
-    return columns, df.to_dict('records'), df.columns, df.columns, df.columns, data_info
+    output = [columns, df.to_dict('records'), 
+              info_list, info_list,
+              df.columns, df.columns, df.columns, 
+              data_info]
+    return output
+
+
+
+@dash.callback(
+    Output("merge_by_column", "options"),
+    Input('dropdown_info_sortkey_t1', 'value'),
+    Input('dropdown_info_sortkey_t2', 'value'),
+    State("data_table", "columns"), 
+    State("data_table", "data"),
+)
+def update_select_two_tables(info_1, info_2, columns, data_info):
+    print(info_1)
+    print(info_2)
+    print(data_info[info_1])
+    print(data_info[info_2])
+    return info_1+info_2
+
 
 
 @dash.callback(
