@@ -1,4 +1,3 @@
-
 import datetime
 import io
 import os
@@ -15,6 +14,7 @@ from dash.exceptions import PreventUpdate
 import app_style
 from app_data import *
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
+from dynamofield.df import df_operation
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
@@ -40,7 +40,7 @@ def trial_selection_panel():
         ]),
         dbc.Row([
             dbc.Col([
-                dbc.Button('Fetch data', id='fetch_data',
+                dbc.Button('Fetch data', id='bt_fetch_data',
                         n_clicks=0, style=app_style.btn_style),
             ], width = 2),
             dbc.Col([
@@ -61,28 +61,37 @@ def merging_two_info():
     return html.Div(style={'padding': 10},
                     children=[
         dbc.Row(html.H6("Merging info tables")),
+        # dbc.Row([
+        #     # dbc.Col([
+        #     #     dbc.Label('First info table'),
+        #     # ], width = {"size": 3, "offset": 0}),
+        #     # dbc.Col([
+        #     #     dbc.Label('Second info table'),
+        #     # ], width={"size": 3, "offset": 0.5}),
+        #     dbc.Col([
+        #         dbc.Label('Merged by column name'),
+        #     ], width={"size": 3, "offset": 7}),
+        # ]),
         dbc.Row([
             dbc.Col([
                 dbc.Label('First info table'),
-            ], width = {"size": 3, "offset": 0}),
-            dbc.Col([
-                dbc.Label('Second info table'),
-            ], width={"size": 3, "offset": 0.5}),
-            dbc.Col([
-                dbc.Label('Merged by column name'),
-            ], width={"size": 3, "offset": 1}),
-        ]),
-        dbc.Row([
-            dbc.Col([
                 dcc.Dropdown(id="dropdown_info_sortkey_t1", multi=False),
+                dbc.Label('First table - Column name'),
+                dcc.Dropdown(id="dropdown_info_t1_column", multi=False),
             ], width={"size": 3}),
             dbc.Col([
+                dbc.Label('Second info table'),
                 dcc.Dropdown(id="dropdown_info_sortkey_t2", multi=False),
+                dbc.Label('Second table - Column name'),
+                dcc.Dropdown(id="dropdown_info_t2_column", multi=False),
             ], width={"size": 3, "offset": 0.5}),
             dbc.Col([
-                dbc.Input(id="merge_by_column", type="text")
-            ], width={"size": 3, "offset": 1})
+                dbc.Button('Merge table', id='bt_merge_info_tables',
+                        n_clicks=0, size="lg",
+                        style=app_style.btn_style),
+            ], width={"size": "auto", "offset": 1})
         ]),
+
         # dbc.Row([
         #     dbc.Col([
         #         dbc.Button('Fetch data', id='fetch_data',
@@ -104,6 +113,7 @@ def merging_two_info():
 def plotting_panel():
     return html.Div(style={'padding': 10}, 
                     children=[
+        dbc.Row(html.H6("Plotting data.")),
         dbc.Row([
             dbc.Col([
                 dcc.Markdown("**X-axis**"),
@@ -137,6 +147,7 @@ def generate_query_panel():
     return [html.Div(id="query_panel", 
                      style={'padding': 10},
                      children=[
+        dcc.Store(id='store_data_table', storage_type='session', clear_data=True),
         trial_selection_panel(),
         html.Hr(),
         dcc.Markdown(id="data_info"), 
@@ -229,54 +240,114 @@ def update_info_selection_btn(b1, b2, options):
         return None
 
 
+
+
+
 @dash.callback(
-    Output("data_table", "columns"), 
     Output("data_table", "data"),
+    Input("store_data_table", "data"),
+)
+def update_output_table(store_table):
+    return store_table
+    
+
+
+@dash.callback(
+    # Output("data_table", "columns"), 
+    # Output("data_table", "data"),
+    Output("store_data_table", "data"),
     Output('dropdown_info_sortkey_t1', 'options'),
     Output('dropdown_info_sortkey_t2', 'options'),
     Output("dropdown_xaxis", "options"), 
     Output("dropdown_yaxis", "options"),
     Output("dropdown_colour", "options"),
     Output("data_info", "children"),
-    Input("fetch_data", "n_clicks"),
+    Input("bt_fetch_data", "n_clicks"),
+    Input("bt_merge_info_tables", "n_clicks"),
     State('select_trial', 'value'),
     State('dropdown_info_sortkey', 'value'),
+    State('dropdown_info_sortkey', 'options'),
+    State('dropdown_info_sortkey_t1', 'value'),
+    State('dropdown_info_sortkey_t2', 'value'),
+    State("dropdown_info_t1_column", "value"),
+    State("dropdown_info_t2_column", "value"),
+    State("store_data_table", "data"),
     State('store_db_info', 'data'),
+    
 )
-def update_data_table(click, trial_id, info_list, db_info):
+def update_data_table(b_fetch, b_merge, 
+                      trial_id, info_list, info_options, 
+                      info_t1, info_t2, t1_column, t2_column, 
+                      data_table, db_info):
     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
-    print(trial_id)
-    print(info_list)
-    # field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
-    field_trial = connect_db_table(db_info)
-    # field_trial = init_field_trial(endpoint, table_name)
-    data = field_trial.query_by_trial_ids(trial_id, info_list)
-    df = json_utils.result_list_to_df(data)
-    # print(df)
-    columns = [{"name": i, "id": i} for i in df.columns]
-    data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
-    output = [columns, df.to_dict('records'), 
-              info_list, info_list,
-              df.columns, df.columns, df.columns, 
-              data_info]
-    return output
+    print(f"trial_id:{trial_id}")
+    if "bt_fetch_data" == ctx.triggered_id:
+        print(f"info_list:{info_list}\t{info_options}")    
+        if info_list is None:
+            info_list = info_options
+        field_trial = connect_db_table(db_info)
+        data = field_trial.query_by_trial_ids(trial_id, info_list)
+        df = json_utils.result_list_to_df(data)
+        # print(df)
+        columns = [{"name": i, "id": i} for i in df.columns]
+        data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
+        output = [#columns,
+                df.to_dict('records'), 
+                info_list, info_list,
+                df.columns, df.columns, df.columns, 
+                data_info]
+        return output
+    if "bt_merge_info_tables" == ctx.triggered_id and data_table  and t1_column and t2_column:
+        print(f"column_select:{t1_column}\t{t2_column}")
+        dd = pd.DataFrame(data_table)
+        info_list = [info_t1, info_t2]
+        df_merge = df_operation.merge_df(dd, info_t1, info_t2, t1_column, t2_column)
+        output = [#columns,
+                df_merge.to_dict('records'), 
+                info_list, info_list,
+                df_merge.columns, df_merge.columns, df_merge.columns, 
+                "data_info"]
+        return  output
+    
 
+
+# input: button_merge_info_tables
+# @dash.callback(
+#     Output("store_data_table", "data"),
+#     Input("button_merge_info_tables", "n_clicks"),
+#     State("dropdown_info_t1_column", "value"),
+#     State("dropdown_info_t2_column", "value"),
+#     State("store_data_table", "data"),
+# )
+# def merge_two_tables(n_clicks, t1_c, t2_c, data_info):
+#     if not t1_c or not t2_c:
+#         raise PreventUpdate
+#     print(f"t1_c:{t1_c}\t{t2_c}")
+#     return t1_c, t2_c
 
 
 @dash.callback(
-    Output("merge_by_column", "options"),
+    Output("dropdown_info_t1_column", "options"),
+    Output("dropdown_info_t2_column", "options"),
     Input('dropdown_info_sortkey_t1', 'value'),
     Input('dropdown_info_sortkey_t2', 'value'),
     State("data_table", "columns"), 
     State("data_table", "data"),
 )
-def update_select_two_tables(info_1, info_2, columns, data_info):
-    print(info_1)
-    print(info_2)
-    print(data_info[info_1])
-    print(data_info[info_2])
-    return info_1+info_2
+def update_select_two_tables(info_1, info_2, columns, data_table):
+    if not info_1 or not info_2:
+        raise PreventUpdate
+    t1_c = None
+    t2_c = None
+    print(f"info:{info_1}\t{info_2}")
+    dd = pd.DataFrame(data_table)
+    t1_c = df_operation.get_non_na_column_name(dd, info_1)
+    t2_c = df_operation.get_non_na_column_name(dd, info_2)
+
+    return t1_c, t2_c
+
+
 
 
 
