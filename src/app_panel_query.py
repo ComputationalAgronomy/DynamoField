@@ -15,6 +15,7 @@ import app_style
 from app_data import *
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.df import df_operation
+from dynamofield.stats import summary_stats
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
@@ -80,27 +81,27 @@ def merging_two_info():
                            }),
             ], width={"size": "auto", "offset": 1})
         ]),
-
-
     ])
 
-def plotting_panel():
+
+
+def plot_stats_panel():
     return html.Div(style={'padding': 10}, 
                     children=[
-        dbc.Row(html.H6("Plotting data.")),
+        dbc.Row(html.H6("Plotting and statistical analysis.")),
         dbc.Row([
             dbc.Col([
-                dcc.Markdown("**X-axis**"),
+                dcc.Markdown("**Treatment: X-axis**"),
                 dcc.Dropdown(id="dropdown_xaxis", multi=False),
             ], width=3),
             dbc.Col([
-                dcc.Markdown("**Y-axis**"),
+                dcc.Markdown("**Response: Y-axis**"),
                 dcc.Dropdown(id="dropdown_yaxis", multi=False),
             ], width=3),
             dbc.Col([
                 dcc.Markdown("\[Optional\] Colour"),
                 dcc.Dropdown(id="dropdown_colour", multi=False, disabled=True),
-            ], width=2),
+            ], width=1),
             dbc.Col([
                 dbc.Label("Plot type:"),
                 dcc.RadioItems(options=["Scatter", "Line", "Bar"], 
@@ -108,19 +109,27 @@ def plotting_panel():
                     id="raido-plot-type", 
                     style={"display": "flex", "margin": 5}
                 ),
-            ], width=2),
+            ], width=1),
             dbc.Col([
                 html.Br(),
                 dbc.Button("Plot data", id="btn_plot",
                            className="m-2",
                            style={# "margin":"10px", 'margin-top': '20px', 
-                                "width":"200px", "height":"60px", 
+                                "width":"150px", "height":"60px", 
                                 'align-items': 'center', 'justify-content': 'center'
                            }),
-            ], width=2),
-        ], ),
-
+                dbc.Button("Analysis", id="btn_stats",
+                           className="m-2",
+                           style={# "margin":"10px", 'margin-top': '20px', 
+                                "width":"150px", "height":"60px", 
+                                'align-items': 'center', 'justify-content': 'center'
+                           }),
+            ], width=3),
+        ]),
     ])
+
+
+
 
 def generate_query_panel():
     return [html.Div(id="query_panel", 
@@ -130,18 +139,32 @@ def generate_query_panel():
         trial_selection_panel(),
         html.Hr(style={"height":"2px", "margin":"5px"}),
         
+        # dbc.Accordion([
+        #     dbc.AccordionItem(
+        #         merging_two_info(),
+        #     ),
+        #     dbc.AccordionItem(
+        #         plot_stats_panel(),
+        #     )
+        # ]),
         merging_two_info(),
-        plotting_panel(),
+        plot_stats_panel(),
         html.Hr(style={"height":"2px", "margin":"5px"}),
         
         
-        html.H5("Table"),
+        html.H5("Statistical analysis"),
+        dbc.Row([
+            html.Pre(id="stats_output", title="Stats results",
+                     style={"font-size":"125%"})
+        ]),
         # html.Br(),
         # dbc.Button("Export data table (CSV)",
         #             id="btn_export",
         #             style=app_style.btn_style),
         # dcc.Download(id="export_data"),
         # html.Br(),
+
+        html.H5("Table and figure"),
         dash_table.DataTable(id="data_table",
                             page_size=50,  # we have less data in this example, so setting to 20
                             style_table={
@@ -263,26 +286,28 @@ def update_data_table(b_fetch, b_merge,
             info_list = info_options
         field_trial = connect_db_table(db_info)
         data = field_trial.query_by_trial_ids(trial_id, info_list)
-        df = json_utils.result_list_to_df(data)
+        df_output = json_utils.result_list_to_df(data)
         # print(df)
-        columns = [{"name": i, "id": i} for i in df.columns]
-        data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
-        output = [df.to_dict('records'),
-                  info_list, info_list,
-                  df.columns, df.columns, df.columns,
-                  data_info]
-        return output
+        # columns = [{"name": i, "id": i} for i in df.columns]
+        # data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
+        # output = [df.to_dict('records'),
+        #           info_list, info_list,
+        #           df.columns, df.columns, df.columns,
+        #           data_info]
+        # return output
     if "bt_merge_info_tables" == ctx.triggered_id and data_table and t1_column and t2_column:
         print(f"column_select:{t1_column}\t{t2_column}")
         dd = pd.DataFrame(data_table)
         info_list = [info_t1, info_t2]
-        df_merge = df_operation.merge_df(dd, info_t1, info_t2, 
-                                         t1_column, t2_column)
-        output = [df_merge.to_dict('records'),
-                  info_list, info_list,
-                  df_merge.columns, df_merge.columns, df_merge.columns,
-                  "data_info"]
-        return output
+        df_output = df_operation.merge_df(dd, info_t1, info_t2,
+                                          t1_column, t2_column)
+
+    data_info = f"Data: {df_output.shape[0]} rows, {df_output.shape[1]} columns."
+    output = [df_output.to_dict('records'),
+              info_list, info_list,
+              df_output.columns, df_output.columns, df_output.columns,
+              data_info]
+    return output
 
 
 
@@ -328,10 +353,11 @@ def export_dataframe(n_clicks, df):
 @dash.callback(
     Output('data_figure', 'figure'),
     Input('btn_plot', 'n_clicks'),
-    State("data_table", "data"),
+    # State("data_table", "data"),
+    State("store_data_table", "data"),
     State('dropdown_xaxis', 'value'), 
     State('dropdown_yaxis', 'value'),
-    # State('dropdown_colour', 'value'),
+    State('dropdown_colour', 'value'),
     State("raido-plot-type", "value"),
     prevent_initial_call=True,
 )
@@ -350,3 +376,26 @@ def update_figure(n_clicks, df, var_x, var_y, var_col, plot_type):
     fig.update_layout(transition_duration=500)
 
     return fig
+
+
+@dash.callback(
+    Output("stats_output", "children"),
+    Input('btn_stats', 'n_clicks'),
+    # State("data_table", "data"),
+    State("store_data_table", "data"),
+    State('dropdown_xaxis', 'value'),
+    State('dropdown_yaxis', 'value'),
+    State('dropdown_colour', 'value'),
+    # State("raido-plot-type", "value"),
+    prevent_initial_call=True,
+)
+def stat_analysis(n_clicks, df, var_x, var_y, var_col):
+    # filtered_df = df[df.year == selected_year]
+    if not var_x and not var_y:
+        raise PreventUpdate
+    df = pd.DataFrame(df)
+    # stat_output = f"Data: {df.shape[0]} rows, {df.shape[1]} columns.\t {df.shape}"
+    print(f"stats:{df.shape}\t{df.columns}\tVar:{var_x}, {var_y}")
+    results = summary_stats.analysis_design(df, factor=var_x, response=var_y)
+    stats_output = f"{results}"
+    return stats_output

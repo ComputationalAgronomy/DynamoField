@@ -37,7 +37,7 @@ def create_formula(response, factor, block=None):
 
 
 
-def analysis_design(df, factor="treatment", response_list=["yields", "meta"], block=None):
+def analysis_design_multi_responses(df, factor="treatment", response_list=["yields", "meta"], block=None):
 
     anova_tables = {}
     for response in response_list:
@@ -47,6 +47,15 @@ def analysis_design(df, factor="treatment", response_list=["yields", "meta"], bl
         anova_result = sm.stats.anova_lm(model, typ=2)
         anova_tables[response] = anova_result
     return anova_tables
+
+
+def analysis_design(df, factor="treatment", response="yields", block=None):
+
+
+    formula = create_formula(response, factor, block)
+    model = smf.ols(formula, data=df).fit()
+    anova_result = sm.stats.anova_lm(model, typ=2)
+    return anova_result
 
 
 # def analysis_rcbd(df, factor="treatment", block="block", response_list=["yields", "meta"]):
