@@ -25,6 +25,6 @@ def merge_df(dd: pd.DataFrame, info_t1, info_t2, t1_column, t2_column) -> pd.Dat
         d2 = d2.rename(columns={t2_column: merge_name})
     df_merge = pd.merge(d1, d2, how="outer", 
                         on=[field_table.FieldTable.PARTITION_KEY_NAME, merge_name],
-                        suffixes=c("_t1", "_t2"))
+                        suffixes=["_t1", "_t2"])
     df_merge = df_merge.dropna(axis=1, how='all')
     return df_merge

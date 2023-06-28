@@ -66,7 +66,7 @@ def generate_import_panel():
                             n_clicks=0, size="lg",
                             # className="me-2",
                             style={
-                                "margin":"5px", 'margin-top': '0px', 
+                                "margin":"5px", 'margin-top': '5px', 
                                 "width":"200px", "height":"60px", 
                                 'align-items': 'center', 
                                 'justify-content': 'center'

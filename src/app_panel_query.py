@@ -25,35 +25,30 @@ def trial_selection_panel():
         dbc.Row([
             dbc.Col([
                 dbc.Label('Select trial ID'),
-            ], width = 3),
+                dcc.Dropdown(multi=True, id="select_trial"),
+            ], width=3),
             dbc.Col([
                 dbc.Label('Multi-Select Information related to this trial'),
-            ], width={"size": 3, "offset": 3}),
-        ]),
-        dbc.Row([
-            dbc.Col([
-                dcc.Dropdown(multi=True, id="select_trial"),
-            ], width = 5),
-            dbc.Col([
                 dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
-            ], width={"size": 5, "offset": 1}),
+                dbc.Button('Select All', id='button_info_all', n_clicks=0,
+                           size="lg", className="my-2"), #style=app_style.btn_style),
+                dbc.Button('Select None', id='button_info_none', n_clicks=0,
+                           size="lg", className="m-2", 
+                           #style={"margin-left": "5px", "margin-top": "5px"}
+                           ),
+            ], width={"size": 3, "offset": 0.5}),
+            dbc.Col([
+                html.Br(),
+                dbc.Button('Fetch data', id='bt_fetch_data', size="lg",
+                           n_clicks=0, 
+                           className="m-2",
+                           style={# "margin":"10px", 'margin-top': '20px', 
+                                "width":"200px", "height":"60px", 
+                                'align-items': 'center', 'justify-content': 'center'
+                           }),
+            ], width={"size": "auto", "offset": 1}),
         ]),
-        dbc.Row([
-            dbc.Col([
-                dbc.Button('Fetch data', id='bt_fetch_data',
-                        n_clicks=0, style=app_style.btn_style),
-            ], width = 2),
-            dbc.Col([
-                dbc.Button('Select All', id='button_info_all',
-                            n_clicks=0, style=app_style.btn_style),
-            ], width={"size": "auto", "offset": 4}),
-            dbc.Col([
-                dbc.Button('Select None', id='button_info_none',
-                        n_clicks=0, size="lg",
-                        style=app_style.btn_style),
-            ], width={"size": "auto", "offset": 0})
-        ])
-
+        dcc.Markdown(id="data_info"), 
     ])
 
 
@@ -61,17 +56,6 @@ def merging_two_info():
     return html.Div(style={'padding': 10},
                     children=[
         dbc.Row(html.H6("Merging info tables")),
-        # dbc.Row([
-        #     # dbc.Col([
-        #     #     dbc.Label('First info table'),
-        #     # ], width = {"size": 3, "offset": 0}),
-        #     # dbc.Col([
-        #     #     dbc.Label('Second info table'),
-        #     # ], width={"size": 3, "offset": 0.5}),
-        #     dbc.Col([
-        #         dbc.Label('Merged by column name'),
-        #     ], width={"size": 3, "offset": 7}),
-        # ]),
         dbc.Row([
             dbc.Col([
                 dbc.Label('First info table'),
@@ -86,27 +70,17 @@ def merging_two_info():
                 dcc.Dropdown(id="dropdown_info_t2_column", multi=False),
             ], width={"size": 3, "offset": 0.5}),
             dbc.Col([
+                html.Br(),
                 dbc.Button('Merge table', id='bt_merge_info_tables',
-                        n_clicks=0, size="lg",
-                        style=app_style.btn_style),
+                           n_clicks=0, size="lg",
+                           className="m-2",
+                           style={  # "margin":"10px", 'margin-top': '20px',
+                               "width": "200px", "height": "60px",
+                               'align-items': 'center', 'justify-content': 'center'
+                           }),
             ], width={"size": "auto", "offset": 1})
         ]),
 
-        # dbc.Row([
-        #     dbc.Col([
-        #         dbc.Button('Fetch data', id='fetch_data',
-        #                 n_clicks=0, style=app_style.btn_style),
-        #     ], width = 2),
-        #     dbc.Col([
-        #         dbc.Button('Select All', id='button_info_all',
-        #                     n_clicks=0, style=app_style.btn_style),
-        #     ], width={"size": "auto", "offset": 4}),
-        #     dbc.Col([
-        #         dbc.Button('Select None', id='button_info_none',
-        #                 n_clicks=0, size="lg",
-        #                 style=app_style.btn_style),
-        #     ], width={"size": "auto", "offset": 0})
-        # ])
 
     ])
 
@@ -137,7 +111,12 @@ def plotting_panel():
             ], width=2),
             dbc.Col([
                 html.Br(),
-                dbc.Button("Plot data", id="btn_plot"),
+                dbc.Button("Plot data", id="btn_plot",
+                           className="m-2",
+                           style={# "margin":"10px", 'margin-top': '20px', 
+                                "width":"200px", "height":"60px", 
+                                'align-items': 'center', 'justify-content': 'center'
+                           }),
             ], width=2),
         ], ),
 
@@ -149,24 +128,20 @@ def generate_query_panel():
                      children=[
         dcc.Store(id='store_data_table', storage_type='session', clear_data=True),
         trial_selection_panel(),
-        html.Hr(),
-        dcc.Markdown(id="data_info"), 
+        html.Hr(style={"height":"2px", "margin":"5px"}),
+        
         merging_two_info(),
         plotting_panel(),
-        # html.Hr(),
-        html.H5("Table"),
+        html.Hr(style={"height":"2px", "margin":"5px"}),
         
-        html.Br(),
-        dbc.Button("Export data table (CSV)",
-                    id="btn_export",
-                    style=app_style.btn_style),
-        dcc.Download(id="export_data"),
-
-        # html.Div(
-        #     "To download the figure, hover over the graph and click the camera icon.",
-        #     style={"textAlign": "right"},
-        # ),
-        html.Br(),
+        
+        html.H5("Table"),
+        # html.Br(),
+        # dbc.Button("Export data table (CSV)",
+        #             id="btn_export",
+        #             style=app_style.btn_style),
+        # dcc.Download(id="export_data"),
+        # html.Br(),
         dash_table.DataTable(id="data_table",
                             page_size=50,  # we have less data in this example, so setting to 20
                             style_table={
@@ -275,15 +250,15 @@ def update_output_table(store_table):
     State('store_db_info', 'data'),
     
 )
-def update_data_table(b_fetch, b_merge, 
-                      trial_id, info_list, info_options, 
-                      info_t1, info_t2, t1_column, t2_column, 
+def update_data_table(b_fetch, b_merge,
+                      trial_id, info_list, info_options,
+                      info_t1, info_t2, t1_column, t2_column,
                       data_table, db_info):
     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
     print(f"trial_id:{trial_id}")
     if "bt_fetch_data" == ctx.triggered_id:
-        print(f"info_list:{info_list}\t{info_options}")    
+        print(f"info_list:{info_list}\t{info_options}")
         if info_list is None:
             info_list = info_options
         field_trial = connect_db_table(db_info)
@@ -292,39 +267,23 @@ def update_data_table(b_fetch, b_merge,
         # print(df)
         columns = [{"name": i, "id": i} for i in df.columns]
         data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
-        output = [#columns,
-                df.to_dict('records'), 
-                info_list, info_list,
-                df.columns, df.columns, df.columns, 
-                data_info]
+        output = [df.to_dict('records'),
+                  info_list, info_list,
+                  df.columns, df.columns, df.columns,
+                  data_info]
         return output
-    if "bt_merge_info_tables" == ctx.triggered_id and data_table  and t1_column and t2_column:
+    if "bt_merge_info_tables" == ctx.triggered_id and data_table and t1_column and t2_column:
         print(f"column_select:{t1_column}\t{t2_column}")
         dd = pd.DataFrame(data_table)
         info_list = [info_t1, info_t2]
-        df_merge = df_operation.merge_df(dd, info_t1, info_t2, t1_column, t2_column)
-        output = [#columns,
-                df_merge.to_dict('records'), 
-                info_list, info_list,
-                df_merge.columns, df_merge.columns, df_merge.columns, 
-                "data_info"]
-        return  output
-    
+        df_merge = df_operation.merge_df(dd, info_t1, info_t2, 
+                                         t1_column, t2_column)
+        output = [df_merge.to_dict('records'),
+                  info_list, info_list,
+                  df_merge.columns, df_merge.columns, df_merge.columns,
+                  "data_info"]
+        return output
 
-
-# input: button_merge_info_tables
-# @dash.callback(
-#     Output("store_data_table", "data"),
-#     Input("button_merge_info_tables", "n_clicks"),
-#     State("dropdown_info_t1_column", "value"),
-#     State("dropdown_info_t2_column", "value"),
-#     State("store_data_table", "data"),
-# )
-# def merge_two_tables(n_clicks, t1_c, t2_c, data_info):
-#     if not t1_c or not t2_c:
-#         raise PreventUpdate
-#     print(f"t1_c:{t1_c}\t{t2_c}")
-#     return t1_c, t2_c
 
 
 @dash.callback(
