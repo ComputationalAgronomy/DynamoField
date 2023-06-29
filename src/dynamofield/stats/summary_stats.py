@@ -13,7 +13,12 @@ import statsmodels.stats.multicomp
 # from field import Field
 
 
-# response_list=["yields", "meta"]
+def summary_table_df(df, response="yields", by="treatment"):
+    # agg_funcs = {response_list[0]: ['median', 'mean', 'std']}
+    # agg_funcs = {key: ['median', 'mean', 'std'] for key in response_list}
+    agg_funcs = {response: ['median', 'mean', 'std']}
+    summary_table = df.groupby(by).agg(agg_funcs)
+    return summary_table
 
 def summary_table(field_trial, trial_id, response_list=["yields"]):
     df = field_trial.get_all_plots(trial_id)

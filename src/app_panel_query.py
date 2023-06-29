@@ -19,6 +19,12 @@ from dynamofield.stats import summary_stats
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
+BT_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
+    "width": "150px", "height": "60px",
+    'align-items': 'center', 'justify-content': 'center',
+    'font-size': "115%"
+}
+
 
 def trial_selection_panel():
     return html.Div(style={'padding': 10},
@@ -43,14 +49,12 @@ def trial_selection_panel():
                 dbc.Button('Fetch data', id='bt_fetch_data', size="lg",
                            n_clicks=0, 
                            className="m-2",
-                           style={# "margin":"10px", 'margin-top': '20px', 
-                                "width":"200px", "height":"60px", 
-                                'align-items': 'center', 'justify-content': 'center'
-                           }),
+                           style=BT_STYLE_ACTION),
             ], width={"size": "auto", "offset": 1}),
         ]),
         dcc.Markdown(id="data_info"), 
     ])
+
 
 
 def merging_two_info():
@@ -75,10 +79,7 @@ def merging_two_info():
                 dbc.Button('Merge table', id='bt_merge_info_tables',
                            n_clicks=0, size="lg",
                            className="m-2",
-                           style={  # "margin":"10px", 'margin-top': '20px',
-                               "width": "200px", "height": "60px",
-                               'align-items': 'center', 'justify-content': 'center'
-                           }),
+                           style=BT_STYLE_ACTION)
             ], width={"size": "auto", "offset": 1})
         ]),
     ])
@@ -110,24 +111,16 @@ def plot_stats_panel():
                     style={"display": "flex", "margin": 5}
                 ),
             ], width=1),
-            dbc.Col([
-                html.Br(),
-                dbc.Button("Plot data", id="btn_plot",
-                           className="m-2",
-                           style={# "margin":"10px", 'margin-top': '20px', 
-                                "width":"150px", "height":"60px", 
-                                'align-items': 'center', 'justify-content': 'center'
-                           }),
-                dbc.Button("Analysis", id="btn_stats",
-                           className="m-2",
-                           style={# "margin":"10px", 'margin-top': '20px', 
-                                "width":"150px", "height":"60px", 
-                                'align-items': 'center', 'justify-content': 'center'
-                           }),
-            ], width=3),
         ]),
+        dbc.Row([
+            dbc.Button("Plot data", id="btn_plot",
+                        className="m-2", style=BT_STYLE_ACTION),
+            dbc.Button("Analysis", id="btn_stats",
+                        className="m-2", style=BT_STYLE_ACTION),
+            dbc.Button("Summary", id="btn_summary",
+                        className="m-2", style=BT_STYLE_ACTION),
+        ])
     ])
-
 
 
 
@@ -381,6 +374,7 @@ def update_figure(n_clicks, df, var_x, var_y, var_col, plot_type):
 @dash.callback(
     Output("stats_output", "children"),
     Input('btn_stats', 'n_clicks'),
+    Input('btn_summary', 'n_clicks'),
     # State("data_table", "data"),
     State("store_data_table", "data"),
     State('dropdown_xaxis', 'value'),
@@ -389,13 +383,17 @@ def update_figure(n_clicks, df, var_x, var_y, var_col, plot_type):
     # State("raido-plot-type", "value"),
     prevent_initial_call=True,
 )
-def stat_analysis(n_clicks, df, var_x, var_y, var_col):
+def stat_analysis(bt_stat, bt_summary, df, var_x, var_y, var_col):
     # filtered_df = df[df.year == selected_year]
     if not var_x and not var_y:
         raise PreventUpdate
     df = pd.DataFrame(df)
     # stat_output = f"Data: {df.shape[0]} rows, {df.shape[1]} columns.\t {df.shape}"
     print(f"stats:{df.shape}\t{df.columns}\tVar:{var_x}, {var_y}")
-    results = summary_stats.analysis_design(df, factor=var_x, response=var_y)
+    if "btn_stats" == ctx.triggered_id:
+        results = summary_stats.analysis_design(df, factor=var_x, response=var_y)
+    elif "btn_summary" ==  ctx.triggered_id:
+        results = summary_stats.summary_table_df(df, by=var_x, response=var_y)
+ 
     stats_output = f"{results}"
     return stats_output
