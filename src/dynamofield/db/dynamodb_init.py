@@ -56,10 +56,10 @@ class DynamodbServer:
         self.dynamodb_res = self.session.resource('dynamodb', endpoint_url=self.endpoint_url)
         self.is_dynamodb_online()
         is_online = self.is_online
-        if is_online:
-            print("res:online")
-        elif not is_online:
-            print(f"res: offline: {is_online}")
+        # if is_online:
+        #     print("res:online")
+        # elif not is_online:
+        print(f"==DEBUG== Resource online: {is_online}")
         # isinstance(dynamodb_res, boto3.resources.base.ServiceResource)
         
         return is_online

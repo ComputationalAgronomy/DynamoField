@@ -24,6 +24,11 @@ from dynamofield.utils import json_utils
 # item_counts = field_trial.get_item_count()
 
 def generate_import_panel():
+    BTN_STYLE = {
+        "margin": "10px", 'margin-top': '10px',
+        "width": "200px", "height": "60px",
+        'align-items': 'center', 'justify-content': 'center'
+    }
     return [
         html.Div(style={'padding': 10, 'flex': 1},
                 #  className="row",
@@ -65,12 +70,7 @@ def generate_import_panel():
                     dbc.Button('Preview file', id='btn_preview',
                             n_clicks=0, size="lg",
                             # className="me-2",
-                            style={
-                                "margin":"5px", 'margin-top': '5px', 
-                                "width":"200px", "height":"60px", 
-                                'align-items': 'center', 
-                                'justify-content': 'center'
-                            }, 
+                            style=BTN_STYLE, 
                     )
                 ], width="auto"),
             ]),
@@ -105,11 +105,7 @@ def generate_import_panel():
                     dbc.Button('Import data', id='btn_import',
                         n_clicks=0, size="lg",
                         className="me-2",
-                        style={
-                            "margin":"10px", 'margin-top': '20px', 
-                            "width":"200px", "height":"60px", 
-                            'align-items': 'center', 'justify-content': 'center'
-                        }, 
+                        style=BTN_STYLE, 
                     ),
                 # ]),
                 ], width=3),

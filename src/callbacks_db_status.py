@@ -121,8 +121,8 @@ def status_template_text(colour, text):
     Input('store_db_info', 'data'),
 )
 def update_status_interval(n, db_info):
-    if db_info is None:
-        raise PreventUpdate
+    # if db_info is None:
+    #     raise PreventUpdate
     try:
         md_db = check_status(db_info["db_status"])
         md_table = check_status(db_info["table_status"])

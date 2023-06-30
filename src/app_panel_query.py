@@ -19,11 +19,16 @@ from dynamofield.stats import summary_stats
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
-BT_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
+BTN_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
     "width": "150px", "height": "60px",
     'align-items': 'center', 'justify-content': 'center',
     'font-size': "115%"
 }
+
+BTN_ACTION_CONF = {"size": "lg",
+                  "n_clicks": 0,
+                  "className": "m-2",
+                  "style": BTN_STYLE_ACTION}
 
 
 def trial_selection_panel():
@@ -43,13 +48,11 @@ def trial_selection_panel():
                            size="lg", className="m-2", 
                            #style={"margin-left": "5px", "margin-top": "5px"}
                            ),
-            ], width={"size": 3, "offset": 0.5}),
+            ], width={"size": 4, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
-                dbc.Button('Fetch data', id='bt_fetch_data', size="lg",
-                           n_clicks=0, 
-                           className="m-2",
-                           style=BT_STYLE_ACTION),
+                dbc.Button('Fetch data', id='btn_fetch_data', 
+                           **BTN_ACTION_CONF),
             ], width={"size": "auto", "offset": 1}),
         ]),
         dcc.Markdown(id="data_info"), 
@@ -76,10 +79,8 @@ def merging_two_info():
             ], width={"size": 3, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
-                dbc.Button('Merge table', id='bt_merge_info_tables',
-                           n_clicks=0, size="lg",
-                           className="m-2",
-                           style=BT_STYLE_ACTION)
+                dbc.Button('Merge table', id='btn_merge_info_tables',
+                           **BTN_ACTION_CONF)
             ], width={"size": "auto", "offset": 1})
         ]),
     ])
@@ -92,7 +93,7 @@ def plot_stats_panel():
         dbc.Row(html.H6("Plotting and statistical analysis.")),
         dbc.Row([
             dbc.Col([
-                dcc.Markdown("**Treatment: X-axis**"),
+                dcc.Markdown("**Factor\n: X-axis**"),
                 dcc.Dropdown(id="dropdown_xaxis", multi=False),
             ], width=3),
             dbc.Col([
@@ -100,25 +101,25 @@ def plot_stats_panel():
                 dcc.Dropdown(id="dropdown_yaxis", multi=False),
             ], width=3),
             dbc.Col([
-                dcc.Markdown("\[Optional\] Colour"),
-                dcc.Dropdown(id="dropdown_colour", multi=False, disabled=True),
-            ], width=1),
+                dcc.Markdown("\[Optional\] Slice by or Colour"),
+                dcc.Dropdown(id="dropdown_by", multi=False),
+            ], width=3),
             dbc.Col([
                 dbc.Label("Plot type:"),
                 dcc.RadioItems(options=["Scatter", "Line", "Bar"], 
                     value = "Scatter", 
                     id="raido-plot-type", 
-                    style={"display": "flex", "margin": 5}
+                    style={"display": "flex", "margin": 5, "padding": 5}
                 ),
-            ], width=1),
+            ], width=2),
         ]),
         dbc.Row([
             dbc.Button("Plot data", id="btn_plot",
-                        className="m-2", style=BT_STYLE_ACTION),
+                       **BTN_ACTION_CONF),
             dbc.Button("Analysis", id="btn_stats",
-                        className="m-2", style=BT_STYLE_ACTION),
-            dbc.Button("Summary", id="btn_summary",
-                        className="m-2", style=BT_STYLE_ACTION),
+                       **BTN_ACTION_CONF),
+            dbc.Button("Summary", id="btn_summary", 
+                       **BTN_ACTION_CONF),
         ])
     ])
 
@@ -251,10 +252,10 @@ def update_output_table(store_table):
     Output('dropdown_info_sortkey_t2', 'options'),
     Output("dropdown_xaxis", "options"), 
     Output("dropdown_yaxis", "options"),
-    Output("dropdown_colour", "options"),
+    Output("dropdown_by", "options"),
     Output("data_info", "children"),
-    Input("bt_fetch_data", "n_clicks"),
-    Input("bt_merge_info_tables", "n_clicks"),
+    Input("btn_fetch_data", "n_clicks"),
+    Input("btn_merge_info_tables", "n_clicks"),
     State('select_trial', 'value'),
     State('dropdown_info_sortkey', 'value'),
     State('dropdown_info_sortkey', 'options'),
@@ -273,22 +274,14 @@ def update_data_table(b_fetch, b_merge,
     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
     print(f"trial_id:{trial_id}")
-    if "bt_fetch_data" == ctx.triggered_id:
+    if "btn_fetch_data" == ctx.triggered_id:
         print(f"info_list:{info_list}\t{info_options}")
         if info_list is None:
             info_list = info_options
         field_trial = connect_db_table(db_info)
         data = field_trial.query_by_trial_ids(trial_id, info_list)
         df_output = json_utils.result_list_to_df(data)
-        # print(df)
-        # columns = [{"name": i, "id": i} for i in df.columns]
-        # data_info = f"Data: {df.shape[0]} rows, {df.shape[1]} columns."
-        # output = [df.to_dict('records'),
-        #           info_list, info_list,
-        #           df.columns, df.columns, df.columns,
-        #           data_info]
-        # return output
-    if "bt_merge_info_tables" == ctx.triggered_id and data_table and t1_column and t2_column:
+    elif "btn_merge_info_tables" == ctx.triggered_id and data_table and t1_column and t2_column:
         print(f"column_select:{t1_column}\t{t2_column}")
         dd = pd.DataFrame(data_table)
         info_list = [info_t1, info_t2]
@@ -310,13 +303,13 @@ def update_data_table(b_fetch, b_merge,
     Input('dropdown_info_sortkey_t1', 'value'),
     Input('dropdown_info_sortkey_t2', 'value'),
     State("data_table", "columns"), 
-    State("data_table", "data"),
+    State("store_data_table", "data"),
 )
 def update_select_two_tables(info_1, info_2, columns, data_table):
     if not info_1 or not info_2:
         raise PreventUpdate
-    t1_c = None
-    t2_c = None
+    # t1_c = None
+    # t2_c = None
     print(f"info:{info_1}\t{info_2}")
     dd = pd.DataFrame(data_table)
     t1_c = df_operation.get_non_na_column_name(dd, info_1)
@@ -346,25 +339,24 @@ def export_dataframe(n_clicks, df):
 @dash.callback(
     Output('data_figure', 'figure'),
     Input('btn_plot', 'n_clicks'),
-    # State("data_table", "data"),
     State("store_data_table", "data"),
     State('dropdown_xaxis', 'value'), 
     State('dropdown_yaxis', 'value'),
-    State('dropdown_colour', 'value'),
+    State('dropdown_by', 'value'),
     State("raido-plot-type", "value"),
     prevent_initial_call=True,
 )
-def update_figure(n_clicks, df, var_x, var_y, var_col, plot_type):
+def update_figure(n_clicks, data_table, var_x, var_y, var_by, plot_type):
     # filtered_df = df[df.year == selected_year]
     if not var_x and not var_y:
         raise PreventUpdate
-    df2 = pd.DataFrame(df)
+    df = pd.DataFrame(data_table)
     if plot_type == "Bar":
-        fig = px.bar(df2, x=var_x, y=var_y)  # , color=var_col)
+        fig = px.bar(df, x=var_x, y=var_y, color=var_by)
     elif plot_type == "Line":
-        fig = px.line(df2, x=var_x, y=var_y)  # , color=var_col)
+        fig = px.line(df, x=var_x, y=var_y, color=var_by)
     elif plot_type == "Scatter":
-        fig = px.scatter(df2, x=var_x, y=var_y)  # , color=var_col)
+        fig = px.scatter(df, x=var_x, y=var_y, color=var_by)
 
     fig.update_layout(transition_duration=500)
 
@@ -375,25 +367,23 @@ def update_figure(n_clicks, df, var_x, var_y, var_col, plot_type):
     Output("stats_output", "children"),
     Input('btn_stats', 'n_clicks'),
     Input('btn_summary', 'n_clicks'),
-    # State("data_table", "data"),
     State("store_data_table", "data"),
     State('dropdown_xaxis', 'value'),
     State('dropdown_yaxis', 'value'),
-    State('dropdown_colour', 'value'),
-    # State("raido-plot-type", "value"),
+    State('dropdown_by', 'value'),
     prevent_initial_call=True,
 )
-def stat_analysis(bt_stat, bt_summary, df, var_x, var_y, var_col):
-    # filtered_df = df[df.year == selected_year]
+def stat_analysis(btn_stat, btn_summary, data_table,
+                  var_x, var_y, var_by):
     if not var_x and not var_y:
         raise PreventUpdate
-    df = pd.DataFrame(df)
-    # stat_output = f"Data: {df.shape[0]} rows, {df.shape[1]} columns.\t {df.shape}"
-    print(f"stats:{df.shape}\t{df.columns}\tVar:{var_x}, {var_y}")
+    df = pd.DataFrame(data_table)
+    print(f"stats:{df.shape}\t{df.columns}\tVar:{var_x}, {var_y}, {var_by}")
     if "btn_stats" == ctx.triggered_id:
-        results = summary_stats.analysis_design(df, factor=var_x, response=var_y)
+        results = summary_stats.analysis_design(df, factor=var_x, response=var_y, by=var_by)
     elif "btn_summary" ==  ctx.triggered_id:
-        results = summary_stats.summary_table_df(df, by=var_x, response=var_y)
- 
-    stats_output = f"{results}"
+        results = summary_stats.summary_table_df(df, factor=var_x, response=var_y, by=var_by)
+    out = [f"Dataset:{k}\n{v}\n\n" for k,v in results.items()]
+    output = "".join(out)
+    stats_output = f"{output}"
     return stats_output

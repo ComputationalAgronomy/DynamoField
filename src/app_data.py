@@ -6,7 +6,7 @@ from dynamofield.field import field_table
 
 
 def init_dynamodb(endpoint_url):
-    print("init db")
+    # print("init db")
     # client = dynamodb_init.init_dynamodb_client()
     # table_utils.delete_all_items(client, table_name)
     dynamodb_server = dynamodb_init.DynamodbServer(endpoint_url=endpoint_url)
