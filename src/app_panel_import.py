@@ -54,7 +54,7 @@ def generate_import_panel():
                         ),
                         style={
                             'width': '100%',
-                            'height': '60px',
+                            'height': '120px',
                             'lineHeight': '60px',
                             'borderWidth': '1px',
                             'borderStyle': 'dashed',
