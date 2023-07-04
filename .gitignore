@@ -3,6 +3,7 @@
 *.csv
 .vscode/
 sandbox/**
+temp/*
 
 ## DynamoDB local server
 DynamoDBLocal.jar
