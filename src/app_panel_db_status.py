@@ -56,7 +56,7 @@ def update_config_panel():
             ], width="auto"),
             dbc.Col([
                 # html.Div(className="three columns", children=[
-                html.Label("Table name:"),
+                html.Label("DB table name:"),
                 html.Label("Default: ft_db"),
                 dcc.Input(id="db_table_name", type="text",
                           placeholder="ft_db", debounce=True,
@@ -72,6 +72,15 @@ def update_config_panel():
                     }
                 ),
             ], width="auto"),
+            dbc.Col([
+                dbc.Button(id="btn_list_tables", children="List existing tables",
+                    n_clicks=0, size="lg",
+                    style={
+                        "margin": "20px", 'margin-top': '30px',
+                        "height": "50px", "width": "200px",
+                    }
+                ),
+            ], width="auto"),
         ])
     ])
 
@@ -81,41 +90,30 @@ def create_new_table_panel():
                     children=[
         
         dbc.Row([
-            dbc.Col(html.H4("Database table information"),
-                width=3),
-            dbc.Col(html.H4("Dangour zone!", style={"color": "red"}),    
-                width={"size": 3,  "offset": 3})
-        ]),
-        dbc.Row([
-            dbc.Col(dbc.Label("Create a new table. Table name:"),
-                width=3),
-            dbc.Col(dbc.Label("DELETE a table. Table name:"),
-                width={"size": 3,  "offset": 3})
-        ]),
-        dbc.Row([
             dbc.Col([
-                dbc.Input(id="new_table_name", type="text", minLength=3)
-            ], width=2),
-            
-            dbc.Col([
-                dbc.Input(id="text_delete_tablename", type="text")
-            ], width={"size": 2, "offset": 4}),
-        ], style={"margin-bottom": "10pt"}), 
-        dbc.Row([
-            dbc.Col([
-                # dbc.Label("&nbsp;"),
+                html.H4("Database table information"),
+                dbc.Label("Create a new table. Table name:"),
+                dbc.Input(id="new_table_name", type="text", minLength=3),
                 dbc.Button(id="btn_create_table", children="Create new table",
-                        n_clicks=0, size="lg")
-            ], width=2),
+                        n_clicks=0, size="lg", className="my-2"),
+            ], width=3),
             dbc.Col([
-                dbc.Button(id="btn_list_tables", children="List existing tables",
-                        n_clicks=0, size="lg")
-            ], width={"size": 2, "offset": 1}),
-            dbc.Col([
+                html.H4("Dangour zone!", style={"color": "red"}),    
+                dbc.Label("DELETE a table. Table name:"),
+                dbc.Input(id="text_delete_tablename", type="text", style={"width":"200px"}),
                 dbc.Button(id="btn_delete_table", children="DELETE this table",
-                        n_clicks=0, size="lg", color="danger")
-            ], width={"size": 2, "offset": 1}),
+                    n_clicks=0, size="lg", color="danger",
+                    className="my-2")
+            ], width={"size": 3,  "offset": 3})
         ]),
+        html.Br(),
+        # dbc.Row([
+        #     dbc.Col([
+        #         dbc.Button(id="btn_list_tables", children="List existing tables",
+        #                 n_clicks=0, size="lg",)
+        #                 # style={"margin-top": "20px"})
+        #     ], width={"size": 2, "offset": 0}),
+        # ]),
 
         html.Br(),
         dcc.Markdown(id="db_table_md",

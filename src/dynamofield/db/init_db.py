@@ -8,6 +8,8 @@ import psutil
 import requests
 import tarfile 
 
+
+
 def add_db_table(client, tablename):
     try:
         response = client.create_table(
@@ -52,20 +54,6 @@ def remove_table(client, tablename):
         print(response)
     return response
     
-
-
-def download_dynamodb_jar(dy_path="."):
-    URL = "https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.tar.gz"
-    DOWNLOAD_NAME = "dynamodb_local_latest.tar.gz"
-    # dy_path = "dynamodb"
-    os.makedirs(dy_path, exist_ok=True)
-    outfile = os.path.join(dy_path, DOWNLOAD_NAME)
-    response = requests.get(URL)
-    with open(outfile, 'wb') as f:
-        for chunk in response.iter_content(chunk_size=1048576): #8192
-            f.write(chunk)
-    with tarfile.open(outfile, "r:gz") as tar:
-        tar.extractall(path=dy_path)
 
 
 

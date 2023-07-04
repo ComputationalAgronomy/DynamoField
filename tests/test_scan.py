@@ -8,8 +8,8 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from dynamofield.db import dynamodb_init
-from src.dynamofield.field import field_table
-from src.dynamofield.field.field_table import FieldTable
+from dynamofield.field import field_table
+from dynamofield.field.field_table import FieldTable
 
 # importlib.reload(field_table)
 

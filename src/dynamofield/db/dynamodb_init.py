@@ -1,12 +1,20 @@
 import boto3
+import botocore
 import botocore.exceptions
+
 from dynamofield.db import init_db
+
 
 class DynamodbServer:
 
     def __init__(self, endpoint_url='http://localhost:8000'):
         self.session = boto3.session.Session()
-        # self.endpoint_url = endpoint_url
+        if len(self.session.available_profiles) == 0 and self.session.get_credentials() is None:
+            self.session = boto3.session.Session(
+                aws_access_key_id="local",
+                aws_secret_access_key="local",
+                region_name="local",
+            )
         self.dynamodb_res = None
         self.is_online = False
         self.update_endpoint(endpoint_url)
@@ -34,7 +42,7 @@ class DynamodbServer:
         # client.describe_table(TableName=table_name)["Table"]["ItemCount"]
         # isinstance(client, botocore.client.BaseClient)
         try:
-            test = client.list_tables()
+            _ = client.list_tables()
         except botocore.exceptions.EndpointConnectionError as e:
             print(f"Invalid DynamoDB connection or server: {e}")
         return client
@@ -44,14 +52,13 @@ class DynamodbServer:
 
     def is_dynamodb_online(self):
         try:
-            temp = self.list_tables()
+            _ = self.list_tables()
             self.is_online = True
             # test = next(dynamodb_res.tables.pages())
         except botocore.exceptions.EndpointConnectionError as e:
             print(f"Invalid DynamoDB connection or server: {e}")
             self.is_online = False
 
-    
     def init_dynamodb_resources(self):
         self.dynamodb_res = self.session.resource('dynamodb', endpoint_url=self.endpoint_url)
         self.is_dynamodb_online()
@@ -61,17 +68,14 @@ class DynamodbServer:
         # elif not is_online:
         print(f"==DEBUG== Resource online: {is_online}")
         # isinstance(dynamodb_res, boto3.resources.base.ServiceResource)
-        
-        return is_online
 
+        return is_online
 
     def init_dynamodb_resources_table(self, table_name):
         res_table = self.dynamodb_res.Table(table_name)
         # res_table.item_count
         # isinstance(res_table, boto3.resources.base.ServiceResource)
         return res_table
-
-
 
     def is_table_exist(self, table_name):
         res_table = self.dynamodb_res.Table(table_name)
@@ -86,5 +90,4 @@ class DynamodbServer:
             print(f"Invalid Table name or other errors: {e}")
             status = False
         return status
-
 

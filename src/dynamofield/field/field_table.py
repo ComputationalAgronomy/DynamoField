@@ -8,8 +8,7 @@ from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
 from dynamofield.db import key_utils
-from dynamofield.utils import dict_utils, dynamo_utils
-from dynamofield.utils import json_utils
+from dynamofield.utils import dict_utils, dynamo_utils, json_utils
 
 # from io import BytesIO
 # import os

@@ -15,8 +15,8 @@ import app_style
 from app_data import *
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.df import df_operation
-from dynamofield.stats import summary_stats
 from dynamofield.field import field_table, importer
+from dynamofield.stats import summary_stats
 from dynamofield.utils import json_utils
 
 BTN_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
@@ -79,7 +79,7 @@ def merging_two_info():
             ], width={"size": 3, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
-                dbc.Button('Merge table', id='btn_merge_info_tables',
+                dbc.Button('Merge tables', id='btn_merge_info_tables',
                            **BTN_ACTION_CONF)
             ], width={"size": "auto", "offset": 1})
         ]),

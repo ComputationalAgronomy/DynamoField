@@ -1,16 +1,14 @@
 import os
-import pytest
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+import pytest
+from boto3.dynamodb.conditions import Key
 from pandas.testing import assert_frame_equal
 
-
-from boto3.dynamodb.conditions import Key
-from src.dynamofield.field import field_table
-from src.dynamofield.field import importer
-from src.dynamofield.df import df_operation
-from dynamofield.db import dynamodb_init
-from src.dynamofield.db import init_db, table_utils
+from dynamofield.db import dynamodb_init, init_db, table_utils
+from dynamofield.df import df_operation
+from dynamofield.field import field_table, importer
 
 
 @pytest.fixture

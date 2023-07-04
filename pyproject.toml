@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Utilise dynamoDB for field trial daat"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -20,3 +20,16 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/"
 "Bug Tracker" = "https://github.com/"
+
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+addopts = [
+    "--import-mode=importlib",
+]

@@ -8,12 +8,9 @@ import boto3
 import numpy
 import pandas as pd
 
-from dynamofield.utils import dynamo_utils
-from dynamofield.utils import json_utils
-from dynamofield.utils import dict_utils
-
 from dynamofield.db import key_utils
 from dynamofield.field import field_table
+from dynamofield.utils import dict_utils, dynamo_utils, json_utils
 
 
 class DataImporter:
