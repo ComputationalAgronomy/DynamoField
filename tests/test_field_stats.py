@@ -29,7 +29,7 @@ def test_stats_manual(field_trial: field_table.FieldTable):
     expected = pd.DataFrame(data)
     assert_frame_equal(df_plots, expected)
 
-    results = df_plots.groupby("treatment").mean()
+    results = df_plots.groupby("treatment").mean(numeric_only=True)
     data = {'meta': {'T1': 5.725, 'T2': 5.0, 'T3': 6.9, 'T4': 3.65, 'T5': 5.95, 'T6': 6.5}, 
             'yields': {'T1': 77.1375, 'T2': 80.515, 'T3': 78.37, 'T4': 78.13, 'T5': 60.3375, 'T6': 85.6525}}
     expected = pd.DataFrame(data)
@@ -41,18 +41,18 @@ def test_stats_summary_single(field_trial: field_table.FieldTable):
 
     trial_id = "trial_2B"
     df_plots = field_trial.query_df_all_plots(trial_id)
-    result = summary_stats.summary_table_df(df_plots, factor="treatment", response="yields")
+    # result = summary_stats.summary_table_df(df_plots, factor="treatment", response="yields")
 
     results = summary_stats.summary_table_single(df_plots, factor="treatment", response="yields")
     data = {('yields', 'median'): {'T1': 79.64, 'T2': 85.675, 'T3': 86.655, 'T4': 73.92, 'T5': 58.87, 'T6': 89.18}, 
             ('yields', 'mean'): {'T1': 77.1375, 'T2': 80.515, 'T3': 78.37, 'T4': 78.13, 'T5': 60.3375, 'T6': 85.6525}, 
             ('yields', 'std'): {'T1': 17.32243319128888, 'T2': 19.42271951435569, 'T3': 18.163063251188287, 'T4': 12.98656485244141, 'T5': 11.172989379153034, 'T6': 14.935520022193183}}
     expected = pd.DataFrame(data)
-    expected.index.name="treatment"
+    expected.index.name = "treatment"
     assert_frame_equal(results, expected)
 
 
-def test_stats_summary_multi(field_trial: field_table.FieldTable):
+def test_stats_summary_single_df(field_trial: field_table.FieldTable):
 
     trial_id = ["trial_2B", "trial_3C"]
     df_plots = field_trial.query_df_all_plots(trial_id)
@@ -62,11 +62,11 @@ def test_stats_summary_multi(field_trial: field_table.FieldTable):
                  ('yields', 'mean'): {'T1': 76.7725, 'T2': 71.855, 'T3': 74.17875000000001, 'T4': 77.82124999999999, 'T5': 65.3775, 'T6': 81.97}, 
                  ('yields', 'std'): {'T1': 12.617986878149098, 'T2': 18.04422424410173, 'T3': 15.438926163157479, 'T4': 13.471040300797643, 'T5': 13.462920241484438, 'T6': 12.826546133479809}}
     expected = pd.DataFrame(data_both)
-    expected.index.name="treatment"
+    expected.index.name = "treatment"
     assert_frame_equal(results, expected)
 
     results = summary_stats.summary_table_df(df_plots, factor="treatment", response="yields")
-    assert_frame_equal(results, expected)
+    assert_frame_equal(results["All"], expected)
 
 
 def test_stats_summary_multi(field_trial: field_table.FieldTable):
@@ -84,24 +84,17 @@ def test_stats_summary_multi(field_trial: field_table.FieldTable):
     results = summary_stats.summary_table_df(df_plots, factor="treatment", response="yields", by="trial_id")
     
     # assert_frame_equal(results, expected)
-    data2 = {('yields', 'median'): {'T1': 79.64, 'T2': 85.675, 'T3': 86.655, 'T4': 73.92, 'T5': 58.87, 'T6': 89.18}, 
-            ('yields', 'mean'): {'T1': 77.1375, 'T2': 80.515, 'T3': 78.37, 'T4': 78.13, 'T5': 60.3375, 'T6': 85.6525}, 
-            ('yields', 'std'): {'T1': 17.32243319128888, 'T2': 19.42271951435569, 'T3': 18.163063251188287, 'T4': 12.98656485244141, 'T5': 11.172989379153034, 'T6': 14.935520022193183}}
-    data3 = {('yields', 'median'): {'T1': 80.085, 'T2': 61.5, 'T3': 66.66, 'T4': 77.545, 'T5': 72.67500000000001, 'T6': 77.13999999999999}, 
-             ('yields', 'mean'): {'T1': 76.4075, 'T2': 63.195, 'T3': 69.9875, 'T4': 77.5125, 'T5': 70.4175, 'T6': 78.2875}, 
+    data2 = {('yields', 'median'): {'T1': 79.64, 'T2': 85.675, 'T3': 86.655, 'T4': 73.92, 'T5': 58.87, 'T6': 89.18},
+             ('yields', 'mean'): {'T1': 77.1375, 'T2': 80.515, 'T3': 78.37, 'T4': 78.13, 'T5': 60.3375, 'T6': 85.6525},
+             ('yields', 'std'): {'T1': 17.32243319128888, 'T2': 19.42271951435569, 'T3': 18.163063251188287, 'T4': 12.98656485244141, 'T5': 11.172989379153034, 'T6': 14.935520022193183}}
+    data3 = {('yields', 'median'): {'T1': 80.085, 'T2': 61.5, 'T3': 66.66, 'T4': 77.545, 'T5': 72.67500000000001, 'T6': 77.13999999999999},
+             ('yields', 'mean'): {'T1': 76.4075, 'T2': 63.195, 'T3': 69.9875, 'T4': 77.5125, 'T5': 70.4175, 'T6': 78.2875},
              ('yields', 'std'): {'T1': 8.430683542868868, 'T2': 13.508852652982783, 'T3': 13.395271242743343, 'T4': 15.953758961448552, 'T5': 15.177084425760658, 'T6': 11.164620832492854}}
     expected = pd.DataFrame(data2)
-    expected.index.name="treatment"
+    expected.index.name = "treatment"
     assert_frame_equal(results["trial_2B"], expected)
     expected = pd.DataFrame(data3)
-    expected.index.name="treatment"
+    expected.index.name = "treatment"
     assert_frame_equal(results["trial_3C"], expected)
 
 
-
-def _temp():
-    
-    trial_id = "trial_2B"
-    df_plots = field_trial.query_df_all_plots(trial_id)
-    df_trt = field_trial.query_df_all_treatments(trial_id)
-    results = pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
