@@ -12,7 +12,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import app_style
-from app_data import *
+import app_data
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.df import df_operation
 from dynamofield.field import field_table, importer
@@ -25,10 +25,12 @@ BTN_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
     'font-size': "115%"
 }
 
-BTN_ACTION_CONF = {"size": "lg",
-                  "n_clicks": 0,
-                  "className": "m-2",
-                  "style": BTN_STYLE_ACTION}
+BTN_ACTION_CONF = {
+    "size": "lg",
+    "n_clicks": 0,
+    "className": "m-2",
+    "style": BTN_STYLE_ACTION
+}
 
 
 def trial_selection_panel():
@@ -43,21 +45,20 @@ def trial_selection_panel():
                 dbc.Label('Multi-Select Information related to this trial'),
                 dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
                 dbc.Button('Select All', id='button_info_all', n_clicks=0,
-                           size="lg", className="my-2"), #style=app_style.btn_style),
+                           size="lg", className="my-2"),  # style=app_style.btn_style),
                 dbc.Button('Select None', id='button_info_none', n_clicks=0,
-                           size="lg", className="m-2", 
-                           #style={"margin-left": "5px", "margin-top": "5px"}
+                           size="lg", className="m-2",
+                           # style={"margin-left": "5px", "margin-top": "5px"}
                            ),
             ], width={"size": 4, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
-                dbc.Button('Fetch data', id='btn_fetch_data', 
+                dbc.Button('Fetch data', id='btn_fetch_data',
                            **BTN_ACTION_CONF),
             ], width={"size": "auto", "offset": 1}),
         ]),
-        dcc.Markdown(id="data_info"), 
+        dcc.Markdown(id="data_info"),
     ])
-
 
 
 def merging_two_info():
@@ -86,9 +87,8 @@ def merging_two_info():
     ])
 
 
-
 def plot_stats_panel():
-    return html.Div(style={'padding': 10}, 
+    return html.Div(style={'padding': 10},
                     children=[
         dbc.Row(html.H6("Plotting and statistical analysis.")),
         dbc.Row([
@@ -101,14 +101,14 @@ def plot_stats_panel():
                 dcc.Dropdown(id="dropdown_yaxis", multi=False),
             ], width=3),
             dbc.Col([
-                dcc.Markdown("\[Optional\] Slice by or Colour"),
+                dcc.Markdown("\\[Optional\\] Slice by or Colour"),
                 dcc.Dropdown(id="dropdown_by", multi=False),
             ], width=3),
             dbc.Col([
                 dbc.Label("Plot type:"),
-                dcc.RadioItems(options=["Scatter", "Line", "Bar"], 
-                    value = "Scatter", 
-                    id="raido-plot-type", 
+                dcc.RadioItems(options=["Scatter", "Line", "Bar"],
+                    value="Scatter",
+                    id="raido-plot-type",
                     style={"display": "flex", "margin": 5, "padding": 5}
                 ),
             ], width=2),
@@ -118,38 +118,36 @@ def plot_stats_panel():
                        **BTN_ACTION_CONF),
             dbc.Button("Analysis", id="btn_stats",
                        **BTN_ACTION_CONF),
-            dbc.Button("Summary", id="btn_summary", 
+            dbc.Button("Summary", id="btn_summary",
                        **BTN_ACTION_CONF),
         ])
     ])
 
 
-
 def generate_query_panel():
-    return [html.Div(id="query_panel", 
-                     style={'padding': 10},
+    return [html.Div(id="query_panel", style={'padding': 10},
                      children=[
-        dcc.Store(id='store_data_table', storage_type='session', clear_data=True),
+        dcc.Store(id='store_data_table', storage_type='session',
+                  clear_data=True),
         trial_selection_panel(),
-        html.Hr(style={"height":"2px", "margin":"5px"}),
-        
-        # dbc.Accordion([
-        #     dbc.AccordionItem(
-        #         merging_two_info(),
-        #     ),
-        #     dbc.AccordionItem(
-        #         plot_stats_panel(),
-        #     )
-        # ]),
-        merging_two_info(),
-        plot_stats_panel(),
-        html.Hr(style={"height":"2px", "margin":"5px"}),
-        
-        
+        html.Hr(style={"height": "2px", "margin": "5px"}),
+
+        dbc.Accordion([
+            dbc.AccordionItem(
+                children=[merging_two_info()],
+                title="Merging data_type"),
+            dbc.AccordionItem(
+                children=[plot_stats_panel()],
+                title="Stats"),
+        ]),
+        # merging_two_info(),
+        # plot_stats_panel(),
+        html.Hr(style={"height": "2px", "margin": "5px"}),
+
         html.H5("Statistical analysis"),
         dbc.Row([
             html.Pre(id="stats_output", title="Stats results",
-                     style={"font-size":"125%"})
+                     style={"font-size": "125%"})
         ]),
         # html.Br(),
         # dbc.Button("Export data table (CSV)",
@@ -159,14 +157,14 @@ def generate_query_panel():
         # html.Br(),
 
         html.H5("Table and figure"),
-        dash_table.DataTable(id="data_table",
-                            page_size=50,  # we have less data in this example, so setting to 20
-                            style_table={
-                                'height': '300px', 'overflowY': 'auto'},
-                            export_format='csv'),
+        dash_table.DataTable(
+            id="data_table",
+            page_size=50,  # we have less data in this example, so setting to 20
+            style_table={
+                'height': '300px', 'overflowY': 'auto'},
+            export_format='csv'),
         dcc.Graph(id='data_figure'),
     ])]
-
 
 
 @dash.callback(
@@ -184,7 +182,7 @@ def get_id_list(tab, db_info):
         is_disabled = True
     else:
         # field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
-        field_trial = connect_db_table(db_info)
+        field_trial = app_data.connect_db_table(db_info)
         ids = field_trial.get_all_trial_id()
         is_disabled = False
         # field_trial = init_field_trial(endpoint, table_name)
@@ -193,19 +191,16 @@ def get_id_list(tab, db_info):
     return ids, is_disabled
 
 
-
-
-
 @dash.callback(
     Output('dropdown_info_sortkey', 'options'),
-    Input('select_trial', 'value'),        
+    Input('select_trial', 'value'),
     State('store_db_info', 'data'),
 )
 def update_output_info(trial_ids, db_info):
     if not trial_ids:
         return []
     # if value is not None:
-    field_trial = connect_db_table(db_info)
+    field_trial = app_data.connect_db_table(db_info)
     info_global = set()
     for trial in trial_ids:
         info = field_trial.list_all_sort_keys(trial)
@@ -214,7 +209,7 @@ def update_output_info(trial_ids, db_info):
         # print(info_global)
     info_global = list(info_global)
     info_global.sort()
-    return info_global # , info_global, info_global
+    return info_global  # , info_global, info_global
 
 
 @dash.callback(
@@ -232,16 +227,13 @@ def update_info_selection_btn(b1, b2, options):
         return None
 
 
-
-
-
 @dash.callback(
     Output("data_table", "data"),
     Input("store_data_table", "data"),
 )
 def update_output_table(store_table):
     return store_table
-    
+
 
 
 @dash.callback(
@@ -265,7 +257,7 @@ def update_output_table(store_table):
     State("dropdown_info_t2_column", "value"),
     State("store_data_table", "data"),
     State('store_db_info', 'data'),
-    
+
 )
 def update_data_table(b_fetch, b_merge,
                       trial_id, info_list, info_options,
@@ -278,7 +270,7 @@ def update_data_table(b_fetch, b_merge,
         print(f"info_list:{info_list}\t{info_options}")
         if info_list is None:
             info_list = info_options
-        field_trial = connect_db_table(db_info)
+        field_trial = app_data.connect_db_table(db_info)
         data = field_trial.query_by_trial_ids(trial_id, info_list)
         df_output = json_utils.result_list_to_df(data)
     elif "btn_merge_info_tables" == ctx.triggered_id and data_table and t1_column and t2_column:
@@ -296,13 +288,12 @@ def update_data_table(b_fetch, b_merge,
     return output
 
 
-
 @dash.callback(
     Output("dropdown_info_t1_column", "options"),
     Output("dropdown_info_t2_column", "options"),
     Input('dropdown_info_sortkey_t1', 'value'),
     Input('dropdown_info_sortkey_t2', 'value'),
-    State("data_table", "columns"), 
+    State("data_table", "columns"),
     State("store_data_table", "data"),
 )
 def update_select_two_tables(info_1, info_2, columns, data_table):
@@ -316,9 +307,6 @@ def update_select_two_tables(info_1, info_2, columns, data_table):
     t2_c = df_operation.get_non_na_column_name(dd, info_2)
 
     return t1_c, t2_c
-
-
-
 
 
 @dash.callback(
@@ -340,7 +328,7 @@ def export_dataframe(n_clicks, df):
     Output('data_figure', 'figure'),
     Input('btn_plot', 'n_clicks'),
     State("store_data_table", "data"),
-    State('dropdown_xaxis', 'value'), 
+    State('dropdown_xaxis', 'value'),
     State('dropdown_yaxis', 'value'),
     State('dropdown_by', 'value'),
     State("raido-plot-type", "value"),
@@ -380,10 +368,12 @@ def stat_analysis(btn_stat, btn_summary, data_table,
     df = pd.DataFrame(data_table)
     print(f"stats:{df.shape}\t{df.columns}\tVar:{var_x}, {var_y}, {var_by}")
     if "btn_stats" == ctx.triggered_id:
-        results = summary_stats.analysis_design(df, factor=var_x, response=var_y, by=var_by)
-    elif "btn_summary" ==  ctx.triggered_id:
-        results = summary_stats.summary_table_df(df, factor=var_x, response=var_y, by=var_by)
-    out = [f"Dataset:{k}\n{v}\n\n" for k,v in results.items()]
+        results = summary_stats.analysis_design(
+            df, factor=var_x, response=var_y, by=var_by)
+    elif "btn_summary" == ctx.triggered_id:
+        results = summary_stats.summary_table_df(
+            df, factor=var_x, response=var_y, by=var_by)
+    out = [f"Dataset:{k}\n{v}\n\n" for k, v in results.items()]
     output = "".join(out)
     stats_output = f"{output}"
     return stats_output

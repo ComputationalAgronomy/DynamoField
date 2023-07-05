@@ -26,7 +26,7 @@ def update_status_panel():
     return html.Div(children=[
         dcc.Markdown(id="db_markdown",
                      dangerously_allow_html=True),
-        # dcc.RadioItems(id="radio_db_status", 
+        # dcc.RadioItems(id="radio_db_status",
         #                style={'display': 'flex', "margin-right": "5pt"},
         #                inline=False,
         #                options=[
@@ -36,7 +36,7 @@ def update_status_panel():
         #     # "label": html.Div(['London'], style={'color': 'LightGreen', 'font-size': 20}),
         #     # "value": "London",
         # # },
-          
+
         # ],),
     ],)
 
@@ -88,23 +88,26 @@ def update_config_panel():
 def create_new_table_panel():
     return html.Div(style={'padding': 10},
                     children=[
-        
         dbc.Row([
             dbc.Col([
                 html.H4("Database table information"),
                 dbc.Label("Create a new table. Table name:"),
                 dbc.Input(id="new_table_name", type="text", minLength=3),
                 dbc.Button(id="btn_create_table", children="Create new table",
-                        n_clicks=0, size="lg", className="my-2"),
+                           n_clicks=0, size="lg", className="my-2"),
             ], width=3),
             dbc.Col([
-                html.H4("Dangour zone!", style={"color": "red"}),    
+                html.H4("Dangour zone!", style={"color": "red"}),
                 dbc.Label("DELETE a table. Table name:"),
-                dbc.Input(id="text_delete_tablename", type="text", style={"width":"200px"}),
+                dbc.Input(
+                    id="text_delete_tablename",
+                    type="text",
+                    style={
+                        "width": "200px"}),
                 dbc.Button(id="btn_delete_table", children="DELETE this table",
-                    n_clicks=0, size="lg", color="danger",
-                    className="my-2")
-            ], width={"size": 3,  "offset": 3})
+                           n_clicks=0, size="lg", color="danger",
+                           className="my-2")
+            ], width={"size": 3, "offset": 3})
         ]),
         html.Br(),
         # dbc.Row([
@@ -117,21 +120,18 @@ def create_new_table_panel():
 
         html.Br(),
         dcc.Markdown(id="db_table_md",
-            dangerously_allow_html=True),
+                     dangerously_allow_html=True),
         dash_table.DataTable(id="dt_list_table",
-            page_size=10,  # we have less data in this example, so setting to 20
-            style_table={'height': '200px', 'overflowY': 'auto', 'width': '300px'}),
+                             page_size=10,  # we have less data in this example, so setting to 20
+                             style_table={'height': '200px', 'overflowY': 'auto', 'width': '300px'}),
     ])
-
 
 
 def delete_table_panel():
-    return  html.Div(style={'padding': 10},
+    return html.Div(style={'padding': 10},
                     children=[
-        
+
     ])
-
-
 
 
 def db_debug_panel():
@@ -175,26 +175,26 @@ def generate_db_status_panel():
         ),
         # html.Hr(),
         # update_status_panel(),
-        html.Hr(),
+        # html.Hr(),
         update_config_panel(),
-        html.Hr(),
-        dbc.Button('Start database (TODO)', id='btn_db_start',
-                    n_clicks=0,  size="lg", # style=app_style.btn_style,
-                    # className="two columns"
-                    style={
-                        # "padding":"5px",
-                        "margin":"10px", #'margin-top': '0px', 
-                        "height":"50px",  "width":"200px", 
-                    }
-        ),
-        # ],),
-        html.Hr(),
+        html.Hr(style={"height": "2px", "margin": "5px"}),
         create_new_table_panel(),
         delete_table_panel(),
         html.Hr(),
+        html.Hr(style={"height": "2px", "margin": "5px"}),
+        dbc.Button(id='btn_db_start', value='Start database (TODO)',
+                   n_clicks=0, size="lg",  # style=app_style.btn_style,
+                   # className="two columns"
+                   style={
+                       # "padding":"5px",
+                       "margin": "10px",  # 'margin-top': '0px',
+                       "height": "50px", "width": "200px",
+                   }
+                   ),
+
         db_debug_panel(),
 
-        
+
     ]
 
 

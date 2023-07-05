@@ -53,14 +53,12 @@ app.layout = html.Div(
             id="banner",
             className="banner",
             children=[
-                html.H2("FT database."),
+                html.H2("Dynamofielt - Field trial database"),
                 dcc.Markdown(id="db_markdown",
                     dangerously_allow_html=True)
             ],
         ),
-        html.Div(children=[
-            dcc.Interval(id="refresh-graph-interval", disabled=False, interval=10000),
-        ]),
+
         dcc.Store(id='store_server', storage_type='local'),
         dcc.Store(id='store_table', storage_type='local'),
         
@@ -70,8 +68,10 @@ app.layout = html.Div(
             dcc.Tab(label='Import data', value='tab-import'),
             dcc.Tab(label='Database Status', value='tab-db-status'),
         ]),
-        html.Div(id='tabs-function-content')
-
+        html.Div(id='tabs-function-content'),
+        html.Div(children=[
+            dcc.Interval(id="refresh-graph-interval", disabled=False, interval=10000),
+        ]),
     ]
 )
 
@@ -81,7 +81,7 @@ app.layout = html.Div(
     Input('tabs-function', 'value')
 )
 def render_panels(tab):
-    print(tab)
+    # print(tab)
     if tab == "tab-query":
         return generate_query_panel()
     elif tab == "tab-import":
