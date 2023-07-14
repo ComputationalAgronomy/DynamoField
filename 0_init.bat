@@ -1,4 +1,4 @@
-py -m pip install -r requirements.txt
-py utils/setup_dynamoDB_local.py
+py -m pip install -r %~dp0/requirements.txt
+py %~dp0/utils/setup_dynamoDB_local.py
 
 pause
