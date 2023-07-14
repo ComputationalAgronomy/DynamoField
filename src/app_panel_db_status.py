@@ -182,8 +182,9 @@ def generate_db_status_panel():
         delete_table_panel(),
         html.Hr(),
         html.Hr(style={"height": "2px", "margin": "5px"}),
-        dbc.Button(id='btn_db_start', value='Start database (TODO)',
+        dbc.Button(id='btn_db_start', children='Start database (TODO)',
                    n_clicks=0, size="lg",  # style=app_style.btn_style,
+                   disabled=True,
                    # className="two columns"
                    style={
                        # "padding":"5px",

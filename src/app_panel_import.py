@@ -57,7 +57,7 @@ def generate_import_panel():
                 )
             ], width=5),
             dbc.Col([
-                dbc.Button(id='btn_preview', value='Preview file',
+                dbc.Button(id='btn_preview', children='Preview file',
                            n_clicks=0, size="lg",
                            style=BTN_STYLE,
                            ),
@@ -84,7 +84,7 @@ def generate_import_panel():
                                ),
             ], width=3),
             dbc.Col([
-                dbc.Button(id='btn_import', value='Import data',
+                dbc.Button(id='btn_import', children='Import data',
                            n_clicks=0, size="lg",
                            className="me-2", style=BTN_STYLE,
                            ),
