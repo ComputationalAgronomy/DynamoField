@@ -1,1 +1,0 @@
-/home/steven/software/dynamoDB/start_dynamodb.sh
