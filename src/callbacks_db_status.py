@@ -169,7 +169,8 @@ def update_status_interval(n, db_info):
 def update_db_status(btn_connect_db, region, ep, name, info):
     # if not ep:
     #     raise PreventUpdate
-
+    endpoint = None
+    table_name = None
     if dash.callback_context.triggered_id == 'db_regions':
         print("Update region: {region}")
         ep = aws_utils.get_endpoint(region)
