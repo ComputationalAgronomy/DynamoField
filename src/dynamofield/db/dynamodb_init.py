@@ -31,12 +31,12 @@ class DynamodbServer:
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
         response = init_db.add_db_table(client, tablename)
         return response
-    
+
     def delete_table(self, tablename):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
         response = init_db.remove_table(client, tablename)
         return response
-    
+
     def init_dynamodb_client(self):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
         # client.describe_table(TableName=table_name)["Table"]["ItemCount"]
@@ -51,25 +51,28 @@ class DynamodbServer:
         return list(self.dynamodb_res.tables.all())
 
     def is_dynamodb_online(self):
+        self.is_online = False
         try:
             _ = self.list_tables()
             self.is_online = True
             # test = next(dynamodb_res.tables.pages())
         except botocore.exceptions.EndpointConnectionError as e:
             print(f"Invalid DynamoDB connection or server: {e}")
-            self.is_online = False
+        except botocore.exceptions.ClientError as e:
+            print(f"Invalid endpoint or credential: {e}")
+
 
     def init_dynamodb_resources(self):
         self.dynamodb_res = self.session.resource('dynamodb', endpoint_url=self.endpoint_url)
         self.is_dynamodb_online()
-        is_online = self.is_online
+        # is_online = self.is_online
         # if is_online:
         #     print("res:online")
         # elif not is_online:
-        print(f"==DEBUG== Resource online: {is_online}")
+        print(f"==DEBUG== Resource online: {self.is_online}")
         # isinstance(dynamodb_res, boto3.resources.base.ServiceResource)
 
-        return is_online
+        return self.is_online
 
     def init_dynamodb_resources_table(self, table_name):
         res_table = self.dynamodb_res.Table(table_name)

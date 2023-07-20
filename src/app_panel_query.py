@@ -61,6 +61,32 @@ def trial_selection_panel():
     ])
 
 
+def merging_columns_within_info():
+    return html.Div(style={'padding': 10},
+                    children=[
+        dbc.Row(html.H6("Merging columns within info tables")),
+        dbc.Row([
+            dbc.Col([
+                dbc.Label('Info table'),
+                dcc.Dropdown(id="dropdown_info_merge", multi=False),
+                dbc.Label('Column names'),
+                dcc.Dropdown(id="dropdown_info_merge_columns", multi=True),
+            ], width={"size": 3}),
+            # dbc.Col([
+            #     dbc.Label('Second info table'),
+            #     dcc.Dropdown(id="dropdown_info_sortkey_t2", multi=False),
+            #     dbc.Label('Second table - Column name'),
+            #     dcc.Dropdown(id="dropdown_info_t2_column", multi=False),
+            # ], width={"size": 3, "offset": 0.5}),
+            dbc.Col([
+                html.Br(),
+                dbc.Button('Merge columns', id='btn_merge_columns',
+                           **BTN_ACTION_CONF)
+            ], width={"size": "auto", "offset": 1})
+        ]),
+    ])
+
+
 def merging_two_info():
     return html.Div(style={'padding': 10},
                     children=[
@@ -109,7 +135,8 @@ def plot_stats_panel():
                 dcc.RadioItems(options=["Scatter", "Line", "Bar"],
                     value="Scatter",
                     id="raido-plot-type",
-                    style={"display": "flex", "margin": 5, "padding": 5}
+                    inline=True,
+                    style={"margin": 5, "padding": 5}
                 ),
             ], width=2),
         ]),
@@ -134,10 +161,13 @@ def generate_query_panel():
 
         dbc.Accordion([
             dbc.AccordionItem(
-                children=[merging_two_info()],
+                children=merging_columns_within_info(),
+                title="Merging columns within a data_type"),
+            dbc.AccordionItem(
+                children=merging_two_info(),
                 title="Merging data_type"),
             dbc.AccordionItem(
-                children=[plot_stats_panel()],
+                children=plot_stats_panel(),
                 title="Stats"),
         ]),
         # merging_two_info(),
@@ -157,13 +187,24 @@ def generate_query_panel():
         # html.Br(),
 
         html.H5("Table and figure"),
-        dash_table.DataTable(
-            id="data_table",
-            page_size=50,  # we have less data in this example, so setting to 20
-            style_table={
-                'height': '300px', 'overflowY': 'auto'},
-            export_format='csv'),
-        dcc.Graph(id='data_figure'),
+        dbc.Accordion([
+            dbc.AccordionItem(
+                title="Data table", item_id="item-table",
+                children=[dash_table.DataTable(
+                    id="data_table",
+                    page_size=50,  # we have less data in this example, so setting to 20
+                    style_table={
+                        'height': '300px', 'overflowY': 'auto'},
+                    export_format='csv')]
+            ),
+            dbc.AccordionItem(
+                title="Figure", item_id="item-figure",
+                children=dcc.Graph(id='data_figure'),)
+        ],
+            flush=True, always_open=True,
+            active_item=["item-table", "item-figure"])
+
+
     ])]
 
 
@@ -235,14 +276,13 @@ def update_output_table(store_table):
     return store_table
 
 
-
 @dash.callback(
-    # Output("data_table", "columns"), 
+    # Output("data_table", "columns"),
     # Output("data_table", "data"),
     Output("store_data_table", "data"),
     Output('dropdown_info_sortkey_t1', 'options'),
     Output('dropdown_info_sortkey_t2', 'options'),
-    Output("dropdown_xaxis", "options"), 
+    Output("dropdown_xaxis", "options"),
     Output("dropdown_yaxis", "options"),
     Output("dropdown_by", "options"),
     Output("data_info", "children"),

@@ -1,6 +1,7 @@
 
 import dash
 from dynamofield.db.init_db import start_dynamodb_server
+from dynamofield.db import aws_utils
 import numpy as np
 import pandas as pd
 from dash import Dash, ctx, dash_table, dcc, html
@@ -8,7 +9,7 @@ from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
 from app_data import *
-
+import app_data
 
 # @dash.callback(
 #     Output('get_item_count', 'children'),
@@ -26,11 +27,17 @@ from app_data import *
 # )
 # def update_item_count_db(x, info):
 #     return update_item_count(info)
+@dash.callback(
+    Output("db_regions", "options"),
+    Input('btn_connect_db', 'n_clicks')
+)
+def list_regions(btn):
+    return aws_utils.list_all_regions()
 
 
 @dash.callback(
     Output('db_table_md', 'children'),
-    Output("dt_list_table", "columns"), 
+    Output("dt_list_table", "columns"),
     Output("dt_list_table", "data"),
     Input('btn_create_table', 'n_clicks'),
     Input('btn_list_tables', 'n_clicks'),
@@ -44,18 +51,18 @@ def add_new_table(btn_create, btn_list, btn_delete,
     print("Table info:", tablename, delete_tablename, db_info, dash.callback_context.triggered_id)
     if db_info is None or not db_info["db_status"]:
         raise PreventUpdate
-    md = "" # "Database offline."
+    md = ""  # "Database offline."
     columns = None
     data = None
-    list_tables = db_list_table(db_info)    
-    if dash.callback_context.triggered_id == 'btn_create_table':        
+    list_tables = app_data.db_list_table(db_info)
+    if dash.callback_context.triggered_id == 'btn_create_table':
         # if tablename is None or len(tablename) == 0:
         #     md = "Please enter a name for the new table (min length > 3)."
         #     print(md)
         #     raise PreventUpdate
         # # TODO: Check table not already exist
         try:
-            md = create_new_table(db_info, tablename)
+            md = app_data.create_new_table(db_info, tablename)
         except Exception as e:
             md = f"Please enter a name for the new table (min length > 3).<br>{e}"
     elif dash.callback_context.triggered_id == 'btn_list_tables':
@@ -68,7 +75,7 @@ def add_new_table(btn_create, btn_list, btn_delete,
         # TODO: Pop up confirmation message
 
         try:
-            md = delete_existing_table(db_info, delete_tablename)
+            md = app_data.delete_existing_table(db_info, delete_tablename)
         except Exception as e:
             md = f"Please enter a name to delete table.<br>{e}"
         print(md)
@@ -80,7 +87,7 @@ def add_new_table(btn_create, btn_list, btn_delete,
 
 
 # @dash.callback(
-#     Output("dt_list_table", "columns"), 
+#     Output("dt_list_table", "columns"),
 #     Output("dt_list_table", "data"),
 
 #     State('store_db_info', 'data'),
@@ -91,7 +98,7 @@ def add_new_table(btn_create, btn_list, btn_delete,
 #     columns = None
 #     data = None
 #     if db_info["db_status"]:
-      
+
 
 
 
@@ -145,13 +152,10 @@ def update_status_interval(n, db_info):
 @dash.callback(
     Output('db_endpoint', 'value'),
     Output('db_table_name', 'value'),
-    # Output('store_endpoint', 'data'),
-    # Output('store_table_name', 'data'),
-    # Output('store_db_status', 'data'),
-    # Output('store_table_status', 'data'),
     Output('store_db_info', 'data'),
-    Output("loading_update_db", "children"),   
+    Output("loading_update_db", "children"),
     Input('btn_connect_db', 'n_clicks'),
+    Input("db_regions", "value"),
     State('db_endpoint', 'value'),
     State('db_table_name', 'value'),
     State('store_db_info', 'data'),
@@ -160,63 +164,54 @@ def update_status_interval(n, db_info):
     running=[
         (Output("btn_connect_db", "disabled"), True, False),
     ],
+    prevent_initial_call=True,
 )
-def update_db_status(btn, ep, name, info): #m_ep, m_name):
+def update_db_status(btn_connect_db, region, ep, name, info):
     # if not ep:
     #     raise PreventUpdate
-    # update_endpoint
-    # if info is None:
-    #     print(f"No update: info:{info}")
-    #     raise PreventUpdate
+
+    if dash.callback_context.triggered_id == 'db_regions':
+        print("Update region: {region}")
+        ep = aws_utils.get_endpoint(region)
+
     try:
         m_ep = info["endpoint"]
         m_name = info["table_name"]
     except Exception:
         m_ep = None
         m_name = None
-    print(f"Current status: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
-    if ep == m_ep and name == m_name:
-        print("No update")
-        raise PreventUpdate
-
-    endpoint = None
-    table_name = None
-    db_status = False
-    table_status = False
     if ep:
         endpoint = ep
     elif m_ep:
         endpoint = m_ep
-
     if name:
         table_name = name
     elif m_name:
         table_name = m_name
 
-    print(f"Update: {endpoint} {table_name}")
-    if endpoint is not None:
-        # raise PreventUpdate
+    if dash.callback_context.triggered_id == 'btn_connect_db':
 
-        # if ep is None and m_ep:
-        dynamodb_server = init_dynamodb(endpoint)
-        # dynamodb_server.is_dynamodb_online()
-        db_status = dynamodb_server.is_online
-    if db_status and table_name is not None:
-        table_status = dynamodb_server.is_table_exist(table_name)
-    print("Status:\t", db_status, table_status)
-    # field_trial = init_field_trial(
-    #     dynamodb_server,
-    #     table_name=table_name_default)
-    # dynamodb_server.update_endpoint(endpoint)
-    # print(f"update: {endpoint} {table_name}")
-    info = {
-        "endpoint": endpoint,
-        "table_name": table_name,
-        "db_status":db_status,
-        "table_status": table_status,
-        endpoint: db_status,
-        table_name: table_status
-    }
+        print(f"Current status: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
+        if ep == m_ep and name == m_name:
+            print("No update")
+            # raise PreventUpdate
+        db_status = False
+        table_status = False
+        if endpoint is not None:
+            dynamodb_server = app_data.init_dynamodb(endpoint)
+            db_status = dynamodb_server.is_online
+        if db_status and table_name is not None:
+            table_status = dynamodb_server.is_table_exist(table_name)
+        print(f"Connect DB: {endpoint} {table_name}\tStatus:\t {db_status} {table_status}")
+
+        info = {
+            "endpoint": endpoint,
+            "table_name": table_name,
+            "db_status": db_status,
+            "table_status": table_status,
+            endpoint: db_status,
+            table_name: table_status
+        }
     return endpoint, table_name, info, True
 
 

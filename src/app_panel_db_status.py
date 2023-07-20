@@ -42,18 +42,23 @@ def update_status_panel():
 
 
 def update_config_panel():
-    return html.Div(style={'padding': 10},
+    return html.Div(style={'padding': 10, 'margin': 5},
                     children=[
         dbc.Row(children=[
             html.H4("Connect to existing database:"),
             dbc.Col([
                 # html.Div(className="three columns", children=[
                 html.Label("Database endpoint:"),
-                html.Label("Default: http://localhost:8000/"),
-                dcc.Input(id="db_endpoint", type="text",
+                # html.Label("Default: http://localhost:8000/"),
+                dbc.Input(id="db_endpoint", type="text", size="lg",
                           placeholder="http://localhost:8000/", debounce=True,
                           ),
-            ], width="auto"),
+                html.Label("Region selector:"),
+                dbc.Select(id="db_regions", required=False, size="lg",
+                        #    placeholder="local: http://localhost:8000/",
+                           persistence=True
+                           )
+            ], width="4"),
             dbc.Col([
                 # html.Div(className="three columns", children=[
                 html.Label("DB table name:"),
