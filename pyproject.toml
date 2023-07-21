@@ -35,3 +35,6 @@ pythonpath = "src"
 addopts = [
     "--import-mode=importlib",
 ]
+
+[flake8]
+per-file-ignores = "tests/*: E501"  # E501 line too long

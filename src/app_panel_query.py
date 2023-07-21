@@ -40,10 +40,16 @@ def trial_selection_panel():
         dbc.Row([
             dbc.Col([
                 dbc.Label('Select trial ID'),
-                dcc.Dropdown(multi=True, id="select_trial"),
+                dcc.Dropdown(multi=True, id="dropdown_select_trial"),
+                dbc.Button('Select All', id='button_trial_all', n_clicks=0,
+                           size="lg", className="my-2"),  # style=app_style.btn_style),
+                dbc.Button('Select None', id='button_trial_none', n_clicks=0,
+                           size="lg", className="m-2",
+                           # style={"margin-left": "5px", "margin-top": "5px"}
+                           ),
             ], width=3),
             dbc.Col([
-                dbc.Label('Multi-Select Information related to this trial'),
+                dbc.Label('Multi-Select data_types related to this trial'),
                 dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
                 dbc.Button('Select All', id='button_info_all', n_clicks=0,
                            size="lg", className="my-2"),  # style=app_style.btn_style),
@@ -65,25 +71,21 @@ def trial_selection_panel():
 def merging_columns_within_info():
     return html.Div(style={'padding': 10},
                     children=[
-        dbc.Row(html.H6("Merging columns within info tables")),
+        # dbc.Row(html.H6("Merging columns within a data_type")),
         dbc.Row([
             dbc.Col([
-                dbc.Label('Info table'),
+                dbc.Label('Select a data_type'),
                 dcc.Dropdown(id="dropdown_info_merge", multi=False),
+            ], width={"size": 3}),
+            dbc.Col([
                 dbc.Label('Column names'),
                 dcc.Dropdown(id="dropdown_info_merge_columns", multi=True),
-            ], width={"size": 3}),
-            # dbc.Col([
-            #     dbc.Label('Second info table'),
-            #     dcc.Dropdown(id="dropdown_info_sortkey_t2", multi=False),
-            #     dbc.Label('Second table - Column name'),
-            #     dcc.Dropdown(id="dropdown_info_t2_column", multi=False),
-            # ], width={"size": 3, "offset": 0.5}),
+            ], width={"size": 4, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
                 dbc.Button('Merge columns', id='btn_merge_columns',
                            **BTN_ACTION_CONF)
-            ], width={"size": "auto", "offset": 1})
+            ], width={"size": "auto", "offset": 0.5})
         ]),
     ])
 
@@ -91,18 +93,18 @@ def merging_columns_within_info():
 def merging_two_info():
     return html.Div(style={'padding': 10},
                     children=[
-        dbc.Row(html.H6("Merging info tables")),
+        # dbc.Row(html.H6("Merging two data_types tables")),
         dbc.Row([
             dbc.Col([
-                dbc.Label('First info table'),
+                dbc.Label('First data_type table'),
                 dcc.Dropdown(id="dropdown_info_sortkey_t1", multi=False),
-                dbc.Label('First table - Column name'),
+                dbc.Label('First data_type - Column name'),
                 dcc.Dropdown(id="dropdown_info_t1_column", multi=False),
             ], width={"size": 3}),
             dbc.Col([
-                dbc.Label('Second info table'),
+                dbc.Label('Second data_type table'),
                 dcc.Dropdown(id="dropdown_info_sortkey_t2", multi=False),
-                dbc.Label('Second table - Column name'),
+                dbc.Label('Second data_type - Column name'),
                 dcc.Dropdown(id="dropdown_info_t2_column", multi=False),
             ], width={"size": 3, "offset": 0.5}),
             dbc.Col([
@@ -166,11 +168,11 @@ def generate_query_panel():
                 title="Merging columns within a data_type"),
             dbc.AccordionItem(
                 children=merging_two_info(),
-                title="Merging data_type"),
+                title="Merging two data_types"),
             dbc.AccordionItem(
                 children=plot_stats_panel(),
-                title="Stats"),
-        ]),
+                title="Basic statistical analysis"),
+        ], active_item=[]),
         html.Hr(style={"height": "2px", "margin": "5px"}),
 
         html.H5("Statistical analysis"),
@@ -202,7 +204,5 @@ def generate_query_panel():
         ],
             flush=True, always_open=True,
             active_item=["item-table", "item-figure"])
-
-
     ])]
 

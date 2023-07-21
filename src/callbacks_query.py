@@ -23,12 +23,12 @@ from dynamofield.utils import json_utils
 
 
 @dash.callback(
-    Output('select_trial', 'options'),
-    Output('select_trial', 'disabled'),
+    Output('dropdown_select_trial', 'options'),
+    Output('dropdown_select_trial', 'disabled'),
     Input('tabs-function', 'value'),
     State('store_db_info', 'data'),
 )
-def get_id_list(tab, db_info):
+def get_field_trial_id_list(tab, db_info):
     if tab != "tab-query" or db_info is None:
         raise PreventUpdate
     if not db_info["db_status"] or not db_info["table_status"]:
@@ -40,15 +40,16 @@ def get_id_list(tab, db_info):
         field_trial = app_data.connect_db_table(db_info)
         ids = field_trial.get_all_trial_id()
         is_disabled = False
+        print(f"{ids}")
         # field_trial = init_field_trial(endpoint, table_name)
         # data = field_trial.get_by_trial_ids(trial_id, info_list)
-    print(f"{ids}")
+
     return ids, is_disabled
 
 
 @dash.callback(
     Output('dropdown_info_sortkey', 'options'),
-    Input('select_trial', 'value'),
+    Input('dropdown_select_trial', 'value'),
     State('store_db_info', 'data'),
 )
 def update_output_info(trial_ids, db_info):
@@ -83,6 +84,21 @@ def update_info_selection_btn(b1, b2, options):
 
 
 @dash.callback(
+    Output('dropdown_select_trial', 'value'),
+    Input('button_trial_all', 'n_clicks'),
+    Input('button_trial_none', 'n_clicks'),
+    State('dropdown_select_trial', 'options'),
+)
+def update_select_trial_btn(b1, b2, options):
+    if not options:
+        raise PreventUpdate
+    if "button_trial_all" == ctx.triggered_id:
+        return options
+    elif "button_trial_none" == ctx.triggered_id:
+        return None
+
+
+@dash.callback(
     Output("data_table", "data"),
     Input("store_data_table", "data"),
 )
@@ -102,7 +118,7 @@ def update_output_table(store_table):
 #     # Output("dropdown_by", "options"),
 #     # Output("data_info", "children"),
 #     Input("btn_merge_column", "n_clicks"),
-#     State('select_trial', 'value'),
+#     State('dropdown_select_trial', 'value'),
 #     State('dropdown_info_sortkey', 'value'),
 #     State('dropdown_info_sortkey', 'options'),
 #     State('dropdown_info_merge', 'value'),
@@ -152,7 +168,7 @@ def update_output_table(store_table):
     Input("btn_fetch_data", "n_clicks"),
     Input("btn_merge_info_tables", "n_clicks"),
     Input("btn_merge_columns", "n_clicks"),
-    State('select_trial', 'value'),
+    State('dropdown_select_trial', 'value'),
     State('dropdown_info_sortkey', 'value'),
     State('dropdown_info_sortkey', 'options'),
     State('dropdown_info_sortkey_t1', 'value'),

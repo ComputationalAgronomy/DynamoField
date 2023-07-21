@@ -5,7 +5,7 @@ from dash.exceptions import PreventUpdate
 
 from app_data import *
 from callbacks_db_status import *
-
+from callbacks_query import *
 
 @dash.callback(
     Output('get_item_count', 'children'),

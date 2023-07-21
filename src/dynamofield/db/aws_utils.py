@@ -6,8 +6,10 @@ import boto3
 def list_all_regions():
     s = boto3.Session()
     regions = s.get_available_regions("dynamodb")
-    regions.append("local")
-    return regions
+    # regions.append("local")
+    output = ["local"]
+    output.extend(regions)
+    return output
 
 
 def get_endpoint(region):

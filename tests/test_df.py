@@ -21,9 +21,20 @@ def df1():
         'chemical': {0: np.nan, 1: np.nan, 2: np.nan, 3: np.nan, 4: np.nan, 5: np.nan, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 1.0, 13: 1.0, 14: 1.0, 15: 1.0, 16: 1.0, 17: 1.0, 18: 2.0, 19: 2.0, 20: 2.0, 21: 3.0, 22: 3.0, 23: 3.0},
         'trt_type': {0: np.nan, 1: np.nan, 2: np.nan, 3: np.nan, 4: np.nan, 5: np.nan, 6: 'T3', 7: 'T2', 8: 'T1', 9: 'T3', 10: 'T2', 11: 'T1', 12: 'T3', 13: 'T2', 14: 'T1', 15: 'T3', 16: 'T2', 17: 'T1', 18: 'T3', 19: 'T2', 20: 'T1', 21: 'T3', 22: 'T2', 23: 'T1'},
     })
-    
+
     return df1
 
+
+@pytest.fixture
+def df2():
+    df2 = pd.DataFrame({
+        'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_3C', 3: 'trial_3C', 4: 'trial_3C', 5: 'trial_4D', 6: 'trial_4D', 7: 'trial_4D'},
+        'Fertilizer': {0: 'NPK', 1: 'NPK50', 2: np.nan, 3: np.nan, 4: np.nan, 5: np.nan, 6: np.nan, 7: np.nan},
+        'ferterlizer_usage': {0: np.nan, 1: np.nan, 2: 'NPK', 3: 'NPK50', 4: 'N80', 5: np.nan, 6: np.nan, 7: np.nan},
+        'type_chemical': {0: np.nan, 1: np.nan, 2: np.nan, 3: np.nan, 4: np.nan, 5: 'N50P30', 6: 'NPK', 7: 'N50P30'},
+        'Date_DOP': {0: 10, 1: 20, 2: 15, 3: 25, 4: 35, 5: 11, 6: 22, 7: 33}
+    })
+    return df2
 
 
 def test_merge(df1: pd.DataFrame):
@@ -40,8 +51,22 @@ def test_merge_diff_name(df1: pd.DataFrame):
     expected = pd.DataFrame(data)
     assert_frame_equal(result, expected)
 
+
 def test_merge_diff_column(df1: pd.DataFrame):
     result = df_operation.merge_df(df1, "trt", "chemical", "treatment_name", "trt_type")
     data = {'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_2B', 3: 'trial_3C', 4: 'trial_3C', 5: 'trial_3C', 6: 'trial_2B', 7: 'trial_2B', 8: 'trial_2B', 9: 'trial_2B', 10: 'trial_2B', 11: 'trial_2B', 12: 'trial_2B', 13: 'trial_2B', 14: 'trial_2B', 15: 'trial_3C', 16: 'trial_3C', 17: 'trial_3C', 18: 'trial_3C', 19: 'trial_3C', 20: 'trial_3C', 21: 'trial_3C', 22: 'trial_3C', 23: 'trial_3C'}, 'info_t1': {0: 'trt_0', 1: 'trt_1', 2: 'trt_2', 3: 'trt_0', 4: 'trt_1', 5: 'trt_2', 6: np.nan, 7: np.nan, 8: np.nan, 9: np.nan, 10: np.nan, 11: np.nan, 12: np.nan, 13: np.nan, 14: np.nan, 15: np.nan, 16: np.nan, 17: np.nan, 18: np.nan, 19: np.nan, 20: np.nan, 21: np.nan, 22: np.nan, 23: np.nan}, 'treatment_t1': {0: 'T1', 1: 'T2', 2: 'T3', 3: 'T1', 4: 'T2', 5: 'T3', 6: np.nan, 7: np.nan, 8: np.nan, 9: np.nan, 10: np.nan, 11: np.nan, 12: np.nan, 13: np.nan, 14: np.nan, 15: np.nan, 16: np.nan, 17: np.nan, 18: np.nan, 19: np.nan, 20: np.nan, 21: np.nan, 22: np.nan, 23: np.nan}, 'merge_treatment_name_trt_type': {0: 'trt_1X', 1: 'trt_2X', 2: 'trt_3X', 3: 'trt_1X', 4: 'trt_2X', 5: 'trt_3X', 6: 'T3', 7: 'T3', 8: 'T3', 9: 'T2', 10: 'T2', 11: 'T2', 12: 'T1', 13: 'T1', 14: 'T1', 15: 'T3', 16: 'T3', 17: 'T3', 18: 'T2', 19: 'T2', 20: 'T2', 21: 'T1', 22: 'T1', 23: 'T1'}, 'info_t2': {0: np.nan, 1: np.nan, 2: np.nan, 3: np.nan, 4: np.nan, 5: np.nan, 6: 'chemical_0', 7: 'chemical_6', 8: 'chemical_12', 9: 'chemical_1', 10: 'chemical_7', 11: 'chemical_13', 12: 'chemical_2', 13: 'chemical_8', 14: 'chemical_14', 15: 'chemical_3', 16: 'chemical_9', 17: 'chemical_15', 18: 'chemical_4', 19: 'chemical_10', 20: 'chemical_16', 21: 'chemical_5', 22: 'chemical_11', 23: 'chemical_17'}, 'treatment_t2': {0: np.nan, 1: np.nan, 2: np.nan, 3: np.nan, 4: np.nan, 5: np.nan, 6: 'T1', 7: 'T1', 8: 'T1', 9: 'T2', 10: 'T2', 11: 'T2', 12: 'T3', 13: 'T3', 14: 'T3', 15: 'T1', 16: 'T1', 17: 'T1', 18: 'T2', 19: 'T2', 20: 'T2', 21: 'T3', 22: 'T3', 23: 'T3'}, 'chemical': {0: np.nan, 1: np.nan, 2: np.nan, 3: np.nan, 4: np.nan, 5: np.nan, 6: 0.0, 7: 1.0, 8: 2.0, 9: 0.0, 10: 1.0, 11: 2.0, 12: 0.0, 13: 1.0, 14: 2.0, 15: 0.0, 16: 1.0, 17: 3.0, 18: 0.0, 19: 1.0, 20: 3.0, 21: 0.0, 22: 1.0, 23: 3.0}}
     expected = pd.DataFrame(data)
     assert_frame_equal(result, expected)
+
+
+def test_merge_columns_same_sort_key(df2: pd.DataFrame):
+    merge_columns = ['Fertilizer', 'ferterlizer_usage', 'type_chemical']
+    result = df_operation.merge_multi_columns(df2, merge_columns)
+    expected = pd.DataFrame({
+        'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_3C', 3: 'trial_3C', 4: 'trial_3C', 5: 'trial_4D', 6: 'trial_4D', 7: 'trial_4D'},
+        'Date_DOP': {0: 10, 1: 20, 2: 15, 3: 25, 4: 35, 5: 11, 6: 22, 7: 33},
+        'merged_column': {0: 'NPK', 1: 'NPK50', 2: 'NPK', 3: 'NPK50', 4: 'N80', 5: 'N50P30', 6: 'NPK', 7: 'N50P30'},
+    })
+    assert_frame_equal(result, expected)
+
+

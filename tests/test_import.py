@@ -25,7 +25,7 @@ def field_trial():
 
 # @pytest.mark.first
 def test_creation():
-    table_name = "ft_db"    
+    table_name = "ft_db"
     dynamodb_server = dynamodb_init.DynamodbServer()
     # dynamodb_res = dynamodb_server.init_dynamodb_resources()
     client = dynamodb_server.init_dynamodb_client()
@@ -46,17 +46,17 @@ def test_creation():
                 [{'AttributeName': 'trial_id', 'AttributeType': 'S'},
                     {'AttributeName': 'info', 'AttributeType': 'S'}],
                 'TableName': 'ft_db',
-                'KeySchema': [{'AttributeName': 'trial_id', 'KeyType': 'HASH'}, 
+                'KeySchema': [{'AttributeName': 'trial_id', 'KeyType': 'HASH'},
                     {'AttributeName': 'info', 'KeyType': 'RANGE'}],
                 'TableStatus': 'ACTIVE',
                 'ItemCount': 0
                 }}
     assert expected["Table"].items() <= table_desc["Table"].items()
-    
+
 
 
 def test_import(field_trial: field_table.FieldTable):
-    
+
     TEST_DATA_DIR = "./tests/test_data"
     hidden_key = 3
     expected_length = {
@@ -64,11 +64,11 @@ def test_import(field_trial: field_table.FieldTable):
         "contact": 4,
         "meta": 3,
         "management": 12,
-        "plot":72
+        "plot": 72
     }
     total = np.cumsum(list(expected_length.values())) + hidden_key
     expected_total = dict(zip(expected_length.keys(), total))
-    
+
     # for data_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
     count = field_trial.get_item_count()
     assert count == 0
@@ -81,7 +81,7 @@ def test_import(field_trial: field_table.FieldTable):
         field_trial.import_batch_field_data_res(data_importer) # How to test this effectively?
         field_trial.res_table.reload()
         assert field_trial.res_table.item_count == expected_total[data_type]
-    
+
     field_trial.res_table.reload()
     assert field_trial.res_table.item_count == expected_total["plot"]
 
