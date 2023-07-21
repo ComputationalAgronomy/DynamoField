@@ -21,7 +21,7 @@ from dynamofield.utils import json_utils
 
 
 BTN_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
-    "width": "150px", "height": "60px",
+    "width": "180px", "height": "60px",
     'align-items': 'center', 'justify-content': 'center',
     'font-size': "115%"
 }
@@ -171,8 +171,6 @@ def generate_query_panel():
                 children=plot_stats_panel(),
                 title="Stats"),
         ]),
-        # merging_two_info(),
-        # plot_stats_panel(),
         html.Hr(style={"height": "2px", "margin": "5px"}),
 
         html.H5("Statistical analysis"),
