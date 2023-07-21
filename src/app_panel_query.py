@@ -359,6 +359,7 @@ def update_data_table(b_fetch, b_merge_info, btn_merge_column,
                       data_table, db_info):
     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
+    df_output = pd.DataFrame()
     print(f"trial_id:{trial_id}\t Trigger:{ctx.triggered_id}")
     if "btn_fetch_data" == ctx.triggered_id:
         print(f"info_list:{info_list}\t{info_options}")
