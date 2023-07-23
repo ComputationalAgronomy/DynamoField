@@ -9,22 +9,22 @@ def init_dynamodb(endpoint_url):
     # print("init db")
     # client = dynamodb_init.init_dynamodb_client()
     # table_utils.delete_all_items(client, table_name)
-    dynamodb_server = dynamodb_server.DynamodbServer(endpoint_url=endpoint_url)
+    dynamodb = dynamodb_server.DynamodbServer(endpoint_url=endpoint_url)
     # client = dynamodb_server.init_dynamodb_client()
     # dynamodb_server.init_dynamodb_resources()
     # print("srv:", dynamodb_server.is_online, dynamodb_server.dynamodb_res)
-    return dynamodb_server
+    return dynamodb
 
 
-def init_db_table(dynamodb_server, table_name = "ft_db"):
-    dynamodb_res = dynamodb_server.dynamodb_res
+def init_db_table(dynamodb, table_name = "ft_db"):
+    dynamodb_res = dynamodb.dynamodb_res
     field_trial = field_table.FieldTable(dynamodb_res, table_name)
     return field_trial
 
 
 def init_field_trial(endpoint, table_name):
-    dynamodb_server = init_dynamodb(endpoint)
-    field_trial = init_db_table(dynamodb_server, table_name)
+    dynamodb = init_dynamodb(endpoint)
+    field_trial = init_db_table(dynamodb, table_name)
     return field_trial
 
 # endpoint_url_local = 'http://localhost:8000'
@@ -44,25 +44,25 @@ def connect_db_table(db_info):
 
 
 def db_list_table(db_info):
-    dynamodb_server = init_dynamodb(db_info["endpoint"])#, db_info["table_name"])
-    list_tables = dynamodb_server.list_tables()
+    dynamodb = init_dynamodb(db_info["endpoint"])#, db_info["table_name"])
+    list_tables = dynamodb.list_tables()
     return list_tables
 
 
 def create_new_table(db_info, tablename):
-    dynamodb_server = init_dynamodb(db_info["endpoint"])
-    response = dynamodb_server.create_new_table(tablename)
+    dynamodb = init_dynamodb(db_info["endpoint"])
+    response = dynamodb.create_new_table(tablename)
     return response
 
 
 def delete_existing_table(db_info, tablename):
-    dynamodb_server = init_dynamodb(db_info["endpoint"])
-    response = dynamodb_server.delete_table(tablename)
+    dynamodb = init_dynamodb(db_info["endpoint"])
+    response = dynamodb.delete_table(tablename)
     return response
 
 def delete_all_data_type(db_info, data_type):
-    dynamodb_server = init_dynamodb(db_info["endpoint"])
-    response = dynamodb_server.delete_all_data_type(db_info["table_name"], data_type)
+    dynamodb = init_dynamodb(db_info["endpoint"])
+    response = dynamodb.delete_all_data_type(db_info["table_name"], data_type)
     return response
 
 
