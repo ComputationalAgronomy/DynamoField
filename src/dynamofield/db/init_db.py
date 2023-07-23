@@ -6,8 +6,7 @@ import botocore
 import botocore.exceptions
 import psutil
 import requests
-import tarfile 
-
+import tarfile
 
 
 def add_db_table(client, tablename):
@@ -38,12 +37,13 @@ def add_db_table(client, tablename):
                 'ReadCapacityUnits': 10,
                 'WriteCapacityUnits': 10
             },
-        )    
+        )
         response = f"New table created: {tablename}."
     except botocore.exceptions.ClientError as e:
         response = f"Table already exist Tablename: {tablename}. {e}"
     print(response)
     return response
+
 
 def remove_table(client, tablename):
     try:
@@ -53,9 +53,30 @@ def remove_table(client, tablename):
         response = (f"Table does NOT exist: {tablename}. Error: {e}")
         print(response)
     return response
-    
 
 
+def delete_all_items_sort_key(client, tablename, sort_key):
+    print(f"tablename:{tablename}\tsort_key:{sort_key}")
+    try:
+        response = client.scan(
+            TableName=tablename,
+            FilterExpression='begins_with ( info , :info )',
+            ExpressionAttributeValues={
+                ':info': {'S': f"{sort_key}_"},
+            },
+            ProjectionExpression='trial_id, info',
+        )
+        # print(response['Items'])
+        for k in response['Items']:
+            # print(k)
+            client.delete_item(TableName=f"{tablename}", Key=k)
+        len_data = len(response['Items'])
+        response = f"Successfully delete {len_data} items from data_type: {sort_key}. table:{tablename}."
+    except botocore.exceptions.ClientError as e:
+        response = (f"Error delete_item in sort_key: {tablename}."
+                    f"sort_key: {sort_key}. Error: {e}")
+        print(response)
+    return response
 
 def start_dynamodb_server(path=".", jar="DynamoDBLocal.jar", lib="DynamoDBLocal_lib"):
     jar = os.path.join(path, jar)

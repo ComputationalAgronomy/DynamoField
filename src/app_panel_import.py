@@ -22,28 +22,28 @@ from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
 
-# item_counts = field_trial.get_item_count()
 BTN_STYLE = {
-    "margin": "10px", 'margin-top': '10px',
-    "width": "200px", "height": "60px",
-    'align-items': 'center', 'justify-content': 'center'
+    'margin': '10px', 'margin-top': '10px',
+    'height': '60px', 'width': '200px',
+    'align-items': 'center', 'justify-content': 'center',
+    'text-transform': 'none',
+}
+
+UPLOAD_STYLE = {
+    'width': '100%',
+    'height': '100px',
+    'lineHeight': '60px',
+    'borderWidth': '1px',
+    'borderStyle': 'dashed',
+    'borderRadius': '5px',
+    'textAlign': 'center',
+    'margin': '5px'
 }
 
 
-def generate_import_panel():
-    upload_style = {
-        'width': '100%',
-        'height': '120px',
-        'lineHeight': '60px',
-        'borderWidth': '1px',
-        'borderStyle': 'dashed',
-        'borderRadius': '5px',
-        'textAlign': 'center',
-        'margin': '5px'
-    }
-
-    return [html.Div(style={'padding': 10, 'flex': 1}, id="generate_import",
-                     children=[
+def upload_import_panel():
+    return html.Div(style={'padding': 10},
+                    children=[
         dbc.Row([
             dbc.Col([
                 dcc.Upload(
@@ -52,25 +52,22 @@ def generate_import_panel():
                         'Drag and Drop or ',
                         html.A('Select Files')
                     ]),
-                    style=upload_style,
+                    style=UPLOAD_STYLE,
                     multiple=True
                 )
             ], width=5),
             dbc.Col([
                 dbc.Button(id='btn_preview', children='Preview file',
-                           n_clicks=0, size="lg",
-                           style=BTN_STYLE,
+                           **app_style.BTN_ACTION_CONF,
                            ),
             ], width="auto"),
         ]),
         dbc.Row([
             dbc.Col([
                 html.H5("Import data type (REQUIRED)"),
-                # html.Br(),
                 dbc.Input(id="importing_type",
-                          type="text", required="required",
+                          type="text", required=True,
                           minlength=3,  # maxLength=-1,
-                    # type="number",
                           ),
             ], width=5),
             dbc.Col([
@@ -85,19 +82,47 @@ def generate_import_panel():
             ], width=3),
             dbc.Col([
                 dbc.Button(id='btn_import', children='Import data',
-                           n_clicks=0, size="lg",
-                           className="me-2", style=BTN_STYLE,
+                           **app_style.BTN_ACTION_CONF,
                            ),
             ], width="auto"),
+        ])
+    ])
+
+
+
+
+def danger_delete_data_type_panel():
+    return html.Div(style={'padding': 10},
+                    children=[
+        dbc.Card([
+            dbc.CardHeader(
+                html.H4("Danger Zone!",style={"color": "red"})),
+            dbc.CardBody([
+                dbc.Label("DELETE a data type"),
+                dbc.Input(id="text_delete_data_type",
+                          type="text"),
+                dbc.Button(id="btn_delete_data_type", children="DELETE this data type",
+                           color="danger",
+                           **app_style.BTN_ACTION_CONF,)
+            ]),
+            dcc.Markdown(id="md_delete_output")
         ]),
-        html.Hr(),
+
+    ])
+
+def generate_import_panel():
+
+
+    return [html.Div(style={'padding': 10, 'flex': 1}, id="generate_import",
+                     children=[
+        upload_import_panel(),
+        html.Hr(style={"height": "2px", "margin": "5px"}),
         html.Div(className="row", children=[
             dcc.Markdown("Import data type:", className="two columns", id="import_markdown"),
-
         ]),
-
         html.Div(id='output-data-upload'),
-
+        html.Hr(style={"height": "2px", "margin": "5px"}),
+        danger_delete_data_type_panel()
     ])
     ]
 
@@ -179,7 +204,7 @@ def preview_content(contents, filename, date):
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),
         dash_table.DataTable(df.to_dict('records'), col_name_dict),
-        html.Hr(),  # horizontal line
+        html.Hr(style={"height": "2px", "margin": "5px"}),
         # For debugging, display the raw contents provided by the web browser
         html.Div('Raw Content'),
         html.Pre(contents[0:200] + '...', style={
@@ -227,6 +252,7 @@ def import_dataframe(contents, filename, data_type, is_append, field_trial):
     State('importing_type', 'value'),
     State("import_is_append", "value"),
     State('store_db_info', 'data'),
+    prevent_initial_call=True,
 )
 def update_output(btn_1, btn_2,
                   list_of_contents, list_of_names, list_of_dates,
@@ -250,3 +276,23 @@ def update_output(btn_1, btn_2,
             # children = html.Div([html.H5("Please enter data type")])
     return children
 
+
+
+
+
+
+@dash.callback(
+    Output('md_delete_output', 'children'),
+    Input('btn_delete_data_type', 'n_clicks'),
+    State('text_delete_data_type', 'value'),
+    State('store_db_info', 'data'),
+    prevent_initial_call=True,
+)
+def delete_data_type(btn_delete, data_type, db_info):
+    if data_type is None:
+        raise PreventUpdate
+    try:
+        md = app_data.delete_all_data_type(db_info, data_type)
+    except Exception as e:
+        md = f"Please enter a data_type to delete all items. {e}"
+    return md

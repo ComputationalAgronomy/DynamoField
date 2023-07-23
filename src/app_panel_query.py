@@ -20,18 +20,6 @@ from dynamofield.stats import summary_stats
 from dynamofield.utils import json_utils
 
 
-BTN_STYLE_ACTION = {  # "margin":"10px", 'margin-top': '20px',
-    "width": "180px", "height": "60px",
-    'align-items': 'center', 'justify-content': 'center',
-    'font-size': "115%"
-}
-
-BTN_ACTION_CONF = {
-    "size": "lg",
-    "n_clicks": 0,
-    "className": "m-2",
-    "style": BTN_STYLE_ACTION
-}
 
 
 def trial_selection_panel():
@@ -41,27 +29,23 @@ def trial_selection_panel():
             dbc.Col([
                 dbc.Label('Select trial ID'),
                 dcc.Dropdown(multi=True, id="dropdown_select_trial"),
-                dbc.Button('Select All', id='button_trial_all', n_clicks=0,
-                           size="lg", className="my-2"),  # style=app_style.btn_style),
-                dbc.Button('Select None', id='button_trial_none', n_clicks=0,
-                           size="lg", className="m-2",
-                           # style={"margin-left": "5px", "margin-top": "5px"}
-                           ),
+                dbc.Button('Select All', id='button_trial_all',
+                           **app_style.BTN_STD_CONF),
+                dbc.Button('Select None', id='button_trial_none',
+                           **app_style.BTN_STD_CONF),
             ], width=3),
             dbc.Col([
                 dbc.Label('Multi-Select data_types related to this trial'),
                 dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
-                dbc.Button('Select All', id='button_info_all', n_clicks=0,
-                           size="lg", className="my-2"),  # style=app_style.btn_style),
-                dbc.Button('Select None', id='button_info_none', n_clicks=0,
-                           size="lg", className="m-2",
-                           # style={"margin-left": "5px", "margin-top": "5px"}
-                           ),
+                dbc.Button('Select All', id='button_info_all',
+                           **app_style.BTN_STD_CONF),
+                dbc.Button('Select None', id='button_info_none',
+                           **app_style.BTN_STD_CONF),
             ], width={"size": 4, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
                 dbc.Button('Fetch data', id='btn_fetch_data',
-                           **BTN_ACTION_CONF),
+                           **app_style.BTN_ACTION_CONF),
             ], width={"size": "auto", "offset": 1}),
         ]),
         dcc.Markdown(id="data_info"),
@@ -71,22 +55,34 @@ def trial_selection_panel():
 def merging_columns_within_info():
     return html.Div(style={'padding': 10},
                     children=[
-        # dbc.Row(html.H6("Merging columns within a data_type")),
         dbc.Row([
             dbc.Col([
                 dbc.Label('Select a data_type'),
                 dcc.Dropdown(id="dropdown_info_merge", multi=False),
-            ], width={"size": 3}),
+            ], width={"size": 2}),
             dbc.Col([
                 dbc.Label('Column names'),
                 dcc.Dropdown(id="dropdown_info_merge_columns", multi=True),
+                dbc.Label('New column name (Optional)'),
+                dbc.Input(id="merge_new_col_name",
+                          type="text", required=False,
+                          minlength=3,
+                          ),
             ], width={"size": 4, "offset": 0.5}),
             dbc.Col([
                 html.Br(),
                 dbc.Button('Merge columns', id='btn_merge_columns',
-                           **BTN_ACTION_CONF)
-            ], width={"size": "auto", "offset": 0.5})
+                           **app_style.BTN_ACTION_CONF)
+            ], width={"size": "3", "offset": 0.5}),
+            dbc.Col([
+                html.Br(),
+                dbc.Button('Replace existing data_type',
+                           id='btn_replace_merged_columns',
+                           color="warning",
+                           **app_style.BTN_ACTION_CONF)
+            ], width={"size": "3", "offset": 0.5})
         ]),
+        dcc.Markdown(id="md_merge_info"),
     ])
 
 
@@ -110,7 +106,7 @@ def merging_two_info():
             dbc.Col([
                 html.Br(),
                 dbc.Button('Merge tables', id='btn_merge_info_tables',
-                           **BTN_ACTION_CONF)
+                           **app_style.BTN_ACTION_CONF)
             ], width={"size": "auto", "offset": 1})
         ]),
     ])
@@ -145,11 +141,11 @@ def plot_stats_panel():
         ]),
         dbc.Row([
             dbc.Button("Plot data", id="btn_plot",
-                       **BTN_ACTION_CONF),
+                       **app_style.BTN_ACTION_CONF),
             dbc.Button("Analysis", id="btn_stats",
-                       **BTN_ACTION_CONF),
+                       **app_style.BTN_ACTION_CONF),
             dbc.Button("Summary", id="btn_summary",
-                       **BTN_ACTION_CONF),
+                       **app_style.BTN_ACTION_CONF),
         ])
     ])
 
@@ -200,7 +196,8 @@ def generate_query_panel():
             ),
             dbc.AccordionItem(
                 title="Figure", item_id="item-figure",
-                children=dcc.Graph(id='data_figure'),)
+                children=dcc.Graph(id='data_figure'),
+            )
         ],
             flush=True, always_open=True,
             active_item=["item-table", "item-figure"])

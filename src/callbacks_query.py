@@ -106,54 +106,6 @@ def update_output_table(store_table):
     return store_table
 
 
-# @dash.callback(
-#     # Output("data_table", "columns"),
-#     # Output("data_table", "data"),
-#     # Output("store_data_table", "data"),
-#     # Output('dropdown_info_merge_column', 'options'),
-#     # Output('dropdown_info_sortkey_t1', 'options'),
-#     # Output('dropdown_info_sortkey_t2', 'options'),
-#     # Output("dropdown_xaxis", "options"),
-#     # Output("dropdown_yaxis", "options"),
-#     # Output("dropdown_by", "options"),
-#     # Output("data_info", "children"),
-#     Input("btn_merge_column", "n_clicks"),
-#     State('dropdown_select_trial', 'value'),
-#     State('dropdown_info_sortkey', 'value'),
-#     State('dropdown_info_sortkey', 'options'),
-#     State('dropdown_info_merge', 'value'),
-#     State("dropdown_info_merge_columns", "value"),
-#     State("store_data_table", "data"),
-#     State('store_db_info', 'data'),
-# )
-# def merge_columns_within_info(b_merge_column,
-#                               trial_id, info_list, info_options,
-#                               info_merge, merge_columns,
-#                               data_table, db_info):
-#     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
-#         raise PreventUpdate
-#     print(f"trial_id:{trial_id}")
-#     # if "btn_fetch_data" == ctx.triggered_id:
-#     #     print(f"info_list:{info_list}\t{info_options}")
-#     #     if info_list is None:
-#     #         info_list = info_options
-#     field_trial = app_data.connect_db_table(db_info)
-#     data = field_trial.query_by_trial_ids(trial_id, info_merge)
-#     data = pd.read_csv("tests/test_data/test_plot.csv")
-#     data = data.loc[0:15, ]
-#     # df_output = json_utils.result_list_to_df(data)
-#     data.loc[0:5, merge_columns[0:2]] = None
-#     data.loc[6:10, merge_columns[1:3]] = None
-#     data.iloc[11:16, [1,3]] = None
-
-#     # check each row only has one value
-#     data_sub.apply(pd.isnull, axis=1)
-#     is_single_list = data_sub.apply(check_single_value_per_row, axis=1)
-#     is_mergable = all(is_single_list)
-#     if is_mergable:
-#         data_sub = data_sub.apply(lambda x: x.dropna().iat[0], axis=1)
-
-
 @dash.callback(
     # Output("data_table", "columns"),
     # Output("data_table", "data"),
@@ -177,14 +129,15 @@ def update_output_table(store_table):
     State("dropdown_info_t2_column", "value"),
     State('dropdown_info_merge', 'value'),
     State("dropdown_info_merge_columns", "value"),
+    State("merge_new_col_name", "value"),
     State("store_data_table", "data"),
     State('store_db_info', 'data'),
 
 )
-def update_data_table(b_fetch, b_merge_info, btn_merge_column,
+def update_data_table(btn_fetch, btn_merge_info, btn_merge_column,
                       trial_id, info_list, info_options,
                       info_t1, info_t2, t1_column, t2_column,
-                      info_merge, merge_columns,
+                      info_merge, merge_columns, merge_new_col_name,
                       data_table, db_info):
     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
@@ -207,11 +160,13 @@ def update_data_table(b_fetch, b_merge_info, btn_merge_column,
     elif ("btn_merge_columns" == ctx.triggered_id and data_table and
           info_merge and merge_columns):
         # dd = pd.DataFrame(data_table)
-        print(f"merge_columns:{merge_columns}\tat_info:{info_merge}")
-        field_trial = app_data.connect_db_table(db_info)
-        data_temp = field_trial.query_by_trial_ids(trial_id, info_merge)
-        data = json_utils.result_list_to_df(data_temp)
-        df_output = df_operation.merge_multi_columns(data, merge_columns)
+        print(f"merge_columns:{merge_columns}\tat_info:{info_merge}\tNew_name:{merge_new_col_name}")
+        # field_trial = app_data.connect_db_table(db_info)
+        # data_temp = field_trial.query_by_trial_ids(trial_id, info_merge)
+        dd = pd.DataFrame(data_table)
+        data = df_operation.subset_by_info(dd, info_merge)
+        df_output = df_operation.merge_multi_columns(
+            data, merge_columns, new_name=merge_new_col_name)
 
     data_info = f"Data: {df_output.shape[0]} rows, {df_output.shape[1]} columns."
     output = [df_output.to_dict('records'),
@@ -254,6 +209,51 @@ def update_select_info_column_names(info, columns, data_table):
     dd = pd.DataFrame(data_table)
     cc = df_operation.get_non_na_column_name(dd, info)
     return cc
+
+
+
+
+
+
+
+@dash.callback(
+    Output("md_merge_info", "children"),
+    Input("btn_replace_merged_columns", "n_clicks"),
+    State('dropdown_info_merge', 'value'),
+    State("store_data_table", "data"),
+    State('store_db_info', 'data'),
+
+
+    prevent_initial_call=True,
+)
+def replace_existing_data_table(btn_replace, data_type,
+                               data_table, db_info):
+    try:
+        field_trial = app_data.connect_db_table(db_info)
+        # children = [import_dataframe(c, n, data_type, is_append, field_trial)
+        #                 for c, n, in
+        #                 zip(list_of_contents, list_of_names)]
+
+        # df = parse_contents(contents, filename)
+        dd = pd.DataFrame(data_table)
+        print(dd)
+        data_importer = importer.DataImporter(dd, data_type)
+        data_importer.parse_df_to_dynamo_json(
+            append=False, field_trial=field_trial)
+        import_len = field_trial.import_batch_field_data_res(
+            data_importer)  # How to test this effectively?
+    except Exception as e:
+        print(e)
+        return html.Div([
+            f'There was an error processing this file.<br>{e}'
+        ])
+    return html.Div([
+        dcc.Markdown(
+            f"Imported **{import_len}** rows and store in info={data_type}."),
+        # dash_table.DataTable(df.to_dict('records'),
+        #     [{'name': i, 'id': i} for i in df.columns]
+        # ),
+    ])
 
 
 @dash.callback(

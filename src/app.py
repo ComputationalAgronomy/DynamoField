@@ -37,7 +37,7 @@ TAB_DEFAULT = 'tab-query'
 TAB_DEFAULT = 'tab-db-status'
 
 
-app = Dash(__name__, 
+app = Dash(__name__,
     # use_pages=True,
     suppress_callback_exceptions=True,
     assets_folder='assetsX',
@@ -61,7 +61,7 @@ app.layout = html.Div(
 
         dcc.Store(id='store_server', storage_type='local'),
         dcc.Store(id='store_table', storage_type='local'),
-        
+
         dcc.Store(id='store_db_info', storage_type='session', clear_data=STORAGE_CLEAN_DATA),
         dcc.Tabs(id='tabs-function', value=TAB_DEFAULT, children=[
             dcc.Tab(label='Query database', value='tab-query'),

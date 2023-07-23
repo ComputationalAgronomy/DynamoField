@@ -70,3 +70,14 @@ def test_merge_columns_same_sort_key(df2: pd.DataFrame):
     assert_frame_equal(result, expected)
 
 
+def test_merge_columns_same_sort_key_partial(df2: pd.DataFrame):
+    merge_columns = ['Fertilizer', 'type_chemical']
+    result = df_operation.merge_multi_columns(df2, merge_columns)
+    expected = pd.DataFrame({
+        'trial_id': {0: 'trial_2B', 1: 'trial_2B', 2: 'trial_3C', 3: 'trial_3C', 4: 'trial_3C', 5: 'trial_4D', 6: 'trial_4D', 7: 'trial_4D'},
+        'ferterlizer_usage': {0: np.nan, 1: np.nan, 2: 'NPK', 3: 'NPK50', 4: 'N80', 5: np.nan, 6: np.nan, 7: np.nan},
+        'Date_DOP': {0: 10, 1: 20, 2: 15, 3: 25, 4: 35, 5: 11, 6: 22, 7: 33},
+        'merged_column': {0: 'NPK', 1: 'NPK50', 2: np.nan, 3: np.nan, 4: np.nan, 5: 'N50P30', 6: 'NPK', 7: 'N50P30'},
+    })
+    assert_frame_equal(result, expected)
+

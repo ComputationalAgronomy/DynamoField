@@ -1,5 +1,3 @@
-
-
 import base64
 import datetime
 import io
@@ -20,6 +18,7 @@ from app_data import *  # dynamodb_server  # field_trial
 from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
+
 
 
 def update_status_panel():
@@ -70,22 +69,32 @@ def update_config_panel():
             dbc.Col([
                 dbc.Button(  # className="three columns",
                     children='Connect Database', id='btn_connect_db',
-                    n_clicks=0, size="lg",  # style=app_style.btn_style,
-                    style={
-                        "margin": "20px", 'margin-top': '30px',
-                        "height": "50px", "width": "200px",
-                    }
+                    **app_style.BTN_ACTION_CONF,
                 ),
             ], width="auto"),
             dbc.Col([
                 dbc.Button(id="btn_list_tables", children="List existing tables",
-                    n_clicks=0, size="lg",
-                    style={
-                        "margin": "20px", 'margin-top': '30px',
-                        "height": "50px", "width": "200px",
-                    }
+                    **app_style.BTN_ACTION_CONF,
                 ),
             ], width="auto"),
+        ])
+    ])
+
+
+def danger_delete_table_panel():
+    return html.Div(style={'padding': 10},
+                    children=[
+        dbc.Card([
+            dbc.CardHeader(
+                html.H4("Danger Zone!",style={"color": "red"})),
+            dbc.CardBody([
+                dbc.Label("DELETE a table. Table name:"),
+                dbc.Input(id="text_delete_tablename",
+                          type="text", style={"width": "200px"}),
+                dbc.Button(id="btn_delete_table", children="DELETE this table",
+                           color="danger",
+                           **app_style.BTN_ACTION_CONF,)
+            ])
         ])
     ])
 
@@ -99,44 +108,21 @@ def create_new_table_panel():
                 dbc.Label("Create a new table. Table name:"),
                 dbc.Input(id="new_table_name", type="text", minLength=3),
                 dbc.Button(id="btn_create_table", children="Create new table",
-                           n_clicks=0, size="lg", className="my-2"),
+                           **app_style.BTN_ACTION_CONF,),
             ], width=3),
             dbc.Col([
-                html.H4("Dangour zone!", style={"color": "red"}),
-                dbc.Label("DELETE a table. Table name:"),
-                dbc.Input(
-                    id="text_delete_tablename",
-                    type="text",
-                    style={
-                        "width": "200px"}),
-                dbc.Button(id="btn_delete_table", children="DELETE this table",
-                           n_clicks=0, size="lg", color="danger",
-                           className="my-2")
-            ], width={"size": 3, "offset": 3})
+                danger_delete_table_panel(),
+            ], width={"size": 5, "offset": 2})
         ]),
-        html.Br(),
-        # dbc.Row([
-        #     dbc.Col([
-        #         dbc.Button(id="btn_list_tables", children="List existing tables",
-        #                 n_clicks=0, size="lg",)
-        #                 # style={"margin-top": "20px"})
-        #     ], width={"size": 2, "offset": 0}),
-        # ]),
-
         html.Br(),
         dcc.Markdown(id="db_table_md",
                      dangerously_allow_html=True),
         dash_table.DataTable(id="dt_list_table",
-                             page_size=10,  # we have less data in this example, so setting to 20
-                             style_table={'height': '200px', 'overflowY': 'auto', 'width': '300px'}),
+                             page_size=5,  # we have less data in this example, so setting to 20
+                             style_table={'height': '150px', 'overflowY': 'auto', 'width': '300px'}),
     ])
 
 
-def delete_table_panel():
-    return html.Div(style={'padding': 10},
-                    children=[
-
-    ])
 
 
 def db_debug_panel():
@@ -167,6 +153,8 @@ def db_debug_panel():
 
 
 def generate_db_status_panel():
+
+
     return [
         # html.Div(#style={'padding': 10, 'flex': 1},
         #          children=[
@@ -178,24 +166,16 @@ def generate_db_status_panel():
             type="default",
             children=html.Div(id="loading_update_db")
         ),
-        # html.Hr(),
         # update_status_panel(),
-        # html.Hr(),
+
         update_config_panel(),
         html.Hr(style={"height": "2px", "margin": "5px"}),
         create_new_table_panel(),
-        delete_table_panel(),
-        html.Hr(),
+
         html.Hr(style={"height": "2px", "margin": "5px"}),
         dbc.Button(id='btn_db_start', children='Start database (TODO)',
-                   n_clicks=0, size="lg",  # style=app_style.btn_style,
                    disabled=True,
-                   # className="two columns"
-                   style={
-                       # "padding":"5px",
-                       "margin": "10px",  # 'margin-top': '0px',
-                       "height": "50px", "width": "200px",
-                   }
+                   **app_style.BTN_ACTION_CONF,
                    ),
 
         db_debug_panel(),

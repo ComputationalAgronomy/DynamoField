@@ -41,14 +41,13 @@ def connect_db_table(db_info):
     except Exception as e:
         print(e)
     return field_trial
-        
+
 
 def db_list_table(db_info):
-    
     dynamodb_server = init_dynamodb(db_info["endpoint"])#, db_info["table_name"])
     list_tables = dynamodb_server.list_tables()
     return list_tables
-        
+
 
 def create_new_table(db_info, tablename):
     dynamodb_server = init_dynamodb(db_info["endpoint"])
@@ -60,6 +59,12 @@ def delete_existing_table(db_info, tablename):
     dynamodb_server = init_dynamodb(db_info["endpoint"])
     response = dynamodb_server.delete_table(tablename)
     return response
+
+def delete_all_data_type(db_info, data_type):
+    dynamodb_server = init_dynamodb(db_info["endpoint"])
+    response = dynamodb_server.delete_all_data_type(db_info["table_name"], data_type)
+    return response
+
 
 
 def start_db():
