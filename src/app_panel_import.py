@@ -16,8 +16,8 @@ from dash.exceptions import PreventUpdate
 
 # from callbacks import *
 import app_style
-import app_data
-from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
+import app_db
+from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
@@ -268,7 +268,7 @@ def update_output(btn_1, btn_2,
             # if not db_info["db_status"] or not db_info["table_status"]:
             #     children = ([html.H5("Database not available")])
             print(f"data_type_{data_type}")
-            field_trial = app_data.connect_db_table(db_info)
+            field_trial = app_db.connect_db_table(db_info)
             children = [import_dataframe(c, n, data_type, is_append, field_trial)
                         for c, n, in
                         zip(list_of_contents, list_of_names)]
@@ -292,7 +292,7 @@ def delete_data_type(btn_delete, data_type, db_info):
     if data_type is None:
         raise PreventUpdate
     try:
-        md = app_data.delete_all_data_type(db_info, data_type)
+        md = app_db.delete_all_data_type(db_info, data_type)
     except Exception as e:
         md = f"Please enter a data_type to delete all items. {e}"
     return md

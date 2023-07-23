@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from dynamofield.db import dynamodb_init, init_db, table_utils
+from dynamofield.db import client_internal, db_client, dynamodb_server
 from dynamofield.field import field_table, importer
 
 # importlib.reload(field_table)
@@ -17,7 +17,7 @@ from dynamofield.field import field_table, importer
 @pytest.fixture
 def field_trial():
     table_name = "ft_db"
-    dynamodb = dynamodb_init.DynamodbServer()
+    dynamodb = dynamodb_server.DynamodbServer()
     field_trial = field_table.FieldTable(dynamodb.dynamodb_res, table_name)
     return field_trial
 
@@ -26,17 +26,17 @@ def field_trial():
 # @pytest.mark.first
 def test_creation():
     table_name = "ft_db"
-    dynamodb_server = dynamodb_init.DynamodbServer()
+    dynamodb = dynamodb_server.DynamodbServer()
     # dynamodb_res = dynamodb_server.init_dynamodb_resources()
-    client = dynamodb_server.init_dynamodb_client()
+    client = dynamodb.init_dynamodb_client()
     init_num_table = len(client.list_tables()["TableNames"])
     if init_num_table == 0:
         init_num_table = 1
-    init_db.remove_table(client, table_name)
+    db_client.remove_table(client, table_name)
     del_length = len(client.list_tables()["TableNames"])
     assert del_length == init_num_table - 1
 
-    init_db.add_db_table(client, table_name)
+    db_client.add_db_table(client, table_name)
     final_length = len(client.list_tables()["TableNames"])
     assert final_length == del_length + 1
 
@@ -90,8 +90,8 @@ def test_import(field_trial: field_table.FieldTable):
 
 def _temp():
     table_name = "ft_db"
-    dynamodb_server = dynamodb_init.DynamodbServer()
-    dynamodb_res = dynamodb_server.init_dynamodb_resources()
+    dynamodb = dynamodb_server.DynamodbServer()
+    dynamodb_res = dynamodb.init_dynamodb_resources()
     field_trial = field_table.FieldTable(dynamodb_res, table_name)
 
 

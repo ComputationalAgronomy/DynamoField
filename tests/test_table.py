@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 from boto3.dynamodb.conditions import Key
 
-from dynamofield.db import dynamodb_init, init_db, table_utils
+from dynamofield.db import client_internal, db_client, dynamodb_server
 from dynamofield.field import field_table, importer
 
 
@@ -18,17 +18,17 @@ def field_trial():
     table_name = "ft_db"
     # client = dynamodb_init.init_dynamodb_client()
     # table_utils.delete_all_items(client, table_name)
-    dynamodb_server = dynamodb_init.DynamodbServer()
+    dynamodb = dynamodb_server.DynamodbServer()
     # client = dynamodb_server.init_dynamodb_client()
-    dynamodb_res = dynamodb_server.init_dynamodb_resources()
-    field_trial = field_table.FieldTable(dynamodb_server.dynamodb_res, table_name)
+    dynamodb_res = dynamodb.init_dynamodb_resources()
+    field_trial = field_table.FieldTable(dynamodb.dynamodb_res, table_name)
     return field_trial
 
 
 
 
 def test_list_all_keys(field_trial: field_table.FieldTable):
-    
+
     expected_key = "__private_list_all_id__"
     assert field_table.FieldTable.TRIAL_ID_LIST_PARTITION_KEY == expected_key
 

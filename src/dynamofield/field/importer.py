@@ -8,7 +8,7 @@ import boto3
 import numpy
 import pandas as pd
 
-from dynamofield.db import key_utils
+from dynamofield.db import db_keys
 from dynamofield.field import field_table
 from dynamofield.utils import dict_utils, dynamo_utils, json_utils
 

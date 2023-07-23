@@ -7,7 +7,7 @@ import pandas as pd
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-from dynamofield.db import key_utils
+from dynamofield.db import db_keys
 from dynamofield.utils import dict_utils, dynamo_utils, json_utils
 
 # from io import BytesIO
@@ -48,17 +48,17 @@ class FieldTable:
 
     @staticmethod
     def create_partition_key(trial_id):
-        partition_key = key_utils.create_db_key(FieldTable.PARTITION_KEY_NAME, trial_id)
+        partition_key = db_keys.create_db_key(FieldTable.PARTITION_KEY_NAME, trial_id)
         return partition_key
 
     @staticmethod
     def create_sort_key(info):
-        sort_key = key_utils.create_db_key(FieldTable.SORT_KEY_NAME, info)
+        sort_key = db_keys.create_db_key(FieldTable.SORT_KEY_NAME, info)
         return sort_key
 
     @staticmethod
     def parse_sort_key_condition(value, exact):
-        sort_key_exprs = key_utils.parse_key_condition(
+        sort_key_exprs = db_keys.parse_key_condition(
             FieldTable.SORT_KEY, value, exact)
         return sort_key_exprs
 
@@ -106,7 +106,7 @@ class FieldTable:
         return FieldTable.template_scan_table(self.res_table, scan_kwargs)
 
 
-    
+
 
 
     def convert_partition_key_collection_dynamo_json(self, partition_key_collection):
@@ -138,7 +138,7 @@ class FieldTable:
             print(data_importer.dynamo_json_list)
             print(id_json)
         return len(data_importer.dynamo_json_list)
-    
+
 
     def list_all_sort_keys(self, trial_id, prune_common=False):
         key = FieldTable.PARTITION_KEY.eq(trial_id)
@@ -214,14 +214,14 @@ class FieldTable:
         df[info_2] = json_utils.result_list_to_df(results)
         df_merged = pd.merge(df[info_1], df[info_2], how="inner", on=["trial_id", merged_by])
         return df_merged
-            
+
 
     def query_by_single_trial_id(self, trial_id, sort_keys=[], exact=False):
         """
         :param trial_id: Trial ID
         :return: All info relate to the given trial ID.
         """
-        sort_keys = key_utils.check_sort_keys(sort_keys)
+        sort_keys = db_keys.check_sort_keys(sort_keys)
         parti_key_exprs = FieldTable.PARTITION_KEY.eq(trial_id)
         # if not isinstance(sort_keys, list) and len(sort_keys) > 0:
         #     sort_keys = [sort_keys]
@@ -245,7 +245,7 @@ class FieldTable:
     def query_by_trial_ids(self, trial_ids, sort_keys=[], exact=False):
         if not isinstance(trial_ids, list):
             trial_ids = [trial_ids]
-        sort_keys = key_utils.check_sort_keys(sort_keys)
+        sort_keys = db_keys.check_sort_keys(sort_keys)
         results = list()
         for trial_id in trial_ids:
             temp = self.query_by_single_trial_id(trial_id, sort_keys=sort_keys, exact=exact)
@@ -277,9 +277,9 @@ class FieldTable:
         # try:
         current_data = self.get_by_sort_key(data_type)
         current_data_split = current_data.groupby(FieldTable.PARTITION_KEY_NAME)
-        offset = current_data_split["info"].aggregate(lambda x : key_utils.find_offset_sort_key_list(x))
+        offset = current_data_split["info"].aggregate(lambda x : db_keys.find_offset_sort_key_list(x))
         # except NameError:
-        #     offest = 
+        #     offest =
         return offset
 
 

@@ -3,7 +3,7 @@ import dash
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from app_data import *
+from app_db import *
 from callbacks_db_status import *
 from callbacks_query import *
 

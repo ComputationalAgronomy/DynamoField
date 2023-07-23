@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from dynamofield.db import dynamodb_init
+from dynamofield.db import dynamodb_server
 from dynamofield.field import field_table, importer
 from dynamofield.stats import summary_stats
 
@@ -10,7 +10,7 @@ from dynamofield.stats import summary_stats
 @pytest.fixture
 def field_trial():
     table_name = "ft_db"
-    dynamodb = dynamodb_init.DynamodbServer()
+    dynamodb = dynamodb_server.DynamodbServer()
     field_trial = field_table.FieldTable(dynamodb.dynamodb_res, table_name)
     return field_trial
 

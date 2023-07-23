@@ -78,6 +78,7 @@ def delete_all_items_sort_key(client, tablename, sort_key):
         print(response)
     return response
 
+
 def start_dynamodb_server(path=".", jar="DynamoDBLocal.jar", lib="DynamoDBLocal_lib"):
     jar = os.path.join(path, jar)
     lib = os.path.join(path, lib)

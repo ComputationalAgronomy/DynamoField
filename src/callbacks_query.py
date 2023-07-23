@@ -12,8 +12,8 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import app_style
-import app_data
-from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
+import app_db
+from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
 from dynamofield.df import df_operation
 from dynamofield.field import field_table, importer
 from dynamofield.stats import summary_stats
@@ -37,7 +37,7 @@ def get_field_trial_id_list(tab, db_info):
         is_disabled = True
     else:
         # field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
-        field_trial = app_data.connect_db_table(db_info)
+        field_trial = app_db.connect_db_table(db_info)
         ids = field_trial.get_all_trial_id()
         is_disabled = False
         print(f"{ids}")
@@ -56,11 +56,11 @@ def update_output_info(trial_ids, db_info):
     if not trial_ids:
         return []
     # if value is not None:
-    field_trial = app_data.connect_db_table(db_info)
+    field_trial = app_db.connect_db_table(db_info)
     info_global = set()
     for trial in trial_ids:
         info = field_trial.list_all_sort_keys(trial)
-        info_set = key_utils.extract_sort_key_prefix(info)
+        info_set = db_keys.extract_sort_key_prefix(info)
         info_global.update(info_set)
         # print(info_global)
     info_global = list(info_global)
@@ -147,7 +147,7 @@ def update_data_table(btn_fetch, btn_merge_info, btn_merge_column,
         print(f"info_list:{info_list}\t{info_options}")
         if info_list is None:
             info_list = info_options
-        field_trial = app_data.connect_db_table(db_info)
+        field_trial = app_db.connect_db_table(db_info)
         data = field_trial.query_by_trial_ids(trial_id, info_list)
         df_output = json_utils.result_list_to_df(data)
     elif ("btn_merge_info_tables" == ctx.triggered_id and
@@ -229,7 +229,7 @@ def update_select_info_column_names(info, columns, data_table):
 def replace_existing_data_table(btn_replace, data_type,
                                data_table, db_info):
     try:
-        field_trial = app_data.connect_db_table(db_info)
+        field_trial = app_db.connect_db_table(db_info)
         # children = [import_dataframe(c, n, data_type, is_append, field_trial)
         #                 for c, n, in
         #                 zip(list_of_contents, list_of_names)]

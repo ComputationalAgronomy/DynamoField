@@ -1,6 +1,6 @@
 
 import dash
-from dynamofield.db.init_db import start_dynamodb_server
+from dynamofield.db.db_client import start_dynamodb_server
 from dynamofield.db import aws_utils
 import numpy as np
 import pandas as pd
@@ -8,8 +8,8 @@ from dash import Dash, ctx, dash_table, dcc, html
 from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from app_data import *
-import app_data
+from app_db import *
+import app_db
 
 # @dash.callback(
 #     Output('get_item_count', 'children'),
@@ -54,7 +54,7 @@ def add_new_table(btn_create, btn_list, btn_delete,
     md = ""  # "Database offline."
     columns = None
     data = None
-    list_tables = app_data.db_list_table(db_info)
+    list_tables = app_db.db_list_table(db_info)
     if dash.callback_context.triggered_id == 'btn_create_table':
         # if tablename is None or len(tablename) == 0:
         #     md = "Please enter a name for the new table (min length > 3)."
@@ -62,7 +62,7 @@ def add_new_table(btn_create, btn_list, btn_delete,
         #     raise PreventUpdate
         # # TODO: Check table not already exist
         try:
-            md = app_data.create_new_table(db_info, tablename)
+            md = app_db.create_new_table(db_info, tablename)
         except Exception as e:
             md = f"Please enter a name for the new table (min length > 3).<br>{e}"
     elif dash.callback_context.triggered_id == 'btn_list_tables':
@@ -75,7 +75,7 @@ def add_new_table(btn_create, btn_list, btn_delete,
         # TODO: Pop up confirmation message
 
         try:
-            md = app_data.delete_existing_table(db_info, delete_tablename)
+            md = app_db.delete_existing_table(db_info, delete_tablename)
         except Exception as e:
             md = f"Please enter a name to delete table.<br>{e}"
         print(md)
@@ -199,7 +199,7 @@ def update_db_status(btn_connect_db, region, ep, name, info):
         db_status = False
         table_status = False
         if endpoint is not None:
-            dynamodb_server = app_data.init_dynamodb(endpoint)
+            dynamodb_server = app_db.init_dynamodb(endpoint)
             db_status = dynamodb_server.is_online
         if db_status and table_name is not None:
             table_status = dynamodb_server.is_table_exist(table_name)

@@ -2,7 +2,7 @@ import boto3
 import botocore
 import botocore.exceptions
 
-from dynamofield.db import init_db
+from dynamofield.db import db_client
 
 
 class DynamodbServer:
@@ -29,17 +29,17 @@ class DynamodbServer:
 
     def create_new_table(self, tablename):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
-        response = init_db.add_db_table(client, tablename)
+        response = db_client.add_db_table(client, tablename)
         return response
 
     def delete_table(self, tablename):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
-        response = init_db.remove_table(client, tablename)
+        response = db_client.remove_table(client, tablename)
         return response
 
     def delete_all_data_type(self, tablename, sort_key):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
-        response = init_db.delete_all_items_sort_key(client, tablename, sort_key)
+        response = db_client.delete_all_items_sort_key(client, tablename, sort_key)
         return response
 
     def init_dynamodb_client(self):

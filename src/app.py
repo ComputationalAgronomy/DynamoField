@@ -24,7 +24,7 @@ from app_panel_db_status import *
 from app_panel_import import *
 from app_panel_query import *
 from callbacks import *
-from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
+from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 

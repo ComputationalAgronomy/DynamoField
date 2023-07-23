@@ -24,6 +24,7 @@ def merge_df(dd: pd.DataFrame, info_t1, info_t2, t1_column, t2_column) -> pd.Dat
     d2 = subset_by_info(dd, info_t2)
     print(f"{d1.columns}\n{d2.columns}\n")
     merge_name = t1_column
+
     if t1_column != t2_column:
         #rename both d1 and d2
         merge_name = f"merge_{t1_column}_{t2_column}"

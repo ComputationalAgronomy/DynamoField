@@ -12,8 +12,8 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import app_style
-import app_data
-from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
+import app_db
+from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
 from dynamofield.df import df_operation
 from dynamofield.field import field_table, importer
 from dynamofield.stats import summary_stats

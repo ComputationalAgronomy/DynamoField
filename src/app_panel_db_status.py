@@ -14,8 +14,8 @@ from dash.exceptions import PreventUpdate
 
 # from callbacks import *
 import app_style
-from app_data import *  # dynamodb_server  # field_trial
-from dynamofield.db import dynamodb_init, init_db, key_utils, table_utils
+from app_db import *  # dynamodb_server  # field_trial
+from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
 from dynamofield.field import field_table, importer
 from dynamofield.utils import json_utils
 
