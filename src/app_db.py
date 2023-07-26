@@ -18,14 +18,14 @@ def init_dynamodb(endpoint_url):
 
 def init_db_table(dynamodb, table_name = "ft_db"):
     dynamodb_res = dynamodb.dynamodb_res
-    field_trial = field_table.FieldTable(dynamodb_res, table_name)
-    return field_trial
+    db_table = field_table.FieldTable(dynamodb_res, table_name)
+    return db_table
 
 
 def init_field_trial(endpoint, table_name):
     dynamodb = init_dynamodb(endpoint)
-    field_trial = init_db_table(dynamodb, table_name)
-    return field_trial
+    db_table = init_db_table(dynamodb, table_name)
+    return db_table
 
 # endpoint_url_local = 'http://localhost:8000'
 # table_name_default = "ft_db"
@@ -34,13 +34,13 @@ def init_field_trial(endpoint, table_name):
 # field_trial = init_field_trial(dynamodb_server, table_name = table_name_default)
 
 def connect_db_table(db_info):
-    field_trial = None
-    # if db_info["table_status"]:
+
     try:
-        field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
+        db_table = init_field_trial(db_info["endpoint"], db_info["table_name"])
     except Exception as e:
+        db_table = None
         print(e)
-    return field_trial
+    return db_table
 
 
 def db_list_table(db_info):
@@ -60,9 +60,9 @@ def delete_existing_table(db_info, tablename):
     response = dynamodb.delete_table(tablename)
     return response
 
-def delete_all_data_type(db_info, data_type):
+def delete_all_items_data_type(db_info, data_type):
     dynamodb = init_dynamodb(db_info["endpoint"])
-    response = dynamodb.delete_all_data_type(db_info["table_name"], data_type)
+    response = dynamodb.delete_all_items_data_type(db_info["table_name"], data_type)
     return response
 
 
@@ -74,11 +74,10 @@ def start_db():
         print("Database offline")
 
 
-def update_item_count(info):
+def update_item_count(field_table: field_table.FieldTable):
 
     try:
-        field_trial = info
-        item_counts = field_trial.get_item_count()
+        item_counts = field_table.get_item_count()
         output = f"Total item count: {item_counts}"
     except:
         output = f"Database offline."

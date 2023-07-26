@@ -107,12 +107,12 @@ class DataImporter:
                 pass
         return offset
 
-
-    def parse_df_to_dynamo_json(self, append=False, field_trial=None):
+    def parse_df_to_dynamo_json(self, append=False,
+                                db_table: field_table.FieldTable = None):
         json_list = []
         self.check_col_names(remove_list=[])
         df_trials = self.df.groupby(field_table.FieldTable.PARTITION_KEY_NAME)
-        offset = self.create_offset(df_trials, append, field_trial)
+        offset = self.create_offset(df_trials, append, db_table)
         self.partition_key_collection = set()
         for trial_id, df_group in df_trials:
             partition_key = field_table.FieldTable.create_partition_key(trial_id)

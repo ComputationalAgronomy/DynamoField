@@ -239,7 +239,7 @@ def replace_existing_data_table(btn_replace, data_type,
         print(dd)
         data_importer = importer.DataImporter(dd, data_type)
         data_importer.parse_df_to_dynamo_json(
-            append=False, field_trial=field_trial)
+            append=False, db_table=field_trial)
         import_len = field_trial.import_batch_field_data_res(
             data_importer)  # How to test this effectively?
     except Exception as e:

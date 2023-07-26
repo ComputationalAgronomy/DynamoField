@@ -177,10 +177,12 @@ class FieldTable:
 
         return other_info_dict
 
+
     def get_all_trial_id(self):
         response = self.query_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
         all_ids = [t["info"] for t in response]
         return all_ids
+
 
     def query_df_all_plots(self, trial_ids):
         """
@@ -198,6 +200,7 @@ class FieldTable:
         results = self.query_by_trial_ids(trial_ids, sort_keys="trt_", exact=False)
         df = json_utils.result_list_to_df(results)
         return df
+
 
     def query_df_plot_treatment(self, trial_ids):
         df_plots = self.query_df_all_plots(trial_ids)

@@ -76,7 +76,7 @@ def test_import(field_trial: field_table.FieldTable):
         print(data_type)
         file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
         data_importer = importer.DataImporter(file_name, data_type)
-        data_importer.parse_df_to_dynamo_json(append=True, field_trial=field_trial)
+        data_importer.parse_df_to_dynamo_json(append=True, db_table=field_trial)
         assert len(data_importer.dynamo_json_list) == expected_length[data_type]
         field_trial.import_batch_field_data_res(data_importer) # How to test this effectively?
         field_trial.res_table.reload()

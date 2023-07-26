@@ -32,14 +32,13 @@ BTN_STYLE = {
 UPLOAD_STYLE = {
     'width': '100%',
     'height': '100px',
-    'lineHeight': '60px',
+    # 'lineHeight': '20px',
     'borderWidth': '1px',
     'borderStyle': 'dashed',
     'borderRadius': '5px',
     'textAlign': 'center',
-    'margin': '5px'
+    # 'margin': '20px'
 }
-
 
 def upload_import_panel():
     return html.Div(style={'padding': 10},
@@ -48,10 +47,10 @@ def upload_import_panel():
             dbc.Col([
                 dcc.Upload(
                     id='upload-data',
-                    children=html.Div([
-                        'Drag and Drop or ',
-                        html.A('Select Files')
-                    ]),
+                    # children=html.Div([
+                    #     'Drag and Drop or ',
+                    #     html.A('Select Files')
+                    # ]),
                     style=UPLOAD_STYLE,
                     multiple=True
                 )
@@ -71,24 +70,29 @@ def upload_import_panel():
                           ),
             ], width=5),
             dbc.Col([
-                dcc.RadioItems(id="import_is_append", value="False",
+                dbc.RadioItems(id="import_is_append", value="True",
                                options={
-                                   "False": "Insert new data",
-                                   "True": "Replace existing"},
+                                   "True": "Insert and append new data.",
+                                #    "False": "Replace all existing records."
+                               },
                                style={
-                                   "margin": "30px", 'margin-top': '20px',
+                                   "margin": "20px",  # 'padding-top': '30px',
                                }
                                ),
-            ], width=3),
+            ], width="auto"),
             dbc.Col([
                 dbc.Button(id='btn_import', children='Import data',
                            **app_style.BTN_ACTION_CONF,
                            ),
             ], width="auto"),
-        ])
+        ]),
+        html.Hr(style={"height": "2px", "margin": "5px"}),
+        html.Div(children=[
+            dcc.Markdown(id="import_markdown"),
+        ]),
+        html.Div(id='output-data-upload'),
+        html.Hr(style={"height": "2px", "margin": "5px"}),
     ])
-
-
 
 
 def danger_delete_data_type_panel():
@@ -101,30 +105,32 @@ def danger_delete_data_type_panel():
                 dbc.Label("DELETE a data type"),
                 dbc.Input(id="text_delete_data_type",
                           type="text"),
-                dbc.Button(id="btn_delete_data_type", children="DELETE this data type",
+                dbc.Button(id="btn_delete_data_type", children=["DELETE this data type"],
                            color="danger",
                            **app_style.BTN_ACTION_CONF,)
             ]),
             dcc.Markdown(id="md_delete_output")
-        ]),
+        ], outline=True, color="danger"),
 
     ])
+
 
 def generate_import_panel():
-
-
-    return [html.Div(style={'padding': 10, 'flex': 1}, id="generate_import",
+    return [html.Div(style={'padding': 10},
+                     id="generate_import",
                      children=[
         upload_import_panel(),
-        html.Hr(style={"height": "2px", "margin": "5px"}),
-        html.Div(className="row", children=[
-            dcc.Markdown("Import data type:", className="two columns", id="import_markdown"),
-        ]),
-        html.Div(id='output-data-upload'),
-        html.Hr(style={"height": "2px", "margin": "5px"}),
         danger_delete_data_type_panel()
-    ])
-    ]
+    ])]
+
+
+def generate_upload_box_message(parsed_name):
+    return html.Div([
+            html.Br(),
+            'Drag and Drop or ', html.A('Select Files    '),
+            html.Br(),
+            parsed_name
+        ])
 
 
 @dash.callback(
@@ -141,13 +147,9 @@ def update_uploader_info(filename, data_type):
     if data_type is not None:
         parsed_data_type = f"{parsed_data_type} {data_type}"
     markdown_text = f"{parsed_data_type}  {parsed_name}"
-    return [
-        html.Div([
-            'Drag and Drop or ', html.A('Select Files    '),
-            parsed_name
-        ]),
-        markdown_text
-    ]
+    html_code = generate_upload_box_message(parsed_name)
+    return html_code, markdown_text
+
 
 
 @dash.callback(
@@ -161,11 +163,7 @@ def is_btn_import_disabled(data_type, filenames, r, s):
     is_disabled = True
     if data_type is not None and filenames is not None:
         is_disabled = False
-    # else if
-    #     print(f"data_type:{data_type}={data_type is not None}={len(data_type)>1}={is_disabled}")
-    print(r, s)
-    print(f"validate import button: {data_type}___{filenames}")
-    print(f"data_type:{data_type}={data_type is not None}=={is_disabled}")
+    print(f"data_type:{data_type}=={filenames}=={data_type is not None}=={is_disabled}")
     return is_disabled
 
 
@@ -201,20 +199,20 @@ def preview_content(contents, filename, date):
     df = parse_contents(contents, filename, date)
     col_name_dict = [{'name': i, 'id': i} for i in df.columns]
     return html.Div([
-        html.H5(filename),
-        html.H6(datetime.datetime.fromtimestamp(date)),
+        html.H6([filename, "  Timestamp:", datetime.datetime.fromtimestamp(date)]),
         dash_table.DataTable(df.to_dict('records'), col_name_dict),
         html.Hr(style={"height": "2px", "margin": "5px"}),
         # For debugging, display the raw contents provided by the web browser
         html.Div('Raw Content'),
-        html.Pre(contents[0:200] + '...', style={
+        html.Pre([contents[0:200] + '   ...  '], style={
             'whiteSpace': 'pre-wrap',
             'wordBreak': 'break-all'
         })
     ])
 
 
-def import_dataframe(contents, filename, data_type, is_append, field_trial):
+def import_dataframe(contents, filename, data_type, is_append,
+                     db_table: field_table.FieldTable):
     #     content_type, content_string = contents.split(',')
     # decoded = base64.b64decode(content_string)
 
@@ -222,8 +220,8 @@ def import_dataframe(contents, filename, data_type, is_append, field_trial):
         df = parse_contents(contents, filename)
         data_importer = importer.DataImporter(df, data_type)
         data_importer.parse_df_to_dynamo_json(
-            append=is_append, field_trial=field_trial)
-        import_len = field_trial.import_batch_field_data_res(
+            append=is_append, db_table=db_table)
+        import_len = db_table.import_batch_field_data_res(
             data_importer)  # How to test this effectively?
     except Exception as e:
         print(e)
@@ -268,16 +266,29 @@ def update_output(btn_1, btn_2,
             # if not db_info["db_status"] or not db_info["table_status"]:
             #     children = ([html.H5("Database not available")])
             print(f"data_type_{data_type}")
-            field_trial = app_db.connect_db_table(db_info)
-            children = [import_dataframe(c, n, data_type, is_append, field_trial)
-                        for c, n, in
-                        zip(list_of_contents, list_of_names)]
+            db_table = app_db.connect_db_table(db_info)
+            children = [
+                import_dataframe(
+                    c, n, data_type, is_append, db_table) for c, n, in zip(
+                    list_of_contents, list_of_names)]
             # else:
             # children = html.Div([html.H5("Please enter data type")])
+
     return children
 
 
 
+@dash.callback(
+    Output("btn_delete_data_type", "disabled"),
+    Input("text_delete_data_type", "value"),
+    Input("text_delete_data_type", "required"),
+)
+def is_btn_delete_disabled(data_type, is_required):
+    is_disabled = True
+    if data_type is not None:
+        is_disabled = False
+    print(f"DELETE: data_type:{data_type}={data_type is not None}=={is_disabled}=={is_required}")
+    return is_disabled
 
 
 
@@ -292,7 +303,7 @@ def delete_data_type(btn_delete, data_type, db_info):
     if data_type is None:
         raise PreventUpdate
     try:
-        md = app_db.delete_all_data_type(db_info, data_type)
+        md = app_db.delete_all_items_data_type(db_info, data_type)
     except Exception as e:
         md = f"Please enter a data_type to delete all items. {e}"
     return md

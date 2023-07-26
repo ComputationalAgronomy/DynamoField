@@ -34,7 +34,8 @@ external_stylesheets = [theme, "https://codepen.io/chriddyp/pen/bWLwgP.css"]
 STORAGE_CLEAN_DATA = False
 
 TAB_DEFAULT = 'tab-query'
-TAB_DEFAULT = 'tab-db-status'
+# TAB_DEFAULT = 'tab-db-status'
+TAB_DEFAULT = 'tab-import'
 
 
 app = Dash(__name__,

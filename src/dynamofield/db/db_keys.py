@@ -28,12 +28,12 @@ def parse_key_condition(key, value, exact):
         sort_key_exprs = key.eq(value)
     else:
         sort_key_exprs = key.begins_with(value)
-    return sort_key_exprs 
+    return sort_key_exprs
 
 
 def find_offset_sort_key_list(sort_key):
     index = [int(s.rsplit("_")[1]) for s in sort_key]
-    offset = max(index)
+    offset = max(index) + 1
     return(offset)
 
 
