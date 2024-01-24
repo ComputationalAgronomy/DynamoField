@@ -33,8 +33,8 @@ logger = logging.getLogger(__name__)
 
 class FieldTable:
     """Encapsulates an Amazon DynamoDB table of field trial data."""
-    PARTITION_KEY_NAME = "trial_id"
-    SORT_KEY_NAME = "info"
+    PARTITION_KEY_NAME = "field_trial_id"
+    SORT_KEY_NAME = "data_type"
     PARTITION_KEY = Key(PARTITION_KEY_NAME)
     SORT_KEY = Key(SORT_KEY_NAME)
     TRIAL_ID_LIST_PARTITION_KEY = "__private_list_all_id__"

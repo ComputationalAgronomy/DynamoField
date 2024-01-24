@@ -1,6 +1,6 @@
 # Dynamofield: Flexible field trial database
 
-Dynamofield is a highly customizable database scheme designed to store field trial data. 
+Dynamofield is a highly customizable database scheme designed to store field trial data.
 Frontend web interface.
 Backend NoSQL database powered by DynamoDB.
 
@@ -13,7 +13,7 @@ Please make sure the following programs are installed.
 - Option 1: Run the setup script
   - MacOS/Linux: `0_init.sh`
   - Windows: `0_init.bat`
-- Option 2: Manually install dependencies 
+- Option 2: Manually install dependencies
   - Install required Python libraries
     ```
     # MacOS/Linux - Terminal
@@ -60,7 +60,7 @@ Please make sure the following programs are installed.
    - Python:
       ```
       python3 app.py
-      # OR 
+      # OR
       py app.py
       ```
 
@@ -70,39 +70,39 @@ There are a few core concepts and terminologies for **dynamofield**.
 
 - **Database endpoint:** Each database server has a unique database endpoint address. The default endpoint for the local server is `http://localhost:8000/`
 
-- **Data_table:** Each database can support multiple data_tables. Data_tables are independent of each other, and generally, they do not share data across multiple data_tables. 
+- **Data_table:** Each database can support multiple data_tables. Data_tables are independent of each other, and generally, they do not share data across multiple data_tables.
   - The typical usage for the data_table is storing unrelated trials at separate data_table, i.e., Yield trial for crops and Disease trial for fruit trees.
 
 - **Trial ID:** Each trial (a plot with *n* rows and *m* columns) has a unique ID. This is the only required column when importing data
 
-- **Info_type:** Within each trial, all information is categorized into multiple different **info_type**. There are no strict rules on how data is divided into categories; however, it is recommended that grouping data collected similar information together. For example;
+- **data_type:** Within each trial, all information is categorized into multiple different **data_type**. There are no strict rules on how data is divided into categories; however, it is recommended that grouping data collected similar information together. For example;
   - Trt: Treatment information such as treatment id, treatment code, treatment name, etc.
   - Contact: Contact information include contact person, phone number, email address, company name, etc.
   - Plot: Yield for each plot, plot location, treatment id, etc.
   - Management: farm management throughout the trial season, including irrigation system, date and amount of fertilizer or pesticides applied, weed management, etc.
 
-**Recommendation:** Keep the naming scheme consistent. 
+**Recommendation:** Keep the naming scheme consistent.
 
 
-#### Database status panel 
+#### Database status panel
 - Connect to the database endpoint. The default endpoint for the local server is `http://localhost:8000/`
-- Enter data_table name. 
+- Enter data_table name.
   - If this is the first time using the database, please create a new data_table (i.e., `ft_db`) using `Create New Table`
   - Use "List Existing Tables" to get all tables in the current database endpoint.
-- Click **Connect Database** 
+- Click **Connect Database**
 ![DB_status](figures/db_status.png)
 
 
 #### Import data panel
 Import data in CSV format into the database
 - Upload a CSV file
-- Enter a **info_type**
+- Enter a **data_type**
 - Choose between "Insert new data" or "Replace existing"
 - Click **Import Data**
 
 #### Query data panel
 - Query data from the database
-- Merge data from multiple **info_type**
+- Merge data from multiple **data_type**
 - Plotting data
 - Perform basic statistical analysis
 - Export data
@@ -116,15 +116,15 @@ Import data in CSV format into the database
    2. Click **Connect Database**. The database status should change to **ONLINE**. If not, please make the endpoint is correct and DynamoDB local server is running.
    4. Enter `ft_db` in DB table name, and click "Connect Database" again. Both Database status and Table status should be **ONLINE**.
       - First time user. Enter `ft_db` at "Create a new table", and click **Create New Table**.
-   
+
 2. **Import data panel:**  Upload XX example dataset fromn the XXXX folder
 
     | filename | info_key/info_type |
     | --- | --- |
-    | eg_plot.csv | plot | 
-    | eg_trt.csv | trt | 
-    | eg_seed.csv | seed | 
-    | eg_management | management| 
+    | eg_plot.csv | plot |
+    | eg_trt.csv | trt |
+    | eg_seed.csv | seed |
+    | eg_management | management|
 
     To import these tables into the database;
     1. Select one `CSV` file from the example folder.
@@ -136,7 +136,7 @@ Import data in CSV format into the database
 3. **Query database panel:** Fetch data
    1. Select trial ID: `trial_2B` and `trial_3C`
    2. Select **info_type**: `plot`, `trt`, and `seed`
-   3. Click **Fetch Data**. This will query the database and fetch records that satisfy these filtering criteria. 
+   3. Click **Fetch Data**. This will query the database and fetch records that satisfy these filtering criteria.
 
 4. **Merging multiple info_type**
    1. Select two **info_type**
@@ -155,12 +155,12 @@ Import data in CSV format into the database
    1.  Select `trt` for "Factor", and `yield` for "Response"
    2. Optional: Select "Slice by"
    3. Click "Analysis" or "Summary"
-    
-   
 
 
-<!-- ## editable install 
-https://github.com/pypa/pip/issues/7953 
+
+
+<!-- ## editable install
+https://github.com/pypa/pip/issues/7953
 ```
 pip3 install  --prefix=~/.local/ -e  .
 ``` -->
@@ -172,7 +172,7 @@ pip3 install  --prefix=~/.local/ -e  .
 
 ### You can add a header
 
-You can add text within a collapsed section. 
+You can add text within a collapsed section.
 
 You can add an image or a code block, too.
 
