@@ -54,7 +54,7 @@ app.layout = html.Div(
             id="banner",
             className="banner",
             children=[
-                html.H2("Dynamofielt - Field trial database"),
+                html.H2("Dynamofield - Field trial database"),
                 dcc.Markdown(id="db_markdown",
                     dangerously_allow_html=True)
             ],

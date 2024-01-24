@@ -168,7 +168,7 @@ def update_data_table(btn_fetch, btn_merge_info, btn_merge_column,
         df_output = df_operation.merge_multi_columns(
             data, merge_columns, new_name=merge_new_col_name)
 
-    data_info = f"Data: {df_output.shape[0]} rows, {df_output.shape[1]} columns."
+    data_info = "" #f"Data: {df_output.shape[0]} rows, {df_output.shape[1]} columns."
     output = [df_output.to_dict('records'),
               info_list, info_list, info_list,
               df_output.columns, df_output.columns, df_output.columns,
