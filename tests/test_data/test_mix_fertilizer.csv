@@ -1,0 +1,9 @@
+field_trial_id,Fertilizer,ferterlizer_usage,type_chemical,Date_DOP
+trial_2B,NPK,,,10
+trial_2B,NPK50,,,20
+trial_3C,,NPK,,15
+trial_3C,,NPK50,,25
+trial_3C,,N80,,35
+trial_4D,,,N50P30,11
+trial_4D,,,NPK,22
+trial_4D,,,N50P30,33

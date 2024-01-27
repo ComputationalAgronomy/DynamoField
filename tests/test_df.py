@@ -1,14 +1,9 @@
-import os
 
 import numpy as np
 import pandas as pd
 import pytest
-from boto3.dynamodb.conditions import Key
-from pandas.testing import assert_frame_equal
-
-from dynamofield.db import client_internal, db_client, dynamodb_server
 from dynamofield.df import df_operation
-from dynamofield.field import field_table, importer
+from pandas.testing import assert_frame_equal
 
 
 @pytest.fixture

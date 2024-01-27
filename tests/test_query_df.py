@@ -1,14 +1,8 @@
-import importlib
-from decimal import Decimal
-
-import boto3
-import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal
-
 from dynamofield.db import dynamodb_server
 from dynamofield.field import field_table
+from pandas.testing import assert_frame_equal
 
 # importlib.reload(field_table)
 

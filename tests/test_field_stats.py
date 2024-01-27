@@ -1,10 +1,9 @@
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal
-
 from dynamofield.db import dynamodb_server
-from dynamofield.field import field_table, importer
+from dynamofield.field import field_table
 from dynamofield.stats import summary_stats
+from pandas.testing import assert_frame_equal
 
 
 @pytest.fixture

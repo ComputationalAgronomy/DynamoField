@@ -1,15 +1,7 @@
-# import field
-import importlib
-import os
 
-import boto3
-import numpy as np
-import pandas as pd
 import pytest
-from boto3.dynamodb.conditions import Key
-
-from dynamofield.db import client_internal, db_client, dynamodb_server
-from dynamofield.field import field_table, importer
+from dynamofield.db import dynamodb_server
+from dynamofield.field import field_table
 
 
 @pytest.fixture
@@ -20,7 +12,7 @@ def field_trial():
     # table_utils.delete_all_items(client, table_name)
     dynamodb = dynamodb_server.DynamodbServer()
     # client = dynamodb_server.init_dynamodb_client()
-    dynamodb_res = dynamodb.init_dynamodb_resources()
+    # dynamodb_res = dynamodb.init_dynamodb_resources()
     field_trial = field_table.FieldTable(dynamodb.dynamodb_res, table_name)
     return field_trial
 

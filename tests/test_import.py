@@ -1,13 +1,10 @@
-# import field
-import importlib
 import os
 
-import boto3
 import numpy as np
 import pandas as pd
 import pytest
 
-from dynamofield.db import client_internal, db_client, dynamodb_server
+from dynamofield.db import db_client, dynamodb_server
 from dynamofield.field import field_table, importer
 
 # importlib.reload(field_table)
