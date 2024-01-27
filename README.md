@@ -2,7 +2,7 @@
 
 Dynamofield is a highly customizable database scheme designed to store field trial data.
 Frontend web interface.
-Backend NoSQL database powered by DynamoDB.
+Backend NoSQL database powered by AWS DynamoDB.
 
 
 ## Requirements and setup
@@ -73,7 +73,7 @@ There are a few core concepts and terminologies for **dynamofield**.
 - **Data_table:** Each database can support multiple data_tables. Data_tables are independent of each other, and generally, they do not share data across multiple data_tables.
   - The typical usage for the data_table is storing unrelated trials at separate data_table, i.e., Yield trial for crops and Disease trial for fruit trees.
 
-- **Trial ID:** Each trial (a plot with *n* rows and *m* columns) has a unique ID. This is the only required column when importing data
+- **Field_Trial_ID:** Each trial (a plot with *n* rows and *m* columns) has a unique ID. This is a required column when importing data
 
 - **data_type:** Within each trial, all information is categorized into multiple different **data_type**. There are no strict rules on how data is divided into categories; however, it is recommended that grouping data collected similar information together. For example;
   - Trt: Treatment information such as treatment id, treatment code, treatment name, etc.

@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynamofield"
-version = "0.0.1"
+version = "1.0.5"
 authors = [
   { name="Steven Wu", email="stevenwu@ntu.edu.tw" },
 ]
-description = "Flexible database framework for field trial data"
+description = "Flexible database framework for analysing agricultural field trial data"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -26,6 +26,8 @@ dynamofield = "dynamofield:app"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
