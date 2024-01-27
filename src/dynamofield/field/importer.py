@@ -152,19 +152,19 @@ class DataImporter:
 
 #     # reduce(lambda x: x.split("_")[1], xx)
 
-# current_data_split.aggregate({"info": lambda x : x.split("_")})
+# current_data_split.aggregate({'data_type': lambda x : x.split("_")})
 
-# current_data_split.aggregate({"info": lambda x : str(x)})
+# current_data_split.aggregate({'data_type': lambda x : str(x)})
 
-# current_data_split.get_group(trial_id).apply(lambda x: [1,2], index=["info"], axis=0)
-# current_data_split.get_group(trial_id)["info"].apply(lambda x: x.split(), axis=1)
+# current_data_split.get_group(trial_id).apply(lambda x: [1,2], index=['data_type'], axis=0)
+# current_data_split.get_group(trial_id)['data_type'].apply(lambda x: x.split(), axis=1)
 
-# current_data_split["info"].apply(lambda x : find_offset(x))
-# xx = current_data_split["info"].aggregate(lambda x : find_offset(x))
+# current_data_split['data_type'].apply(lambda x : find_offset(x))
+# xx = current_data_split['data_type'].aggregate(lambda x : find_offset(x))
 
 # current_data_split.info.aggregate(lambda x : [s.rsplit("_")[1] for s in x])
 
 
-# current_data_split.get_group(trial_id)["info"].apply(lambda x: x.split("_")[1])
+# current_data_split.get_group(trial_id)['data_type'].apply(lambda x: x.split("_")[1])
 
 

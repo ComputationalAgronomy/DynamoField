@@ -11,12 +11,12 @@ import pandas
 ALPHABETS = list(string.ascii_uppercase)
 # ALPHABETS.insert(0, 0)
 trial_id_list = ["trial_2B", "trial_3C", "trial_4D"]
-trial_id_list = ["crop_yr1_t01", "crop_yr1_t02", "crop_yr1_t03", "crop_yr1_t04", 
+trial_id_list = ["crop_yr1_t01", "crop_yr1_t02", "crop_yr1_t03", "crop_yr1_t04",
                  "crop_yr2_t01", "crop_yr2_t02", "crop_yr2_t03", "crop_yr2_t04"]
 
 
-NROW = NTRT = 6  
-NCOL = NBLOCK = 4  
+NROW = NTRT = 6
+NCOL = NBLOCK = 4
 
 """
 trial_id = trial_id_list[0]
@@ -49,7 +49,7 @@ def generate_design_cbd(ntrt, nrow, ncol):
     row_list = [t + 1 for t in range(ntrt) for _ in range(nrep)]
     trt_list = [f"T{t}" for t in row_list]
     design = itertools.product(range(1, nrow+1, 1), range(1, ncol+1, 1))
-    column_list = []    
+    column_list = []
     random.shuffle(trt_list)
     design = pd.DataFrame({"treatment": trt_list,
                            "row": row_list,
@@ -85,7 +85,7 @@ def simulate_yield_data(trial_id_list, ntrt, nblock, file_name):
     for trial_id in trial_id_list:
         design = generate_design_rcbd(ntrt, nblock)
         size = design.shape[0]
-        design["trial_id"] = trial_id    
+        design['field_trial_id'] = trial_id
         results = pd.DataFrame({
             "yields": [round(random.uniform(50, 100),2) for _ in range(size)],
             "meta": [round(random.uniform(1, 10)) for _ in range(size)]
@@ -118,7 +118,7 @@ def simulate_trt_data(trial_id_list, ntrt, file_name):
             "treatment": [f"T{t}" for t in trt_range],
             "treatment_name": [f"trt_name_{ALPHABETS[t]}" for t in range(ntrt)],
         })
-        info["trial_id"] = trial_id    
+        info['field_trial_id'] = trial_id
         info["seed_type"] = "seed_type_A"
         sim_data[trial_id] = info
     output = pd.concat(sim_data, ignore_index=True)
@@ -129,7 +129,7 @@ def simulate_trial_field_data(trial_id_list, file_name):
     # sim_data = dict() #pd.DataFrame()
     # trt_range = range(1, ntrt+1, 1)
     info = pd.DataFrame({
-        "trial_id": trial_id_list,
+        'field_trial_id': trial_id_list,
         "pH": [round(random.uniform(5, 9), 1) for _ in trial_id_list],
         "Location": [f"Loc_{ALPHABETS[t]}" for t, _ in enumerate(trial_id_list)],
         "irrigation": [True if t % 2 == 0 else False for t, _ in enumerate(trial_id_list)]
@@ -153,7 +153,7 @@ def simulate_management_data(trial_id_list, file_name):
     id_list = random.choices(trial_id_list, k=sim_length)
     solid_or_powder = random.choices(["solid", "powder"], k=sim_length)
     info = pd.DataFrame({
-        "trial_id": id_list,
+        'field_trial_id': id_list,
         "fertilizer": ["P" if t % 3 == 0 else "N" for t, _ in enumerate(id_list)],
         "type": ["NPK_type_I" if t % 2 == 0 else "" for t, _ in enumerate(id_list)],
         "amount": [round(random.uniform(5, 9), 1) for _ in id_list],
@@ -179,7 +179,7 @@ def generate_random_phone():
 
 def simulate_trial_contact(trial_id_list, file_name):
     info = pd.DataFrame({
-        "trial_id": trial_id_list,
+        'field_trial_id': trial_id_list,
         "person": ["John" if t % 2 == 0 else "Jane" for t, _ in enumerate(trial_id_list)],
         "phone": [generate_random_phone() for t, _ in enumerate(trial_id_list)]
     })

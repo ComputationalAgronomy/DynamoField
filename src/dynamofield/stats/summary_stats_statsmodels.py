@@ -65,7 +65,7 @@ def analysis_design(df, factor="treatment", response_list=["yields", "meta"], bl
     # plt.ylabel("Standardized Residuals")
     # plt.show()
     # # histogram
-    # plt.hist(model.resid, bins='auto', histtype='bar', ec='k') 
+    # plt.hist(model.resid, bins='auto', histtype='bar', ec='k')
     # plt.xlabel("Residuals")
     # plt.ylabel('Frequency')
     # plt.show()
@@ -78,7 +78,7 @@ def analysis_design(df, factor="treatment", response_list=["yields", "meta"], bl
 
 
 def tukey(df, factor="treatment", response_list=["yields", "meta"], block=None):
-    
+
     tukey_dict = {}
     for response in response_list:
         # formula = f"{response} ~ C({factor})"
@@ -89,6 +89,6 @@ def tukey(df, factor="treatment", response_list=["yields", "meta"], block=None):
     # print(m_comp)
 
 def parse_design(df):
-    subdata = df[["info", "treatment"]]
-    df["info"].replace("plot_(.*)", "\\1", regex=True)
+    subdata = df[['data_type', "treatment"]]
+    df['data_type'].replace("plot_(.*)", "\\1", regex=True)
 

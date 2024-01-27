@@ -18,14 +18,14 @@ def result_list_to_df(results) -> pd.DataFrame:
     # df = pd.concat(df_list, axis=1).transpose()
     df = pd.read_json(json.dumps(results, cls=DecimalEncoder))
     cols = list(df.columns.values)
-    new_col = ["trial_id", "info"]
+    new_col = ['field_trial_id', 'data_type']
     try:
         [cols.remove(c) for c in new_col]
         new_col.extend(cols)
         df = df[new_col]
     except ValueError:
         pass
-    
+
     return df
 
 
