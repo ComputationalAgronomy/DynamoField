@@ -1,15 +1,12 @@
 
 import dash
-from dynamofield.db.db_client import start_dynamodb_server
-from dynamofield.db import aws_utils
-import numpy as np
-import pandas as pd
-from dash import Dash, ctx, dash_table, dcc, html
+from dash import ctx, dash_table, dcc, html
 from dash.dependencies import ClientsideFunction, Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from app_db import *
-import app_db
+
+from dynamofield import app_db, app_style
+from dynamofield.db import aws_utils
 
 # @dash.callback(
 #     Output('get_item_count', 'children'),
@@ -27,6 +24,7 @@ import app_db
 # )
 # def update_item_count_db(x, info):
 #     return update_item_count(info)
+
 @dash.callback(
     Output("db_regions", "options"),
     Input('btn_connect_db', 'n_clicks')
