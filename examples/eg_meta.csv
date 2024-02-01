@@ -1,0 +1,9 @@
+,field_trial_id,pH,Location,irrigation
+0,crop_yr1_t01,5.7,Loc_A,True
+1,crop_yr1_t02,6.7,Loc_B,False
+2,crop_yr1_t03,5.5,Loc_C,True
+3,crop_yr1_t04,7.7,Loc_D,False
+4,crop_yr2_t01,5.4,Loc_E,True
+5,crop_yr2_t02,6.7,Loc_F,False
+6,crop_yr2_t03,7.1,Loc_G,True
+7,crop_yr2_t04,8.1,Loc_H,False
