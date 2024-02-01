@@ -1,87 +1,105 @@
 # DynamoField: Flexible field trial database
-- [DynamoField: Flexible field trial database](#DynamoField-flexible-field-trial-database)
+- [DynamoField: Flexible field trial database](#dynamofield-flexible-field-trial-database)
   - [Requirements and setup](#requirements-and-setup)
-    - [Getting started with DynamoField](#getting-started-with-DynamoField)
+    - [AWS DynamoDB](#aws-dynamodb)
+    - [DynamoDB Local version](#dynamodb-local-version)
+    - [Getting started with DynamoField](#getting-started-with-dynamofield)
   - [Usage](#usage)
       - [Database status panel](#database-status-panel)
       - [Import data panel](#import-data-panel)
       - [Query data panel](#query-data-panel)
   - [Example](#example)
 
+------
 
-DynamoField is a highly customizable database framework designed to collect and analyse field trial data.
+DynamoField is a highly customizable database framework that collects, organizes, and analyzes field trial data.
+
 DynamoField provides a frontend web interface, and AWS DynamoDB powers the backend NoSQL database.
 
 
 ## Requirements and setup
 
 Please make sure the following programs are installed.
-- [Python 3.9 or higher](https://www.python.org/)
-- [Java (JRE 8 or higher)](https://www.java.com)
-- Option 1: Run the setup script
-  - MacOS/Linux: `0_init.sh`
-  - Windows: `0_init.bat`
-- Option 2: Manually install dependencies
-  - Install required Python libraries
-    ```
-    # MacOS/Linux - Terminal
-    pip3 install -r requirements.txt
-    # OR
-    pip install -r requirements.txt
-
-    # Windows - Command Prompt
-    py -m pip install -r requirements.txt
-    ```
-    If `pip/pip3` is not available, please install it from [pip](https://pip.pypa.io/en/stable/).
-   - **DynamoDB**
-     - Option A: **DynamoDB Local version**
-           - Download and uncompress [DynamoDB Local](https://d1ni2b6xgvw0s0.cloudfront.net/dynamodb_local_latest.zip)
-     - Option B: **DynamoDB on AWS** (TODO: unfinished section)
-        - AWS Account
-        - Setup DynamoDB on AWS: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SettingUp.DynamoWebService.html
-
-
-
-### Getting started with DynamoField
-1. Download the latest version of **DynamoField** from the `release` page form GitHub
+- Download the latest version of **DynamoField** from the `release` page form GitHub
    - Alternatively, `git clone` the latest version from the `main` branch.
 
-2. Starts DynamoDB
+- [Python 3.9 or higher](https://www.python.org/)
+  - Option 1: Use the setup script. This will try to install Python dependencies and the local version of DynamoDB.
+    - MacOS/Linux: `0_init.sh`
+    - Windows: `0_init.bat`
+  - Option 2: Manually install dependencies
+    - Install required Python libraries.
+      If `pip/pip3` is not available, please install it from [pip](https://pip.pypa.io/en/stable/).
+      ```
+      # MacOS/Linux - Terminal
+      pip install -r requirements.txt
+
+      # Windows - Command Prompt
+      py -m pip install -r requirements.txt
+      ```
+
+
+### Configure credentials for AWS DynamoDB
+  - Create a free [AWS account](https://aws.amazon.com/)
+  - Setup security credentials with [AWS access key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey)
+  - Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+  - [Setting up new configuration and credentials](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
+  - [Optional]: Use DynamoDB with AWS console. [DynamoDB Documentation](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SettingUp.DynamoWebService.html)
+
+### DynamoDB Local version
+- Install [Java (JRE 8 or higher)](https://www.java.com)
+- Option 1: Use the setup script. This will try to install Python dependencies and the local version of DynamoDB.
+    - MacOS/Linux: `0_init.sh`
+    - Windows: `0_init.bat`
+- Option 2: Download and uncompress [DynamoDB Local](https://d1ni2b6xgvw0s0.cloudfront.net/dynamodb_local_latest.zip)
+
+
+
+
+## Getting started with DynamoField
+
+- Option 1: AWS DynamoDB
+  - Please make sure AWS CLI is setup and configured with the proper credentials.
+
+- Option 2. Starts DynamoDB Locally
    - Option 1: Execute startup script.
      - MacOS/Linux: `1_start_dynamodb.sh`
      - Windows: `1_start_dynamodb.bat`
    - Option 2: Manually start DynamoDB Local
-    ```
-    java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar [options]
-    ```
-    For more information on available options, run with the -help option:
-    ```
-    java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -help
-    ```
-    - Option 3: AWS DynamoDB. (TODO)
-      - AWS credential.
-      - DynamoDB on AWS.
+     ```
+     java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar [options]
+     ```
+     For more information on available options, run with the -help option:
+     ```
+     java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -help
+     ```
 
-3. Start **DynamoField** and open [http://127.0.0.1:8050/](http://127.0.0.1:8050/) in the browser.
-   - MacOS/Linux: `DynamoField.sh`
-   - Windows: `DynamoField.bat`
-   - Python:
-      ```
-      python3 app.py
-      # OR
-      py app.py
-      ```
 
+- Start **DynamoField** and open [http://127.0.0.1:8050/](http://127.0.0.1:8050/) in the browser.
+  - **MacOS/Linux**
+    - Execute `2_run_DynamoField.sh`
+    - OR manually runs python
+      ```
+      python3 src/dynamofield.py
+      ```
+  - **Windows**
+    - Execute `2_run_DynamoField.bat`
+    - OR manually runs Python
+      ```
+      py src/dynamofield.py
+      ```
 
 ## Usage
 There are a few core concepts and terminologies for **DynamoField**.
 
-- **Database endpoint:** Each database server has a unique database endpoint address. The default endpoint for the local server is `http://localhost:8000/`
+- **Database endpoint:** Each database server has a unique database endpoint address.
+  - The default endpoint for the local server is `http://localhost:8000/`.
+  - For AWS DynamoDB, select the aws regional endpoint.
 
 - **Data_table:** Each database can support multiple data_tables. Data_tables are independent of each other, and generally, they do not share data across multiple data_tables.
   - The typical usage for the `data_table` is storing unrelated trials at separate `data_table`, i.e., yield trial for crops and Disease trial for fruit trees.
 
-- **Field_Trial_ID:** Each trial (a plot with *n* rows and *m* columns) has a unique ID. This is a required column when importing data.
+- **field_trial_id:** Each trial has a unique ID. This column is required for all data.
 
 - **data_type:** Within each trial, information is categorized into multiple different **data_type**. There are no strict rules on how data is divided into categories; however, it is recommended that grouping data collected similar information together. For example;
   - Trt: Treatment information such as treatment id, treatment code, treatment name, etc.
@@ -98,7 +116,14 @@ There are a few core concepts and terminologies for **DynamoField**.
   - If this is the first time using the database, please create a new data_table (i.e., `ft_db`) using `Create New Table`
   - Use "List Existing Tables" to get all tables in the current database endpoint.
 - Click **Connect Database**
-![DB_status](figures/db_status.png)
+
+  - AWS DynamoDB:
+
+    ![DB_status_aws](figures/db_status_aws.png)
+
+  - Local DynamoDB:
+
+    ![DB_status_local](figures/db_status_local.png)
 
 
 #### Import data panel
@@ -127,12 +152,13 @@ Import data in CSV format into the database
 
 2. **Import data panel:**  Upload example dataset from the `examples` folder
 
-    | filename | info_key/info_type |
+    | filename | **data_type** |
     | --- | --- |
+    | eg_contact.csv | contact |
+    | eg_management | management|
+    | eg_meta.csv | meta |
     | eg_plot.csv | plot |
     | eg_trt.csv | trt |
-    | eg_seed.csv | seed |
-    | eg_management | management|
 
     To import these tables into the database:
     1. Select one `CSV` file from the example folder.
@@ -142,7 +168,7 @@ Import data in CSV format into the database
     5. Click **Import Data**
 
 3. **Query database panel:** Fetch data
-   1. Select trial ID: `trial_2B` and `trial_3C`
+   1. Select trial ID: `crop_yr1_t01` and `crop_yr1_t02` (crop name, year 1, trial 1)
    2. Select **info_type**: `plot`, `trt`, and `seed`
    3. Click **Fetch Data**. This will query the database and fetch records that satisfy these filtering criteria.
 
