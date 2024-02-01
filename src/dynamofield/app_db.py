@@ -25,6 +25,7 @@ def init_field_trial(endpoint, table_name):
     return db_table
 
 # endpoint_url_local = 'http://localhost:8000'
+# endpoint_url = endpoint_url_local
 # table_name_default = "ft_db"
 # dynamodb_server = init_dynamodb(endpoint_url=endpoint_url_local)
 # field_trial = init_field_trial(dynamodb_server, table_name = table_name_default)
