@@ -1,9 +1,9 @@
 # DynamoField: Flexible field trial database
 - [DynamoField: Flexible field trial database](#dynamofield-flexible-field-trial-database)
   - [Requirements and setup](#requirements-and-setup)
-    - [AWS DynamoDB](#aws-dynamodb)
+    - [Configure credentials for AWS DynamoDB](#configure-credentials-for-aws-dynamodb)
     - [DynamoDB Local version](#dynamodb-local-version)
-    - [Getting started with DynamoField](#getting-started-with-dynamofield)
+  - [Getting started with DynamoField](#getting-started-with-dynamofield)
   - [Usage](#usage)
       - [Database status panel](#database-status-panel)
       - [Import data panel](#import-data-panel)
@@ -192,26 +192,3 @@ Import data in CSV format into the database
 
 
 
-
-<!-- ## editable install
-https://github.com/pypa/pip/issues/7953
-```
-pip3 install  --prefix=~/.local/ -e  .
-``` -->
-
-
-
-<!-- <details>
-<summary>Tips for collapsed sections</summary>
-
-### You can add a header
-
-You can add text within a collapsed section.
-
-You can add an image or a code block, too.
-
-```ruby
-   puts "Hello World"
-```
-
-</details> -->
