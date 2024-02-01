@@ -2,31 +2,16 @@
 # visit http://127.0.0.1:8050/ in your web browser.
 
 
-import base64
-import datetime
-# import field
-import importlib
-import io
-import os
-from datetime import datetime as dt
-
-import boto3
 import dash
 import dash_bootstrap_components as dbc
-import numpy as np
-import pandas as pd
-import plotly.express as px
-from dash import Dash, ctx, dash_table, dcc, html
+from dash import Dash, dash_table, dcc, html
 from dash.dependencies import ClientsideFunction, Input, Output, State
-from dash.exceptions import PreventUpdate
 
-from app_panel_db_status import *
-from app_panel_import import *
-from app_panel_query import *
-from callbacks import *
-from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
-from dynamofield.field import field_table, importer
-from dynamofield.utils import json_utils
+# from dash.exceptions import PreventUpdate
+from dynamofield.app_panel_db_status import generate_db_status_panel
+from dynamofield.app_panel_import import generate_import_panel
+from dynamofield.app_panel_query import generate_query_panel
+from dynamofield.callbacks import *
 
 theme = dbc.themes.COSMO
 external_stylesheets = [theme, "https://codepen.io/chriddyp/pen/bWLwgP.css"]
@@ -90,6 +75,8 @@ def render_panels(tab):
     elif tab == "tab-db-status":
         return generate_db_status_panel()
 
+def main():
+    app.run_server(debug=True)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    main()

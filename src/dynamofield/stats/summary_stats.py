@@ -88,7 +88,7 @@ def analysis_design_single(df, factor="treatment", response="yields", block=None
     result = analysis_design_formula(df, formula)
     return result
 
-def analysis_design_formula(df, formula):    
+def analysis_design_formula(df, formula):
     model = smf.ols(formula, data=df).fit()
     anova_result = sm.stats.anova_lm(model, typ=2)
     return anova_result
@@ -122,7 +122,7 @@ def test_assumption(model):
     plt.ylabel("Standardized Residuals")
     plt.show()
     # histogram
-    plt.hist(model.resid, bins='auto', histtype='bar', ec='k') 
+    plt.hist(model.resid, bins='auto', histtype='bar', ec='k')
     plt.xlabel("Residuals")
     plt.ylabel('Frequency')
     plt.show()
@@ -136,13 +136,13 @@ def test_assumption(model):
 
 
 def tukey_single(df, factor="treatment", response="yield", block=None):
-    
+
     m_comp = statsmodels.stats.multicomp.pairwise_tukeyhsd(df[response], groups=df[factor])
     return m_comp
 
 
 def tukey(df, factor="treatment", response_list=["yields", "meta"], block=None):
-    
+
     tukey_dict = {}
     for response in response_list:
         m_comp = tukey_single(df, factor, response)
@@ -151,7 +151,7 @@ def tukey(df, factor="treatment", response_list=["yields", "meta"], block=None):
 
 # @deprecated
 def parse_design(df):
-    subdata = df[["info", "treatment"]]
-    df["info"].replace("plot_(.*)", "\\1", regex=True)
+    subdata = df[['data_type', "treatment"]]
+    df['data_type'].replace("plot_(.*)", "\\1", regex=True)
 
 

@@ -1,0 +1,4 @@
+field_trial_id,location,soil_type,soil_ph,irrigation
+trial_2B,Loc_0,sandy,5.2,No
+trial_3C,Loc_1,sandy,6.3,Yes
+trial_4D,Loc_2,sandy,7.4,Yes

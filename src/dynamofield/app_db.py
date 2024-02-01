@@ -1,7 +1,5 @@
 
-import boto3
-
-from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
+from dynamofield.db import dynamodb_server
 from dynamofield.field import field_table
 
 
@@ -12,7 +10,6 @@ def init_dynamodb(endpoint_url):
     dynamodb = dynamodb_server.DynamodbServer(endpoint_url=endpoint_url)
     # client = dynamodb_server.init_dynamodb_client()
     # dynamodb_server.init_dynamodb_resources()
-    # print("srv:", dynamodb_server.is_online, dynamodb_server.dynamodb_res)
     return dynamodb
 
 
@@ -31,7 +28,6 @@ def init_field_trial(endpoint, table_name):
 # endpoint_url = endpoint_url_local
 # table_name_default = "ft_db"
 # dynamodb_server = init_dynamodb(endpoint_url=endpoint_url_local)
-# # print("ZZ:", dynamodb_server.is_online, dynamodb_server.dynamodb_res)
 # field_trial = init_field_trial(dynamodb_server, table_name = table_name_default)
 
 def connect_db_table(db_info):

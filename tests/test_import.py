@@ -1,13 +1,10 @@
-# import field
-import importlib
 import os
 
-import boto3
 import numpy as np
 import pandas as pd
 import pytest
 
-from dynamofield.db import client_internal, db_client, dynamodb_server
+from dynamofield.db import db_client, dynamodb_server
 from dynamofield.field import field_table, importer
 
 # importlib.reload(field_table)
@@ -43,11 +40,11 @@ def test_creation():
     table_desc = client.describe_table(TableName = table_name)
     expected = {'Table': {
         'AttributeDefinitions':
-                [{'AttributeName': 'trial_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'info', 'AttributeType': 'S'}],
+                [{'AttributeName': 'field_trial_id', 'AttributeType': 'S'},
+                    {'AttributeName': 'data_type', 'AttributeType': 'S'}],
                 'TableName': 'ft_db',
-                'KeySchema': [{'AttributeName': 'trial_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'info', 'KeyType': 'RANGE'}],
+                'KeySchema': [{'AttributeName': 'field_trial_id', 'KeyType': 'HASH'},
+                    {'AttributeName': 'data_type', 'KeyType': 'RANGE'}],
                 'TableStatus': 'ACTIVE',
                 'ItemCount': 0
                 }}

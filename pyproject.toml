@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynamofield"
-version = "0.0.1"
+version = "1.0.5"
 authors = [
   { name="Steven Wu", email="stevenwu@ntu.edu.tw" },
 ]
-description = "Flexible database framework for field trial data"
+description = "Flexible database framework for analysing agricultural field trial data"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -22,10 +22,14 @@ classifiers = [
 "Bug Tracker" = "https://github.com/ComputationalAgronomy/field-trial-dynamodb/issues"
 
 [project.scripts]
-dynamofield = "dynamofield:app"
+dynamofield = "dynamofield.app:main"
+# [project.entry-points."dynamofield_app"]
+# dynamofield = "dynamofield.app"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -36,5 +40,5 @@ addopts = [
     "--import-mode=importlib",
 ]
 
-[flake8]
-per-file-ignores = "tests/*: E501"  # E501 line too long
+# [flake8]
+# per-file-ignores = "tests/*: E501"  # E501 line too long

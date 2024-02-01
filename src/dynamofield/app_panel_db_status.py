@@ -1,24 +1,7 @@
-import base64
-import datetime
-import io
-import os
-from datetime import datetime as dt
-
 import dash
 import dash_bootstrap_components as dbc
-import numpy as np
-import pandas as pd
-from dash import Dash, ctx, dash_table, dcc, html
-from dash.dependencies import ClientsideFunction, Input, Output, State
-from dash.exceptions import PreventUpdate
-
-# from callbacks import *
-import app_style
-from app_db import *  # dynamodb_server  # field_trial
-from dynamofield.db import client_internal, db_client, db_keys, dynamodb_server
-from dynamofield.field import field_table, importer
-from dynamofield.utils import json_utils
-
+from dash import dash_table, dcc, html
+from dynamofield import app_db, app_style
 
 
 def update_status_panel():

@@ -1,6 +1,5 @@
 ## Custom
 *.db
-*.csv
 .vscode/
 sandbox/**
 temp/*

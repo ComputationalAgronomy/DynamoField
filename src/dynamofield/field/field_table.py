@@ -33,8 +33,8 @@ logger = logging.getLogger(__name__)
 
 class FieldTable:
     """Encapsulates an Amazon DynamoDB table of field trial data."""
-    PARTITION_KEY_NAME = "trial_id"
-    SORT_KEY_NAME = "info"
+    PARTITION_KEY_NAME = "field_trial_id"
+    SORT_KEY_NAME = "data_type"
     PARTITION_KEY = Key(PARTITION_KEY_NAME)
     SORT_KEY = Key(SORT_KEY_NAME)
     TRIAL_ID_LIST_PARTITION_KEY = "__private_list_all_id__"
@@ -148,7 +148,7 @@ class FieldTable:
         sort_key_list = []
 
         for item in response['Items']:
-            sort_key_list.append(item.get("info"))
+            sort_key_list.append(item.get('data_type'))
         if prune_common:
             other_sort_keys = [i for i in sort_key_list if not i.startswith(
                 'plot_') | i.startswith('trt_')]
@@ -173,14 +173,14 @@ class FieldTable:
             response = self.res_table.query(**keywords)
             other_info_dict[sort_key] = response["Items"]
         # for item in response['Items']:
-        #     sort_key_list.append(item.get("info"))
+        #     sort_key_list.append(item.get('data_type'))
 
         return other_info_dict
 
 
     def get_all_trial_id(self):
         response = self.query_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
-        all_ids = [t["info"] for t in response]
+        all_ids = [t['data_type'] for t in response]
         return all_ids
 
 
@@ -205,7 +205,7 @@ class FieldTable:
     def query_df_plot_treatment(self, trial_ids):
         df_plots = self.query_df_all_plots(trial_ids)
         df_trt = self.query_df_all_treatments(trial_ids)
-        df_merged = pd.merge(df_plots, df_trt, how="inner", on=["trial_id", "treatment"])
+        df_merged = pd.merge(df_plots, df_trt, how="inner", on=['field_trial_id', "treatment"])
         return df_merged
 
 
@@ -215,7 +215,7 @@ class FieldTable:
         df[info_1] = json_utils.result_list_to_df(results)
         results = self.query_by_trial_ids(trial_ids, sort_keys=f"{info_2}_", exact=False)
         df[info_2] = json_utils.result_list_to_df(results)
-        df_merged = pd.merge(df[info_1], df[info_2], how="inner", on=["trial_id", merged_by])
+        df_merged = pd.merge(df[info_1], df[info_2], how="inner", on=['field_trial_id', merged_by])
         return df_merged
 
 
@@ -280,7 +280,7 @@ class FieldTable:
         # try:
         current_data = self.get_by_sort_key(data_type)
         current_data_split = current_data.groupby(FieldTable.PARTITION_KEY_NAME)
-        offset = current_data_split["info"].aggregate(lambda x : db_keys.find_offset_sort_key_list(x))
+        offset = current_data_split['data_type'].aggregate(lambda x : db_keys.find_offset_sort_key_list(x))
         # except NameError:
         #     offest =
         return offset

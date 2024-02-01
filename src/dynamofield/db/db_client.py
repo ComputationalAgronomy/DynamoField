@@ -14,22 +14,22 @@ def add_db_table(client, tablename):
         response = client.create_table(
             AttributeDefinitions=[
                 {
-                    'AttributeName': 'trial_id',
+                    'AttributeName': 'field_trial_id',
                     'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'info',
+                    'AttributeName': 'data_type',
                     'AttributeType': 'S'
                 }
             ],
             TableName=tablename,
             KeySchema=[
                 {
-                    'AttributeName': 'trial_id',
+                    'AttributeName': 'field_trial_id',
                     'KeyType': 'HASH'
                 },
                 {
-                    'AttributeName': 'info',
+                    'AttributeName': 'data_type',
                     'KeyType': 'RANGE'
                 }
             ],
