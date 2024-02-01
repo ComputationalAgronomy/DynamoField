@@ -1,0 +1,17 @@
+,field_trial_id,fertilizer,type,amount,solid_or_powder
+0,crop_yr1_t01,P,NPK_type_I,6.6,solid
+1,crop_yr1_t02,N,,7.4,powder
+2,crop_yr2_t04,N,NPK_type_I,8.4,solid
+3,crop_yr1_t01,P,,8.8,solid
+4,crop_yr2_t02,N,NPK_type_I,5.1,solid
+5,crop_yr2_t04,N,,7.7,solid
+6,crop_yr2_t03,P,NPK_type_I,5.9,powder
+7,crop_yr2_t01,N,,8.1,solid
+8,crop_yr2_t03,N,NPK_type_I,7.2,solid
+9,crop_yr2_t02,P,,6.0,solid
+10,crop_yr2_t03,N,NPK_type_I,6.1,solid
+11,crop_yr1_t01,N,,6.9,powder
+12,crop_yr2_t04,P,NPK_type_I,5.3,powder
+13,crop_yr1_t04,N,,6.6,powder
+14,crop_yr2_t01,N,NPK_type_I,7.5,powder
+15,crop_yr2_t03,P,,5.8,solid
