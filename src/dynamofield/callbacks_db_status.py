@@ -190,7 +190,7 @@ def update_db_status(btn_connect_db, region, ep, name, info):
 
     if dash.callback_context.triggered_id == 'btn_connect_db':
 
-        print(f"Current status: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
+        # print(f"Current status: ={ep}=={name}=\tmemory:{m_ep}=={m_name}==\t=={info}")
         if ep == m_ep and name == m_name:
             print("No update")
             # raise PreventUpdate

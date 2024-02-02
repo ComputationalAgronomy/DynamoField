@@ -85,8 +85,6 @@ def tukey(df, factor="treatment", response_list=["yields", "meta"], block=None):
         m_comp = statsmodels.stats.multicomp.pairwise_tukeyhsd(df[response], groups=df[factor])
         tukey_dict[response] = m_comp
     return tukey_dict
-    #     (endog=athleisure_df['volume'], groups=athleisure_df['engine'], alpha=0.05)
-    # print(m_comp)
 
 def parse_design(df):
     subdata = df[['data_type', "treatment"]]

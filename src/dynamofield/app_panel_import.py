@@ -4,12 +4,7 @@ import dash_bootstrap_components as dbc
 from dash import dash_table, dcc, html
 from dynamofield import app_db, app_style
 
-BTN_STYLE = {
-    'margin': '10px', 'margin-top': '10px',
-    'height': '60px', 'width': '200px',
-    'align-items': 'center', 'justify-content': 'center',
-    'text-transform': 'none',
-}
+
 
 UPLOAD_STYLE = {
     'width': '100%',

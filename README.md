@@ -192,3 +192,9 @@ Import data in CSV format into the database
 
 
 
+## Others
+- DynamoField can be used as a standalone
+  ```
+  pip install DynamoField
+  ```
+- Testing with `pytest`. This required local version of DynamoDB
