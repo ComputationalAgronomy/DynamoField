@@ -60,8 +60,8 @@ class DataImporter:
             except ValueError as e:
                 print(f"Can't parse plot data. {e}")
                 raise
-            self.df['plot'] = "plot_" + \
-                self.df['column'].astype(str) + '-' + \
+            self.df['plot'] = "plot_C" + \
+                self.df['column'].astype(str) + 'R' + \
                 self.df['row'].astype(str)
 
     def convert_attribute_dict(self, data_s):
@@ -77,25 +77,29 @@ class DataImporter:
         return attr_dict
 
     def sort_key_creation(self, index, dfrow):
-        if self.data_type == "plot":
-            key = self.check_dup_key_prefix(dfrow[self.data_type])
-        # elif is_single_row:
-        #     key = self.data_type
-        else:
-            key = f"{self.data_type}_{index}"
+        # if self.data_type == "plot":
+        #     key = self.check_dup_key_prefix(dfrow[self.data_type])
+        # # elif is_single_row:
+        # #     key = self.data_type
+        # else:
+        key = f"{self.data_type}_{index}"
         sort_key = field_table.FieldTable.create_sort_key(key)
         return sort_key
 
 
 
-    def create_offset(self, df_trials, append, field_trial):
+    def create_offset(self, df_trials, append, field_trial: field_table.FieldTable):
         offset = {k: 0 for k in df_trials.groups.keys()}
         if append:
             try:
-                offset = field_trial.find_offset(self.data_type)
-            except AttributeError:
+                offset_update = field_trial.find_offset(self.data_type)
+                # offset = offset | offset_update
+                offset.update(offset_update)
+            except AttributeError as e:
+                print(f"AttributeError: {e}")
                 pass
-            except KeyError:
+            except (KeyError, ValueError) as e:
+                print(f"Key or Value Error: {e}")
                 pass
         return offset
 

@@ -5,6 +5,7 @@ from dash.exceptions import PreventUpdate
 
 # from app_db import *
 from dynamofield.callbacks_db_status import *
+from dynamofield.callbacks_import import *
 from dynamofield.callbacks_query import *
 
 
@@ -37,10 +38,8 @@ def update_item_count_import(x, info):
 )
 def get_memory_data(x, db_info):
     if db_info is not None:
-        print(f"memory: {db_info}")
+        # print(f"memory: {db_info}")
         # print("memory:", db_info["endpoint"], db_info["table_name"], db_info["db_status"], db_info["table_status"], x)
-        # for k, v in db_info.items():
-        #     print("\t", k, v)
         return db_info["endpoint"], db_info["table_name"], str(db_info["db_status"]), str(db_info["table_status"])
     return False, False, False, False
 

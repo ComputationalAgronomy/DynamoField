@@ -70,7 +70,6 @@ def test_import(field_trial: field_table.FieldTable):
     count = field_trial.get_item_count()
     assert count == 0
     for data_type in expected_length.keys():
-        print(data_type)
         file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
         data_importer = importer.DataImporter(file_name, data_type)
         data_importer.parse_df_to_dynamo_json(append=True, db_table=field_trial)

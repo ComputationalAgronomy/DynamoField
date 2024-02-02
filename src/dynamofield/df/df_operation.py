@@ -22,7 +22,7 @@ def subset_by_info(dd: pd.DataFrame, info):
 def merge_df(dd: pd.DataFrame, info_t1, info_t2, t1_column, t2_column) -> pd.DataFrame:
     d1 = subset_by_info(dd, info_t1)
     d2 = subset_by_info(dd, info_t2)
-    print(f"{d1.columns}\n{d2.columns}\n")
+    # print(f"{d1.columns}\n{d2.columns}\n")
     merge_name = t1_column
 
     if t1_column != t2_column:

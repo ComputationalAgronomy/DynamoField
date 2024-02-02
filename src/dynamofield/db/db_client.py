@@ -55,16 +55,16 @@ def remove_table(client, tablename):
     return response
 
 
-def delete_all_items_sort_key(client, tablename, sort_key):
+def delete_all_items_sort_key(client: botocore.client, tablename, sort_key):
     print(f"tablename:{tablename}\tsort_key:{sort_key}")
     try:
         response = client.scan(
             TableName=tablename,
-            FilterExpression='begins_with ( info , :info )',
+            FilterExpression='begins_with ( data_type , :data_type )',
             ExpressionAttributeValues={
-                ':info': {'S': f"{sort_key}_"},
+                ':data_type': {'S': f"{sort_key}_"},
             },
-            ProjectionExpression='trial_id, info',
+            ProjectionExpression='field_trial_id, data_type',
         )
         # print(response['Items'])
         for k in response['Items']:

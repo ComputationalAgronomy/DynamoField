@@ -28,13 +28,9 @@ def get_field_trial_id_list(tab, db_info):
         ids = [False]
         is_disabled = True
     else:
-        # field_trial = init_field_trial(db_info["endpoint"], db_info["table_name"])
         field_trial = app_db.connect_db_table(db_info)
         ids = field_trial.get_all_trial_id()
         is_disabled = False
-        print(f"{ids}")
-        # field_trial = init_field_trial(endpoint, table_name)
-        # data = field_trial.get_by_trial_ids(trial_id, info_list)
 
     return ids, is_disabled
 
@@ -54,7 +50,6 @@ def update_output_info(trial_ids, db_info):
         info = field_trial.list_all_sort_keys(trial)
         info_set = db_keys.extract_sort_key_prefix(info)
         info_global.update(info_set)
-        # print(info_global)
     info_global = list(info_global)
     info_global.sort()
     return info_global  # , info_global, info_global
@@ -134,9 +129,7 @@ def update_data_table(btn_fetch, btn_merge_info, btn_merge_column,
     if not trial_id or not db_info["db_status"] or not db_info["table_status"]:
         raise PreventUpdate
     df_output = pd.DataFrame()
-    print(f"trial_id:{trial_id}\t Trigger:{ctx.triggered_id}")
     if "btn_fetch_data" == ctx.triggered_id:
-        print(f"info_list:{info_list}\t{info_options}")
         if info_list is None:
             info_list = info_options
         field_trial = app_db.connect_db_table(db_info)
@@ -144,17 +137,12 @@ def update_data_table(btn_fetch, btn_merge_info, btn_merge_column,
         df_output = json_utils.result_list_to_df(data)
     elif ("btn_merge_info_tables" == ctx.triggered_id and
           data_table and t1_column and t2_column):
-        print(f"column_select:{t1_column}\t{t2_column}")
         dd = pd.DataFrame(data_table)
         info_list = [info_t1, info_t2]
         df_output = df_operation.merge_df(dd, info_t1, info_t2,
                                           t1_column, t2_column)
     elif ("btn_merge_columns" == ctx.triggered_id and data_table and
           info_merge and merge_columns):
-        # dd = pd.DataFrame(data_table)
-        print(f"merge_columns:{merge_columns}\tat_info:{info_merge}\tNew_name:{merge_new_col_name}")
-        # field_trial = app_data.connect_db_table(db_info)
-        # data_temp = field_trial.query_by_trial_ids(trial_id, info_merge)
         dd = pd.DataFrame(data_table)
         data = df_operation.subset_by_info(dd, info_merge)
         df_output = df_operation.merge_multi_columns(
@@ -179,9 +167,6 @@ def update_data_table(btn_fetch, btn_merge_info, btn_merge_column,
 def update_select_two_tables(info_1, info_2, columns, data_table):
     if not info_1 or not info_2:
         raise PreventUpdate
-    # t1_c = None
-    # t2_c = None
-    print(f"info:{info_1}\t{info_2}")
     dd = pd.DataFrame(data_table)
     t1_c = df_operation.get_non_na_column_name(dd, info_1)
     t2_c = df_operation.get_non_na_column_name(dd, info_2)
@@ -206,8 +191,6 @@ def update_select_info_column_names(info, columns, data_table):
 
 
 
-
-
 @dash.callback(
     Output("md_merge_info", "children"),
     Input("btn_replace_merged_columns", "n_clicks"),
@@ -222,13 +205,8 @@ def replace_existing_data_table(btn_replace, data_type,
                                data_table, db_info):
     try:
         field_trial = app_db.connect_db_table(db_info)
-        # children = [import_dataframe(c, n, data_type, is_append, field_trial)
-        #                 for c, n, in
-        #                 zip(list_of_contents, list_of_names)]
 
-        # df = parse_contents(contents, filename)
         dd = pd.DataFrame(data_table)
-        print(dd)
         data_importer = importer.DataImporter(dd, data_type)
         data_importer.parse_df_to_dynamo_json(
             append=False, db_table=field_trial)
@@ -305,7 +283,6 @@ def stat_analysis(btn_stat, btn_summary, data_table,
     if not var_x and not var_y:
         raise PreventUpdate
     df = pd.DataFrame(data_table)
-    print(f"stats:{df.shape}\t{df.columns}\tVar:{var_x}, {var_y}, {var_by}")
     if "btn_stats" == ctx.triggered_id:
         results = summary_stats.analysis_design(
             df, factor=var_x, response=var_y, by=var_by)
