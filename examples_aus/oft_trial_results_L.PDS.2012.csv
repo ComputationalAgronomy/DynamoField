@@ -1,0 +1,12 @@
+field_trial_id,Table number,Treatment 1,Treatment 3,Dry matter (t/ha).1,weight gain ((g/hd/day)).1,weight gain (kg/ha/day).1,weigh in ave (kg),weight gain (kg/hd/day)
+L.PDS.2012,1,Ryegrass,,3.01,,,,
+L.PDS.2012,1,Raphno,,3.83,,,,
+L.PDS.2012,2,Ryegrass,,,109.38,1.31,,
+L.PDS.2012,2,Raphno,,,171.88,5.35,,
+L.PDS.2012,3,Barley Stubble,,3.55,,,,
+L.PDS.2012,3,Millet,,1.2,,,,
+L.PDS.2012,4,Barley Stubble,,,120.0,0.44,,
+L.PDS.2012,4,Millet,,,253.33,1.41,,
+L.PDS.2012,5,late October 2019,250 head,,,,325.0,0.08
+L.PDS.2012,5,September 2019,250 head,,,,305.0,2.0
+L.PDS.2012,5,Nov/Dec 201,120 head,,,,300.0,1.0

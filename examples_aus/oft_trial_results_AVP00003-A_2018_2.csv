@@ -1,0 +1,114 @@
+field_trial_id,Table number,Treatment 1,Grain yield (t/ha).2,Soil strength (kPa),Water droplet penetration time (seconds),Soil loosening depth (cm)
+AVP00003-A,1,Control,,,1.5,
+AVP00003-A,1,Deep Rip,,,1.7,
+AVP00003-A,1,Deep Rip Inclusion,,,1.85,
+AVP00003-A,1,Deep Rip + Spade,,,0.3,
+AVP00003-A,1,One Way Plough,,,0.25,
+AVP00003-A,1,Mouldboard Plough,,,0.18,
+AVP00003-A,2,Deep Rip,0.81,,,
+AVP00003-A,2,Deep Rip Inclusion,0.86,,,
+AVP00003-A,2,Deep Rip + Spade,0.89,,,
+AVP00003-A,2,Heliripper,1.54,,,
+AVP00003-A,2,Heliripper Inclusion,1.35,,,
+AVP00003-A,2,Heliripper + Spade,1.39,,,
+AVP00003-A,2,Heliripper + One Way Plough,1.47,,,
+AVP00003-A,2,Heliripper Inclusion + Spade,1.47,,,
+AVP00003-A,2,One Way Plough,0.92,,,
+AVP00003-A,2,Mouldboard Plough,1.24,,,
+AVP00003-A,2,Mouldboard Plough + Heliripper,1.4,,,
+AVP00003-A,2,Control,0.8,,,
+AVP00003-A,2,Delve + Spade,1.52,,,
+AVP00003-A,3,Barrier,,2500.0,,-5.0
+AVP00003-A,3,Barrier,,2500.0,,-10.0
+AVP00003-A,3,Barrier,,2500.0,,-15.0
+AVP00003-A,3,Barrier,,2500.0,,-20.0
+AVP00003-A,3,Barrier,,2500.0,,-25.0
+AVP00003-A,3,Barrier,,2500.0,,-30.0
+AVP00003-A,3,Barrier,,2500.0,,-35.0
+AVP00003-A,3,Barrier,,2500.0,,-40.0
+AVP00003-A,3,Barrier,,2500.0,,-45.0
+AVP00003-A,3,Barrier,,2500.0,,-50.0
+AVP00003-A,3,Barrier,,2500.0,,-55.0
+AVP00003-A,3,Barrier,,2500.0,,-60.0
+AVP00003-A,3,Barrier,,2500.0,,-65.0
+AVP00003-A,3,Barrier,,2500.0,,-70.0
+AVP00003-A,3,Deep Rip,,275.0,,-5.0
+AVP00003-A,3,Deep Rip,,509.0,,-10.0
+AVP00003-A,3,Deep Rip,,821.0,,-15.0
+AVP00003-A,3,Deep Rip,,1020.0,,-20.0
+AVP00003-A,3,Deep Rip,,1292.0,,-25.0
+AVP00003-A,3,Deep Rip,,1952.0,,-30.0
+AVP00003-A,3,Deep Rip,,3142.0,,-35.0
+AVP00003-A,3,Deep Rip,,3876.0,,-40.0
+AVP00003-A,3,Deep Rip,,4240.0,,-45.0
+AVP00003-A,3,Deep Rip,,4287.0,,-50.0
+AVP00003-A,3,Deep Rip,,4111.0,,-55.0
+AVP00003-A,3,Deep Rip,,3906.0,,-60.0
+AVP00003-A,3,Deep Rip,,3773.0,,-65.0
+AVP00003-A,3,Deep Rip,,3699.0,,-70.0
+AVP00003-A,3,Control,,676.0,,-5.0
+AVP00003-A,3,Control,,1203.0,,-10.0
+AVP00003-A,3,Control,,1936.0,,-15.0
+AVP00003-A,3,Control,,2572.0,,-20.0
+AVP00003-A,3,Control,,3053.0,,-25.0
+AVP00003-A,3,Control,,3516.0,,-30.0
+AVP00003-A,3,Control,,3886.0,,-35.0
+AVP00003-A,3,Control,,4136.0,,-40.0
+AVP00003-A,3,Control,,4208.0,,-45.0
+AVP00003-A,3,Control,,4201.0,,-50.0
+AVP00003-A,3,Control,,4020.0,,-55.0
+AVP00003-A,3,Control,,3804.0,,-60.0
+AVP00003-A,3,Control,,3583.0,,-65.0
+AVP00003-A,3,Control,,3403.0,,-70.0
+AVP00003-A,3,Mouldboard Plough,,176.0,,-5.0
+AVP00003-A,3,Mouldboard Plough,,361.0,,-10.0
+AVP00003-A,3,Mouldboard Plough,,489.0,,-15.0
+AVP00003-A,3,Mouldboard Plough,,659.0,,-20.0
+AVP00003-A,3,Mouldboard Plough,,1003.0,,-25.0
+AVP00003-A,3,Mouldboard Plough,,1897.0,,-30.0
+AVP00003-A,3,Mouldboard Plough,,2700.0,,-35.0
+AVP00003-A,3,Mouldboard Plough,,3629.0,,-40.0
+AVP00003-A,3,Mouldboard Plough,,4121.0,,-45.0
+AVP00003-A,3,Mouldboard Plough,,4219.0,,-50.0
+AVP00003-A,3,Mouldboard Plough,,3973.0,,-55.0
+AVP00003-A,3,Mouldboard Plough,,3896.0,,-60.0
+AVP00003-A,3,Mouldboard Plough,,3630.0,,-65.0
+AVP00003-A,3,Mouldboard Plough,,3533.0,,-70.0
+AVP00003-A,3,Hellirpper,,265.0,,-5.0
+AVP00003-A,3,Hellirpper,,407.0,,-10.0
+AVP00003-A,3,Hellirpper,,468.0,,-15.0
+AVP00003-A,3,Hellirpper,,507.0,,-20.0
+AVP00003-A,3,Hellirpper,,523.0,,-25.0
+AVP00003-A,3,Hellirpper,,500.0,,-30.0
+AVP00003-A,3,Hellirpper,,502.0,,-35.0
+AVP00003-A,3,Hellirpper,,500.0,,-40.0
+AVP00003-A,3,Hellirpper,,613.0,,-45.0
+AVP00003-A,3,Hellirpper,,791.0,,-50.0
+AVP00003-A,3,Hellirpper,,1135.0,,-55.0
+AVP00003-A,3,Hellirpper,,1606.0,,-60.0
+AVP00003-A,3,Hellirpper,,2164.0,,-65.0
+AVP00003-A,3,Hellirpper,,2733.0,,-70.0
+AVP00003-A,4,Deep Rip,1.04,,,
+AVP00003-A,4,Deep Rip Inclusion,1.02,,,
+AVP00003-A,4,Deep Rip + Spade,1.15,,,
+AVP00003-A,4,Heliripper,1.58,,,
+AVP00003-A,4,Heliripper Inclusion,1.5,,,
+AVP00003-A,4,Heliripper + Spade,1.63,,,
+AVP00003-A,4,Heliripper + One Way Plough,1.4,,,
+AVP00003-A,4,Heliripper Inclusion + Spade,1.66,,,
+AVP00003-A,4,One Way Plough,1.03,,,
+AVP00003-A,4,Mouldboard Plough,1.25,,,
+AVP00003-A,4,Mouldboard Plough + Heliripper,1.32,,,
+AVP00003-A,4,Control,0.89,,,
+AVP00003-A,5,Deep Rip,0.39,,,
+AVP00003-A,5,Deep Rip Inclusion,0.41,,,
+AVP00003-A,5,Deep Rip + Spade,0.5,,,
+AVP00003-A,5,Heliripper,0.59,,,
+AVP00003-A,5,Heliripper Inclusion,0.57,,,
+AVP00003-A,5,Heliripper + Spade,0.6,,,
+AVP00003-A,5,Heliripper + One Way Plough,0.57,,,
+AVP00003-A,5,Heliripper Inclusion + Spade,0.63,,,
+AVP00003-A,5,One Way Plough,0.48,,,
+AVP00003-A,5,Mouldboard Plough,0.55,,,
+AVP00003-A,5,Mouldboard Plough + Heliripper,0.56,,,
+AVP00003-A,5,Control,0.39,,,

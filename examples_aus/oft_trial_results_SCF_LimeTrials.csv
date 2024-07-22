@@ -1,0 +1,78 @@
+field_trial_id,Table number,Treatment 1,Oil (%),Protein (%),Grain yield (t/ha),Moisture (%),pH 30-40cm (pH),0-10cm soil pH (pH),Grade (grade),10 - 20cm pH (pH),20 - 30cm pH (pH),pH 40-50cm (pH),L. Admixture (g),L. Admixture (%),S. Admixture (g),S. Admixture (%)
+SCF_LimeTrials,1,"5 t/ha
+  Lime + MBP (2014)",,,4.7,,,,,,,,,,,
+SCF_LimeTrials,1,2.5 t/ha Lime,,,4.55,,,,,,,,,,,
+SCF_LimeTrials,1,"Nil 5t/ha Lime
+  (2019)",,,4.69,,,,,,,,,,,
+SCF_LimeTrials,1,5 t/ha Lime,,,4.69,,,,,,,,,,,
+SCF_LimeTrials,1,10 t/Ha Lime,,,4.54,,,,,,,,,,,
+SCF_LimeTrials,1,MBP- Nil Lime,,,-,,,,,,,,,,,
+SCF_LimeTrials,1,Nil,,,4.64,,,,,,,,,,,
+SCF_LimeTrials,1,"5 t/ha
+  Lime + MBP (2014)",,,-,,,,,,,,,,,
+SCF_LimeTrials,1,2.5 t/ha Lime,,,-,,,,,,,,,,,
+SCF_LimeTrials,1,"Nil 5t/ha Lime
+  (2019)",,,-,,,,,,,,,,,
+SCF_LimeTrials,1,5 t/ha Lime,,,-,,,,,,,,,,,
+SCF_LimeTrials,1,10 t/Ha Lime,,,-,,,,,,,,,,,
+SCF_LimeTrials,1,MBP- Nil Lime,,,-,,,,,,,,,,,
+SCF_LimeTrials,1,Nil,,,-,,,,,,,,,,,
+SCF_LimeTrials,1,"5 t/ha
+  Lime + MBP (2014)",,,3.99,,,,,,,,,,,
+SCF_LimeTrials,1,2.5 t/ha Lime,,,3.95,,,,,,,,,,,
+SCF_LimeTrials,1,"Nil 5t/ha Lime
+  (2019)",,,3.13,,,,,,,,,,,
+SCF_LimeTrials,1,5 t/ha Lime,,,3.52,,,,,,,,,,,
+SCF_LimeTrials,1,10 t/Ha Lime,,,3.81,,,,,,,,,,,
+SCF_LimeTrials,1,MBP- Nil Lime,,,2.98,,,,,,,,,,,
+SCF_LimeTrials,1,Nil,,,3.28,,,,,,,,,,,
+SCF_LimeTrials,1,"5 t/ha
+  Lime + MBP (2014)",,,2.76,,,,,,,,,,,
+SCF_LimeTrials,1,2.5 t/ha Lime,,,2.21,,,,,,,,,,,
+SCF_LimeTrials,1,"Nil 5t/ha Lime
+  (2019)",,,2.53,,,,,,,,,,,
+SCF_LimeTrials,1,5 t/ha Lime,,,2.61,,,,,,,,,,,
+SCF_LimeTrials,1,10 t/Ha Lime,,,2.55,,,,,,,,,,,
+SCF_LimeTrials,1,MBP- Nil Lime,,,1.96,,,,,,,,,,,
+SCF_LimeTrials,1,Nil,,,2.46,,,,,,,,,,,
+SCF_LimeTrials,1,"5 t/ha
+  Lime + MBP (2014)",,,4.13,,,,,,,,,,,
+SCF_LimeTrials,1,2.5 t/ha Lime,,,3.89,,,,,,,,,,,
+SCF_LimeTrials,1,"Nil 5t/ha Lime
+  (2019)",,,3.71,,,,,,,,,,,
+SCF_LimeTrials,1,5 t/ha Lime,,,3.78,,,,,,,,,,,
+SCF_LimeTrials,1,10 t/Ha Lime,,,3.36,,,,,,,,,,,
+SCF_LimeTrials,1,MBP- Nil Lime,,,3.27,,,,,,,,,,,
+SCF_LimeTrials,1,Nil,,,4.3,,,,,,,,,,,
+SCF_LimeTrials,1,"5 t/ha
+  Lime + MBP (2014)",,,3.06,,,,,,,,,,,
+SCF_LimeTrials,1,2.5 t/ha Lime,,,2.83,,,,,,,,,,,
+SCF_LimeTrials,1,"Nil 5t/ha Lime
+  (2019)",,,2.3,,,,,,,,,,,
+SCF_LimeTrials,1,5 t/ha Lime,,,2.83,,,,,,,,,,,
+SCF_LimeTrials,1,10 t/Ha Lime,,,2.93,,,,,,,,,,,
+SCF_LimeTrials,1,MBP- Nil Lime,,,2.2,,,,,,,,,,,
+SCF_LimeTrials,1,Nil,,,2.32,,,,,,,,,,,
+SCF_LimeTrials,2,Nil,,,,,4.9,4.8,,4.5,4.7,5.4,,,,
+SCF_LimeTrials,2,2.5t/ha Lime ,,,,,4.6,5.0,,5.0,4.9,4.7,,,,
+SCF_LimeTrials,2,5t/haLime (surface),,,,,4.78,5.1,,4.51,4.73,5.56,,,,
+SCF_LimeTrials,2,5.0t/ha Lime,,,,,5.1,6.0,,4.8,5.0,5.3,,,,
+SCF_LimeTrials,2,5t/ha Lime + MBP,,,,,4.7,5.6,,4.6,4.7,4.9,,,,
+SCF_LimeTrials,2,10t/ha Lime,,,,,4.8,6.5,,4.6,4.7,5.3,,,,
+SCF_LimeTrials,3,Nil,44.9,19.7,,7.3,,,Can 1,,,,3.18,0.64,1.96,0.39
+SCF_LimeTrials,3,5.0 t/ha,45.9,18.2,,7.3,,,Can 1,,,,1.1,0.22,1.2,0.24
+SCF_LimeTrials,3,"(NIL Buffer
+  2013) MBP + 5t/Ha Lime-2015",45.6,19.0,,7.1,,,Can 1,,,,2.7,0.54,2.0,0.4
+SCF_LimeTrials,3,10.0 t/ha,45.8,18.3,,7.3,,,Can 1,,,,4.4,0.88,2.1,0.42
+SCF_LimeTrials,3,Nil,45.8,18.2,,6.9,,,Can 1,,,,2.6,0.52,2.1,0.42
+SCF_LimeTrials,3,2.5 t/ha,47.0,18.1,,6.9,,,Can 1,,,,3.58,0.72,1.76,0.35
+SCF_LimeTrials,3,"Control covert
+  to 5t/Ha Lime prior to rip 2019",46.6,18.2,,7.1,,,Can 1,,,,2.0,0.4,1.1,0.22
+SCF_LimeTrials,3,5.0 t/ha,46.7,17.8,,7.1,,,Can 1,,,,4.1,0.82,2.0,0.4
+SCF_LimeTrials,3,Control,45.6,18.7,,7.0,,,Can 1,,,,1.9,0.38,1.3,0.26
+SCF_LimeTrials,3,10.0 t/ha 2015,46.2,17.9,,6.7,,,Can 1,,,,5.3,1.06,2.3,0.46
+SCF_LimeTrials,3,"Lime 5 tonne +
+  MBP",46.5,18.3,,6.7,,,Can 1,,,,6.9,1.38,1.8,0.36
+SCF_LimeTrials,3,MBP nil Lime,45.1,19.5,,6.5,,,Can 2,,,,7.8,1.56,2.3,0.46
+SCF_LimeTrials,3,"Control
+  convert to 5t/Ha Lime prior to rip 2019",45.0,19.5,,6.8,,,Can 1,,,,3.5,0.7,2.8,0.56

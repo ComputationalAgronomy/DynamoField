@@ -1,0 +1,22 @@
+field_trial_id,Table number,Treatment 1,Grain yield (t/ha)
+SCF_LimeSources,1,Walco Lime,2.24
+SCF_LimeSources,1,Redgate Lime,2.33
+SCF_LimeSources,1,Control,2.35
+SCF_LimeSources,1,Lancelin Lime,2.38
+SCF_LimeSources,1,Denmark Lime,2.38
+SCF_LimeSources,1,Bornholm Lime,2.32
+SCF_LimeSources,1,6t/ha Lime,2.25
+SCF_LimeSources,1,Walco Lime,4.87
+SCF_LimeSources,1,Redgate Lime,5.14
+SCF_LimeSources,1,Control,5.21
+SCF_LimeSources,1,Lancelin Lime,4.78
+SCF_LimeSources,1,Denmark Lime,5.14
+SCF_LimeSources,1,Bornholm Lime,5.16
+SCF_LimeSources,1,6t/ha Lime,5.33
+SCF_LimeSources,1,Walco Lime,3.96
+SCF_LimeSources,1,Redgate Lime,3.59
+SCF_LimeSources,1,Control,3.77
+SCF_LimeSources,1,Lancelin Lime,3.92
+SCF_LimeSources,1,Denmark Lime,4.02
+SCF_LimeSources,1,Bornholm Lime,4.4
+SCF_LimeSources,1,6t/ha Lime,4.09
