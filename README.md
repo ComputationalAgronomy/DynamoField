@@ -9,6 +9,8 @@
       - [Import data panel](#import-data-panel)
       - [Query data panel](#query-data-panel)
   - [Example](#example)
+    - [Example basic demo](#example-basic-demo)
+    - [Example OFT dataset](#example-oft-dataset)
 
 ------
 
