@@ -1,0 +1,7 @@
+field_trial_id,Treatment 1,P units applied (kg/ha),P balance (kg/ha),Cumulative P removal (kg/ha),cumulative Yield (t/ha)
+SCF_PrestonP,40kg/ha,24.0,-27.0,52.0,14.36
+SCF_PrestonP,60kg/ha,36.0,-14.0,51.0,14.32
+SCF_PrestonP,80kg/ha,48.0,0.0,55.0,15.04
+SCF_PrestonP,100kg/ha,60.0,4.0,57.0,15.75
+SCF_PrestonP,120kg/ha,72.0,15.0,58.0,15.13
+SCF_PrestonP,140kg/ha,84.0,26.0,59.0,15.75

@@ -117,11 +117,11 @@ There are a few core concepts and terminologies for **DynamoField**.
   - Use "List Existing Tables" to get all tables in the current database endpoint.
 - Click **Connect Database**
 
-  - AWS DynamoDB:
+    - AWS DynamoDB:
 
     ![DB_status_aws](figures/db_status_aws.png)
 
-  - Local DynamoDB:
+    - Local DynamoDB:
 
     ![DB_status_local](figures/db_status_local.png)
 
@@ -144,21 +144,23 @@ Import data in CSV format into the database
 
 
 ## Example
+
+### Example basic demo
 1. **Database Status panel:** Connect to the database and DB table.
    1. Database endpoint: `http://localhost:8000`
    2. Click **Connect Database**. The database status should change to **ONLINE**. If not, please make sure the endpoint is correct, and the DynamoDB local server is running.
-   4. Enter `ft_db` in DB table name, and click "Connect Database" again. Both Database status and Table status should be **ONLINE**.
+   3. Enter `ft_db` in DB table name, and click "Connect Database" again. Both Database status and Table status should be **ONLINE**.
       - First time user. Enter `ft_db` at "Create a new table", and click **Create New Table**.
 
-2. **Import data panel:**  Upload example dataset from the `examples` folder
+2. **Import data panel:**  Upload example dataset from the `example_basic` folder
 
-    | filename | **data_type** |
-    | --- | --- |
-    | eg_contact.csv | contact |
-    | eg_management | management|
-    | eg_meta.csv | meta |
-    | eg_plot.csv | plot |
-    | eg_trt.csv | trt |
+    | filename       | data_type  |
+    | -------------- | ---------- |
+    | eg_contact.csv | contact    |
+    | eg_management  | management |
+    | eg_meta.csv    | meta       |
+    | eg_plot.csv    | plot       |
+    | eg_trt.csv     | trt        |
 
     To import these tables into the database:
     1. Select one `CSV` file from the example folder.
@@ -185,11 +187,44 @@ Import data in CSV format into the database
    4. Click "Plot Data"
    5.  Plotting panel with build-in figure control
 
-6. **Statistical analysis:**
+6.  **Statistical analysis:**
    1.  Select `trt` for "Factor", and `yield` for "Response"
    2. Optional: Select "Slice by"
    3. Click "Analysis" or "Summary"
 
+
+
+### Example OFT dataset
+This example contains 17 field trials from Online Farm Trials (OFT) https://www.farmtrials.com.au/
+
+1. **Database Status panel:** Connect to the database and DB table.
+   1. Database endpoint: `http://localhost:8000`
+   2. Click **Connect Database**. The database status should change to **ONLINE**. If not, please make sure the endpoint is correct, and the DynamoDB local server is running.
+   3. Enter `ft_oft` in DB table name, and click "Connect Database" again. Both Database status and Table status should be **ONLINE**.
+      - First time user. Enter `ft_oft` at "Create a new table", and click **Create New Table**.
+
+
+2. **Import data panel:**  Upload example dataset from the `example_OFT` folder
+
+    The filenames use the following naming conventions
+    `oft_trial_TRIAL_ID_key_DATA_TYPE.csv`
+
+    | filename                                 | trial_id       | data_type | Description                          |
+    | ---------------------------------------- | -------------- | --------- | ------------------------------------ |
+    | oft_key_copyright.csv                    | -              | copyright | Copyright information for all trials |
+    | oft_trial_9176109_key_info.csv           | 9176109        | info      | Information for this trial           |
+    | oft_trial_9176109_key_result1.csv        | 9176109        | result    | Result 1 from this trial             |
+    | oft_trial_9176109_key_result2.csv        | 9176109        | result    | Result 2 from this trial             |
+    | oft_trial_SCF_LimeTrials_key_info.csv    | SCF_LimeTrials | info      | Information for this trial           |
+    | oft_trial_SCF_LimeTrials_key_result1.csv | SCF_LimeTrials | result    | Result 1 from this trial             |
+    | oft_trial_SCF_LimeTrials_key_result2.csv | SCF_LimeTrials | result    | Result 2 from this trial             |
+
+    To import these tables into the database:
+    1. Select one `CSV` file from the example folder.
+    2. [Optional]: Use **Preview File** to check the contents
+    3. Import info_type: Enter the corresponding value from the table.
+    4. Select `Insert new data`, and this will append import data to the current database. On the other hand, `Replace existing` will overwrite the existing data for a given info_type
+    5. Click **Import Data**
 
 
 ## Others

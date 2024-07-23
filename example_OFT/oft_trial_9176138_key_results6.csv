@@ -1,0 +1,8 @@
+field_trial_id,Treatment 1,Hectolitre weight (kg/hL),Protein (%),Screenings (%),Moisture (%)
+9176138,Control (+100kg/ha),82.4,9.2,0.95,9.7
+9176138,"Farmer practice
+  (+100, +130kg/ha)",81.5,9.6,0.8,9.6
+9176138,"Split (+100, +65,
+  +65kg/ha)",81.4,10.3,0.95,9.6
+9176138,"High N (+100, +130,
+  +65, +65kg/ha)",81.2,10.6,1.06,9.6

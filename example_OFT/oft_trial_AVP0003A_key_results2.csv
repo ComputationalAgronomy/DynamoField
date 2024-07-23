@@ -1,0 +1,13 @@
+field_trial_id,Treatment 1,Soil strength (kPa),Depth (cm).1
+AVP0003A,Control,0.0,0.0
+AVP0003A,Control,3600.0,10.0
+AVP0003A,Control,5000.0,20.0
+AVP0003A,Control,4600.0,30.0
+AVP0003A,Control,3000.0,40.0
+AVP0003A,Control,2500.0,50.0
+AVP0003A,Deep Rip,0.0,0.0
+AVP0003A,Deep Rip,500.0,10.0
+AVP0003A,Deep Rip,600.0,20.0
+AVP0003A,Deep Rip,550.0,30.0
+AVP0003A,Deep Rip,600.0,40.0
+AVP0003A,Deep Rip,800.0,50.0

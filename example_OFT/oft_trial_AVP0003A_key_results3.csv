@@ -1,0 +1,19 @@
+field_trial_id,Treatment 1,pH CaCl2 (pH),Depth (cm).1
+AVP0003A,Control,6.5,0.0
+AVP0003A,Control,5.0,10.0
+AVP0003A,Control,4.5,20.0
+AVP0003A,Control,4.0,30.0
+AVP0003A,Control,4.0,40.0
+AVP0003A,Control,4.0,50.0
+AVP0003A,Deep Rip,6.4,0.0
+AVP0003A,Deep Rip,5.5,10.0
+AVP0003A,Deep Rip,5.0,20.0
+AVP0003A,Deep Rip,4.4,30.0
+AVP0003A,Deep Rip,4.0,40.0
+AVP0003A,Deep Rip,4.0,50.0
+AVP0003A,Deep Rip + Spade + 6t Lime,5.6,0.0
+AVP0003A,Deep Rip + Spade + 6t Lime,5.4,10.0
+AVP0003A,Deep Rip + Spade + 6t Lime,5.0,20.0
+AVP0003A,Deep Rip + Spade + 6t Lime,4.8,30.0
+AVP0003A,Deep Rip + Spade + 6t Lime,4.6,40.0
+AVP0003A,Deep Rip + Spade + 6t Lime,4.4,50.0

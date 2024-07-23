@@ -1,0 +1,7 @@
+field_trial_id,Treatment 1,Water droplet penetration time (seconds)
+AVP00003-A,Control,1.5
+AVP00003-A,Deep Rip,1.7
+AVP00003-A,Deep Rip Inclusion,1.85
+AVP00003-A,Deep Rip + Spade,0.3
+AVP00003-A,One Way Plough,0.25
+AVP00003-A,Mouldboard Plough,0.18

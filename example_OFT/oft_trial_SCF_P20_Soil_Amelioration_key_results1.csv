@@ -1,0 +1,11 @@
+field_trial_id,Treatment 1,pH CaCl2 (pH)
+SCF_P20_ Soil Amelioration,Conrol,4.75
+SCF_P20_ Soil Amelioration,"Deep rip, nil lime",4.55
+SCF_P20_ Soil Amelioration,"Deep rip, 12t/ha farmer lime",6.15
+SCF_P20_ Soil Amelioration,Deep rip- 5t/ha Commercial lime,6.4
+SCF_P20_ Soil Amelioration,"Nil rip, 5t/ha Commercial lime",6.35
+SCF_P20_ Soil Amelioration,"Deep rip, nil lime",4.3
+SCF_P20_ Soil Amelioration,Deep rip + 5t/ha Commercial lime,6.15
+SCF_P20_ Soil Amelioration,Deep rip + 12t/ha Farmer lime,5.25
+SCF_P20_ Soil Amelioration,Nil rip + 5t/ha Commercial lime,4.4
+SCF_P20_ Soil Amelioration,Control,4.2

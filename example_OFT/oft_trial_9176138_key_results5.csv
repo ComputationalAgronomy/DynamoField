@@ -1,0 +1,5 @@
+field_trial_id,Treatment 1,Grain yield (t/ha).3
+9176138,Control (+100),5.03
+9176138,"Farmer Practice (+100, +130)",5.43
+9176138,"Split (+100, +65, +65)",5.34
+9176138,"High N +65 (+100, +130, +65)",5.29

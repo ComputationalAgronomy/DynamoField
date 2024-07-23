@@ -1,0 +1,71 @@
+field_trial_id,Treatment 1,Soil strength (kPa),Soil loosening depth (cm)
+AVP00003-A,Barrier,2500.0,-5.0
+AVP00003-A,Barrier,2500.0,-10.0
+AVP00003-A,Barrier,2500.0,-15.0
+AVP00003-A,Barrier,2500.0,-20.0
+AVP00003-A,Barrier,2500.0,-25.0
+AVP00003-A,Barrier,2500.0,-30.0
+AVP00003-A,Barrier,2500.0,-35.0
+AVP00003-A,Barrier,2500.0,-40.0
+AVP00003-A,Barrier,2500.0,-45.0
+AVP00003-A,Barrier,2500.0,-50.0
+AVP00003-A,Barrier,2500.0,-55.0
+AVP00003-A,Barrier,2500.0,-60.0
+AVP00003-A,Barrier,2500.0,-65.0
+AVP00003-A,Barrier,2500.0,-70.0
+AVP00003-A,Deep Rip,275.0,-5.0
+AVP00003-A,Deep Rip,509.0,-10.0
+AVP00003-A,Deep Rip,821.0,-15.0
+AVP00003-A,Deep Rip,1020.0,-20.0
+AVP00003-A,Deep Rip,1292.0,-25.0
+AVP00003-A,Deep Rip,1952.0,-30.0
+AVP00003-A,Deep Rip,3142.0,-35.0
+AVP00003-A,Deep Rip,3876.0,-40.0
+AVP00003-A,Deep Rip,4240.0,-45.0
+AVP00003-A,Deep Rip,4287.0,-50.0
+AVP00003-A,Deep Rip,4111.0,-55.0
+AVP00003-A,Deep Rip,3906.0,-60.0
+AVP00003-A,Deep Rip,3773.0,-65.0
+AVP00003-A,Deep Rip,3699.0,-70.0
+AVP00003-A,Control,676.0,-5.0
+AVP00003-A,Control,1203.0,-10.0
+AVP00003-A,Control,1936.0,-15.0
+AVP00003-A,Control,2572.0,-20.0
+AVP00003-A,Control,3053.0,-25.0
+AVP00003-A,Control,3516.0,-30.0
+AVP00003-A,Control,3886.0,-35.0
+AVP00003-A,Control,4136.0,-40.0
+AVP00003-A,Control,4208.0,-45.0
+AVP00003-A,Control,4201.0,-50.0
+AVP00003-A,Control,4020.0,-55.0
+AVP00003-A,Control,3804.0,-60.0
+AVP00003-A,Control,3583.0,-65.0
+AVP00003-A,Control,3403.0,-70.0
+AVP00003-A,Mouldboard Plough,176.0,-5.0
+AVP00003-A,Mouldboard Plough,361.0,-10.0
+AVP00003-A,Mouldboard Plough,489.0,-15.0
+AVP00003-A,Mouldboard Plough,659.0,-20.0
+AVP00003-A,Mouldboard Plough,1003.0,-25.0
+AVP00003-A,Mouldboard Plough,1897.0,-30.0
+AVP00003-A,Mouldboard Plough,2700.0,-35.0
+AVP00003-A,Mouldboard Plough,3629.0,-40.0
+AVP00003-A,Mouldboard Plough,4121.0,-45.0
+AVP00003-A,Mouldboard Plough,4219.0,-50.0
+AVP00003-A,Mouldboard Plough,3973.0,-55.0
+AVP00003-A,Mouldboard Plough,3896.0,-60.0
+AVP00003-A,Mouldboard Plough,3630.0,-65.0
+AVP00003-A,Mouldboard Plough,3533.0,-70.0
+AVP00003-A,Hellirpper,265.0,-5.0
+AVP00003-A,Hellirpper,407.0,-10.0
+AVP00003-A,Hellirpper,468.0,-15.0
+AVP00003-A,Hellirpper,507.0,-20.0
+AVP00003-A,Hellirpper,523.0,-25.0
+AVP00003-A,Hellirpper,500.0,-30.0
+AVP00003-A,Hellirpper,502.0,-35.0
+AVP00003-A,Hellirpper,500.0,-40.0
+AVP00003-A,Hellirpper,613.0,-45.0
+AVP00003-A,Hellirpper,791.0,-50.0
+AVP00003-A,Hellirpper,1135.0,-55.0
+AVP00003-A,Hellirpper,1606.0,-60.0
+AVP00003-A,Hellirpper,2164.0,-65.0
+AVP00003-A,Hellirpper,2733.0,-70.0

@@ -1,0 +1,7 @@
+field_trial_id,Treatment 1,pH 30-40cm (pH),0-10cm soil pH (pH),10 - 20cm pH (pH),20 - 30cm pH (pH),pH 40-50cm (pH)
+SCF_LimeTrials,Nil,4.9,4.8,4.5,4.7,5.4
+SCF_LimeTrials,2.5t/ha Lime ,4.6,5.0,5.0,4.9,4.7
+SCF_LimeTrials,5t/haLime (surface),4.78,5.1,4.51,4.73,5.56
+SCF_LimeTrials,5.0t/ha Lime,5.1,6.0,4.8,5.0,5.3
+SCF_LimeTrials,5t/ha Lime + MBP,4.7,5.6,4.6,4.7,4.9
+SCF_LimeTrials,10t/ha Lime,4.8,6.5,4.6,4.7,5.3

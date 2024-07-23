@@ -1,0 +1,19 @@
+field_trial_id,Treatment 1,Grain yield (t/ha).1
+AVP0003A,Control,0.45
+AVP0003A,"3
+  t/ha lime",0.5
+AVP0003A,"3
+  t/ha lime + disc",0.65
+AVP0003A,3 t/ha lime + rip,1.1
+AVP0003A,"3 t/ha lime + rip
+  + spade",0.1
+AVP0003A,6 t/ha lime,0.5
+AVP0003A,6 t/ha lime + disc,0.65
+AVP0003A,"6
+  t/ha lime + rip",1.2
+AVP0003A,"6
+  t/ha lime + rip + spade",0.15
+AVP0003A,"Disc
+  only",0.65
+AVP0003A,Rip only,1.0
+AVP0003A,Rip + Spade only,0.15
