@@ -1,0 +1,55 @@
+field_trial_id,Treatment 1,Grain yield (t/ha)
+SCF_LimeTrials,"5 t/ha
+  Lime + MBP (2014)",4.7
+SCF_LimeTrials,2.5 t/ha Lime,4.55
+SCF_LimeTrials,"Nil 5t/ha Lime
+  (2019)",4.69
+SCF_LimeTrials,5 t/ha Lime,4.69
+SCF_LimeTrials,10 t/Ha Lime,4.54
+SCF_LimeTrials,MBP- Nil Lime,-
+SCF_LimeTrials,Nil,4.64
+SCF_LimeTrials,"5 t/ha
+  Lime + MBP (2014)",-
+SCF_LimeTrials,2.5 t/ha Lime,-
+SCF_LimeTrials,"Nil 5t/ha Lime
+  (2019)",-
+SCF_LimeTrials,5 t/ha Lime,-
+SCF_LimeTrials,10 t/Ha Lime,-
+SCF_LimeTrials,MBP- Nil Lime,-
+SCF_LimeTrials,Nil,-
+SCF_LimeTrials,"5 t/ha
+  Lime + MBP (2014)",3.99
+SCF_LimeTrials,2.5 t/ha Lime,3.95
+SCF_LimeTrials,"Nil 5t/ha Lime
+  (2019)",3.13
+SCF_LimeTrials,5 t/ha Lime,3.52
+SCF_LimeTrials,10 t/Ha Lime,3.81
+SCF_LimeTrials,MBP- Nil Lime,2.98
+SCF_LimeTrials,Nil,3.28
+SCF_LimeTrials,"5 t/ha
+  Lime + MBP (2014)",2.76
+SCF_LimeTrials,2.5 t/ha Lime,2.21
+SCF_LimeTrials,"Nil 5t/ha Lime
+  (2019)",2.53
+SCF_LimeTrials,5 t/ha Lime,2.61
+SCF_LimeTrials,10 t/Ha Lime,2.55
+SCF_LimeTrials,MBP- Nil Lime,1.96
+SCF_LimeTrials,Nil,2.46
+SCF_LimeTrials,"5 t/ha
+  Lime + MBP (2014)",4.13
+SCF_LimeTrials,2.5 t/ha Lime,3.89
+SCF_LimeTrials,"Nil 5t/ha Lime
+  (2019)",3.71
+SCF_LimeTrials,5 t/ha Lime,3.78
+SCF_LimeTrials,10 t/Ha Lime,3.36
+SCF_LimeTrials,MBP- Nil Lime,3.27
+SCF_LimeTrials,Nil,4.3
+SCF_LimeTrials,"5 t/ha
+  Lime + MBP (2014)",3.06
+SCF_LimeTrials,2.5 t/ha Lime,2.83
+SCF_LimeTrials,"Nil 5t/ha Lime
+  (2019)",2.3
+SCF_LimeTrials,5 t/ha Lime,2.83
+SCF_LimeTrials,10 t/Ha Lime,2.93
+SCF_LimeTrials,MBP- Nil Lime,2.2
+SCF_LimeTrials,Nil,2.32

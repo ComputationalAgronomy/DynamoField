@@ -1,9 +1,0 @@
-field_trial_id,Table number,Variety,Treatment 1,Grain yield (t/ha),Emergence plants (plants/m2),Volumetric Water Content 0 - 10cm (%) (%),Volumetric Water Content 10 - 30cm (%) (%)
-SCF2109_001SAX,1,Barley,Millet,4.69,140.5,10.089,5.774
-SCF2109_001SAX,1,Barley,Millet / Lab Lab,4.636,144.5,10.476,12.852
-SCF2109_001SAX,1,Barley,Fallow,4.514,150.5,12.07,10.049
-SCF2109_001SAX,1,Barley,Sorghum,4.5125,141.0,4.527,5.757
-SCF2109_001SAX,1,Winter Wheat,Control,4.49,,1.33,3.33
-SCF2109_001SAX,1,Winter Wheat,Sun Flower,4.4,,1.33,2.0
-SCF2109_001SAX,1,Winter Wheat,Millet,4.31,,1.33,0.667
-SCF2109_001SAX,1,Winter Wheat,Sorghum,4.53,,3.33,0.667

@@ -1,0 +1,13 @@
+field_trial_id,Treatment 1,Grain yield (t/ha).2
+AVP00003-A,Deep Rip,1.04
+AVP00003-A,Deep Rip Inclusion,1.02
+AVP00003-A,Deep Rip + Spade,1.15
+AVP00003-A,Heliripper,1.58
+AVP00003-A,Heliripper Inclusion,1.5
+AVP00003-A,Heliripper + Spade,1.63
+AVP00003-A,Heliripper + One Way Plough,1.4
+AVP00003-A,Heliripper Inclusion + Spade,1.66
+AVP00003-A,One Way Plough,1.03
+AVP00003-A,Mouldboard Plough,1.25
+AVP00003-A,Mouldboard Plough + Heliripper,1.32
+AVP00003-A,Control,0.89

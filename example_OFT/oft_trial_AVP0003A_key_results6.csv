@@ -1,0 +1,19 @@
+field_trial_id,Treatment 1,Return on investment compared to control ($/ha),Net 2-year benefit ($/ha),Treatment Cost ($/ha),Net 1-year benefit ($/ha)
+AVP0003A,Control,0.0,0.0,0.0,0.0
+AVP0003A,"3
+  t/ha lime",-256.0,-92.0,188.6,25.0
+AVP0003A,"3
+  t/ha lime + disc",-129.0,-29.0,199.6,100.0
+AVP0003A,3 t/ha lime + rip,310.0,212.0,227.1,325.0
+AVP0003A,"3 t/ha lime + rip
+  + spade",-245.0,232.0,302.2,-175.0
+AVP0003A,6 t/ha lime,-382.0,-30.0,377.1,25.0
+AVP0003A,6 t/ha lime + disc,-370.0,-82.0,388.1,100.0
+AVP0003A,"6
+  t/ha lime + rip",442.0,483.0,415.6,375.0
+AVP0003A,"6
+  t/ha lime + rip + spade",-505.0,136.0,490.8,-150.0
+AVP0003A,"Disc
+  only",64.0,-25.0,11.0,100.0
+AVP0003A,Rip only,655.0,418.0,38.5,275.0
+AVP0003A,Rip + Spade only,73.0,337.0,113.7,-150.0

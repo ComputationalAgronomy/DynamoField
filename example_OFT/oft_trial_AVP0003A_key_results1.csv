@@ -1,0 +1,19 @@
+field_trial_id,Treatment 1,Cost ($/ha)
+AVP0003A,Control,0.0
+AVP0003A,"3
+  t/ha lime",188.6
+AVP0003A,"3
+  t/ha lime + disc",199.6
+AVP0003A,3 t/ha lime + rip,227.1
+AVP0003A,"3 t/ha lime + rip
+  + spade",302.2
+AVP0003A,6 t/ha lime,377.1
+AVP0003A,6 t/ha lime + disc,388.1
+AVP0003A,"6
+  t/ha lime + rip",415.6
+AVP0003A,"6
+  t/ha lime + rip + spade",490.8
+AVP0003A,"Disc
+  only",11.0
+AVP0003A,Rip only,38.5
+AVP0003A,Rip + Spade only,113.7

@@ -1,0 +1,11 @@
+field_trial_id,Treatment 1,Grain yield (t/ha)
+SCF_P20_ Soil Amelioration,"Deep rip, nil lime",4.93
+SCF_P20_ Soil Amelioration,Deep rip + 5t/ha Commercial lime,4.4
+SCF_P20_ Soil Amelioration,Deep rip + 12t/ha Farmer lime,5.23
+SCF_P20_ Soil Amelioration,Nil rip + 5t/ha Commercial lime,4.29
+SCF_P20_ Soil Amelioration,Nil Rip- Nil Lime,5.49
+SCF_P20_ Soil Amelioration,"Deep rip, nil lime",2.46
+SCF_P20_ Soil Amelioration,Deep rip + 5t/ha Commercial lime,2.51
+SCF_P20_ Soil Amelioration,Deep rip + 12t/ha Farmer lime,2.47
+SCF_P20_ Soil Amelioration,Nil rip + 5t/ha Commercial lime,2.37
+SCF_P20_ Soil Amelioration,Nil Rip- Nil Lime,1.95
