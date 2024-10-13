@@ -18,7 +18,7 @@ def add_db_table(client, tablename):
                     'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'data_type',
+                    'AttributeName': 'record_type',
                     'AttributeType': 'S'
                 }
             ],
@@ -29,7 +29,7 @@ def add_db_table(client, tablename):
                     'KeyType': 'HASH'
                 },
                 {
-                    'AttributeName': 'data_type',
+                    'AttributeName': 'record_type',
                     'KeyType': 'RANGE'
                 }
             ],
@@ -60,18 +60,18 @@ def delete_all_items_sort_key(client: botocore.client, tablename, sort_key):
     try:
         response = client.scan(
             TableName=tablename,
-            FilterExpression='begins_with ( data_type , :data_type )',
+            FilterExpression='begins_with ( record_type , :record_type )',
             ExpressionAttributeValues={
-                ':data_type': {'S': f"{sort_key}_"},
+                ':record_type': {'S': f"{sort_key}_"},
             },
-            ProjectionExpression='field_trial_id, data_type',
+            ProjectionExpression='field_trial_id, record_type',
         )
         # print(response['Items'])
         for k in response['Items']:
             # print(k)
             client.delete_item(TableName=f"{tablename}", Key=k)
         len_data = len(response['Items'])
-        response = f"Successfully delete {len_data} items from data_type: {sort_key}. table:{tablename}."
+        response = f"Successfully delete {len_data} items from record_type: {sort_key}. table:{tablename}."
     except botocore.exceptions.ClientError as e:
         response = (f"Error delete_item in sort_key: {tablename}."
                     f"sort_key: {sort_key}. Error: {e}")

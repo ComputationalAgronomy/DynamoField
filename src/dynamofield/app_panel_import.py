@@ -72,7 +72,7 @@ def upload_import_panel():
     ])
 
 
-def danger_delete_data_type_panel():
+def danger_delete_record_type_panel():
     return html.Div(style={'padding': 10},
                     children=[
         dbc.Card([
@@ -80,9 +80,9 @@ def danger_delete_data_type_panel():
                 html.H4("Danger Zone!",style={"color": "red"})),
             dbc.CardBody([
                 dbc.Label("DELETE a data type"),
-                dbc.Input(id="text_delete_data_type",
+                dbc.Input(id="text_delete_record_type",
                           type="text"),
-                dbc.Button(id="btn_delete_data_type", children=["DELETE this data type"],
+                dbc.Button(id="btn_delete_record_type", children=["DELETE this data type"],
                            color="danger",
                            **app_style.BTN_ACTION_CONF,)
             ]),
@@ -97,5 +97,5 @@ def generate_import_panel():
                      id="generate_import",
                      children=[
         upload_import_panel(),
-        danger_delete_data_type_panel()
+        danger_delete_record_type_panel()
     ])]

@@ -26,7 +26,7 @@ def test_list_all_keys(field_trial: field_table.FieldTable):
 
     expected_ids = ['trial_2B', 'trial_3C', 'trial_4D']
     results = field_trial.query_by_single_trial_id(field_table.FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
-    expected = [{'field_trial_id': '__private_list_all_id__', 'data_type': t} for t in expected_ids]
+    expected = [{'field_trial_id': '__private_list_all_id__', 'record_type': t} for t in expected_ids]
     assert results == expected
 
     results = field_trial.get_all_trial_id()

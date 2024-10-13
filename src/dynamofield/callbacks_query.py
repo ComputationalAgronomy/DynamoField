@@ -201,13 +201,13 @@ def update_select_info_column_names(info, columns, data_table):
 
     prevent_initial_call=True,
 )
-def replace_existing_data_table(btn_replace, data_type,
+def replace_existing_data_table(btn_replace, record_type,
                                data_table, db_info):
     try:
         field_trial = app_db.connect_db_table(db_info)
 
         dd = pd.DataFrame(data_table)
-        data_importer = importer.DataImporter(dd, data_type)
+        data_importer = importer.DataImporter(dd, record_type)
         data_importer.parse_df_to_dynamo_json(
             append=False, db_table=field_trial)
         import_len = field_trial.import_batch_field_data_res(
@@ -219,7 +219,7 @@ def replace_existing_data_table(btn_replace, data_type,
         ])
     return html.Div([
         dcc.Markdown(
-            f"Imported **{import_len}** rows and store in info={data_type}."),
+            f"Imported **{import_len}** rows and store in info={record_type}."),
         # dash_table.DataTable(df.to_dict('records'),
         #     [{'name': i, 'id': i} for i in df.columns]
         # ),

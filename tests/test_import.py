@@ -41,10 +41,10 @@ def test_creation():
     expected = {'Table': {
         'AttributeDefinitions':
                 [{'AttributeName': 'field_trial_id', 'AttributeType': 'S'},
-                    {'AttributeName': 'data_type', 'AttributeType': 'S'}],
+                    {'AttributeName': 'record_type', 'AttributeType': 'S'}],
                 'TableName': 'ft_db',
                 'KeySchema': [{'AttributeName': 'field_trial_id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'data_type', 'KeyType': 'RANGE'}],
+                    {'AttributeName': 'record_type', 'KeyType': 'RANGE'}],
                 'TableStatus': 'ACTIVE',
                 'ItemCount': 0
                 }}
@@ -66,17 +66,17 @@ def test_import(field_trial: field_table.FieldTable):
     total = np.cumsum(list(expected_length.values())) + hidden_key
     expected_total = dict(zip(expected_length.keys(), total))
 
-    # for data_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
+    # for record_type in ["trt", "trial_meta", "trial_contact", "trial_management"]:
     count = field_trial.get_item_count()
     assert count == 0
-    for data_type in expected_length.keys():
-        file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
-        data_importer = importer.DataImporter(file_name, data_type)
+    for record_type in expected_length.keys():
+        file_name = os.path.join(TEST_DATA_DIR, f"test_{record_type}.csv")
+        data_importer = importer.DataImporter(file_name, record_type)
         data_importer.parse_df_to_dynamo_json(append=True, db_table=field_trial)
-        assert len(data_importer.dynamo_json_list) == expected_length[data_type]
+        assert len(data_importer.dynamo_json_list) == expected_length[record_type]
         field_trial.import_batch_field_data_res(data_importer) # How to test this effectively?
         field_trial.res_table.reload()
-        assert field_trial.res_table.item_count == expected_total[data_type]
+        assert field_trial.res_table.item_count == expected_total[record_type]
 
     field_trial.res_table.reload()
     assert field_trial.res_table.item_count == expected_total["plot"]
@@ -102,14 +102,14 @@ def _temp():
 
 
 
-    data_type = "yield"
-    file_name = os.path.join(TEST_DATA_DIR, f"test_{data_type}.csv")
+    record_type = "yield"
+    file_name = os.path.join(TEST_DATA_DIR, f"test_{record_type}.csv")
     df = pd.read_csv(file_name)
     df.describe()
     df.dtypes
 
 
-    data_importer = importer.DataImporter(file_name, data_type="plot")
+    data_importer = importer.DataImporter(file_name, record_type="plot")
     data_importer.parse_df_plot_to_dynamo_json()
 
     field_trial.import_batch_field_data_res(data_importer)

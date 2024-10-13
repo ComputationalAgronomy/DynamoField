@@ -21,19 +21,19 @@ class DataImporter:
         "Column": "column",
     }
 
-    def __init__(self, input, data_type, import_column=[]):
+    def __init__(self, input, record_type, import_column=[]):
         # self.res_table = res_table
         if isinstance(input, pd.DataFrame):
             self.df = input
         else:
             self.df = pd.read_csv(input)
-        self.data_type = data_type  # sort_key
+        self.record_type = record_type  # sort_key
         self.import_column = import_column
         self.dynamo_json_list = []
         self.partition_key_collection = set()
         if len(self.import_column) == 0:
             self.import_column = self.df.columns.values.tolist()
-        if self.data_type == "plot":
+        if self.record_type == "plot":
             self.create_df_plot_column()
 
 
@@ -46,8 +46,8 @@ class DataImporter:
                 pass
 
     def check_dup_key_prefix(self, key):
-        if not key.startswith(self.data_type):
-            key = f"{self.data_type}_{key}"
+        if not key.startswith(self.record_type):
+            key = f"{self.record_type}_{key}"
         return key
 
     def create_df_plot_column(self):
@@ -77,12 +77,12 @@ class DataImporter:
         return attr_dict
 
     def sort_key_creation(self, index, dfrow):
-        # if self.data_type == "plot":
-        #     key = self.check_dup_key_prefix(dfrow[self.data_type])
+        # if self.record_type == "plot":
+        #     key = self.check_dup_key_prefix(dfrow[self.record_type])
         # # elif is_single_row:
-        # #     key = self.data_type
+        # #     key = self.record_type
         # else:
-        key = f"{self.data_type}_{index}"
+        key = f"{self.record_type}_{index}"
         sort_key = field_table.FieldTable.create_sort_key(key)
         return sort_key
 
@@ -92,7 +92,7 @@ class DataImporter:
         offset = {k: 0 for k in df_trials.groups.keys()}
         if append:
             try:
-                offset_update = field_trial.find_offset(self.data_type)
+                offset_update = field_trial.find_offset(self.record_type)
                 # offset = offset | offset_update
                 offset.update(offset_update)
             except AttributeError as e:
@@ -148,19 +148,19 @@ class DataImporter:
 
 #     # reduce(lambda x: x.split("_")[1], xx)
 
-# current_data_split.aggregate({'data_type': lambda x : x.split("_")})
+# current_data_split.aggregate({'record_type': lambda x : x.split("_")})
 
-# current_data_split.aggregate({'data_type': lambda x : str(x)})
+# current_data_split.aggregate({'record_type': lambda x : str(x)})
 
-# current_data_split.get_group(trial_id).apply(lambda x: [1,2], index=['data_type'], axis=0)
-# current_data_split.get_group(trial_id)['data_type'].apply(lambda x: x.split(), axis=1)
+# current_data_split.get_group(trial_id).apply(lambda x: [1,2], index=['record_type'], axis=0)
+# current_data_split.get_group(trial_id)['record_type'].apply(lambda x: x.split(), axis=1)
 
-# current_data_split['data_type'].apply(lambda x : find_offset(x))
-# xx = current_data_split['data_type'].aggregate(lambda x : find_offset(x))
+# current_data_split['record_type'].apply(lambda x : find_offset(x))
+# xx = current_data_split['record_type'].aggregate(lambda x : find_offset(x))
 
 # current_data_split.info.aggregate(lambda x : [s.rsplit("_")[1] for s in x])
 
 
-# current_data_split.get_group(trial_id)['data_type'].apply(lambda x: x.split("_")[1])
+# current_data_split.get_group(trial_id)['record_type'].apply(lambda x: x.split("_")[1])
 
 

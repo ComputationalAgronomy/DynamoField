@@ -57,9 +57,9 @@ def delete_existing_table(db_info, tablename):
     response = dynamodb.delete_table(tablename)
     return response
 
-def delete_all_items_data_type(db_info, data_type):
+def delete_all_items_record_type(db_info, record_type):
     dynamodb = init_dynamodb(db_info["endpoint"])
-    response = dynamodb.delete_all_items_data_type(db_info["table_name"], data_type)
+    response = dynamodb.delete_all_items_record_type(db_info["table_name"], record_type)
     return response
 
 

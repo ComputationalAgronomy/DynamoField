@@ -30,14 +30,14 @@ def generate_upload_box_message(parsed_name):
     Input("upload-data", "filename"),
     Input("importing_type", "value"),
 )
-def update_uploader_info(filename, data_type):
+def update_uploader_info(filename, record_type):
     parsed_name = ""
-    parsed_data_type = "Import data type:"
+    parsed_record_type = "Import data type:"
     if filename is not None:
         parsed_name = f"\nCurrent files: {filename}"
-    if data_type is not None:
-        parsed_data_type = f"{parsed_data_type} {data_type}"
-    markdown_text = f"{parsed_data_type}  {parsed_name}"
+    if record_type is not None:
+        parsed_record_type = f"{parsed_record_type} {record_type}"
+    markdown_text = f"{parsed_record_type}  {parsed_name}"
     html_code = generate_upload_box_message(parsed_name)
     return html_code, markdown_text
 
@@ -49,11 +49,11 @@ def update_uploader_info(filename, data_type):
     Input("importing_type", "required"),
     Input("importing_type", "style"),
 )
-def is_btn_import_disabled(data_type, filenames, r, s):
+def is_btn_import_disabled(record_type, filenames, r, s):
     is_disabled = True
-    if data_type is not None and filenames is not None:
+    if record_type is not None and filenames is not None:
         is_disabled = False
-    # print(f"data_type:{data_type}=={filenames}=={data_type is not None}=={is_disabled}")
+    # print(f"record_type:{record_type}=={filenames}=={record_type is not None}=={is_disabled}")
     return is_disabled
 
 
@@ -64,7 +64,7 @@ def parse_contents(contents, filename, date=None):
         if "csv" in filename:
             # Assume that the user uploaded a CSV file
             df = pd.read_csv(io.StringIO(decoded.decode("utf-8")))
-            # data_importer = importer.DataImporter(filename, data_type)
+            # data_importer = importer.DataImporter(filename, record_type)
         elif "xls" in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded))
@@ -101,14 +101,14 @@ def preview_content(contents, filename, date):
 
 
 def import_dataframe(
-    contents, filename, data_type, is_append, db_table: field_table.FieldTable
+    contents, filename, record_type, is_append, db_table: field_table.FieldTable
 ):
     #     content_type, content_string = contents.split(',')
     # decoded = base64.b64decode(content_string)
 
     try:
         df = parse_contents(contents, filename)
-        data_importer = importer.DataImporter(df, data_type)
+        data_importer = importer.DataImporter(df, record_type)
         data_importer.parse_df_to_dynamo_json(append=is_append, db_table=db_table)
         import_len = db_table.import_batch_field_data_res(
             data_importer
@@ -122,7 +122,7 @@ def import_dataframe(
             html.H5(filename),
             # html.H6(datetime.datetime.fromtimestamp(date)),
             dcc.Markdown(
-                f"Imported **{import_len}** rows and store in info={data_type}."
+                f"Imported **{import_len}** rows and store in info={record_type}."
             ),
             # dash_table.DataTable(df.to_dict('records'),
             #     [{'name': i, 'id': i} for i in df.columns]
@@ -149,7 +149,7 @@ def update_output(
     list_of_contents,
     list_of_names,
     list_of_dates,
-    data_type,
+    record_type,
     is_append,
     db_info,
 ):
@@ -166,7 +166,7 @@ def update_output(
             #     children = ([html.H5("Database not available")])
             db_table = app_db.connect_db_table(db_info)
             children = [
-                import_dataframe(c, n, data_type, is_append, db_table)
+                import_dataframe(c, n, record_type, is_append, db_table)
                 for c, n, in zip(list_of_contents, list_of_names)
             ]
             # else:
@@ -176,13 +176,13 @@ def update_output(
 
 
 @dash.callback(
-    Output("btn_delete_data_type", "disabled"),
-    Input("text_delete_data_type", "value"),
-    Input("text_delete_data_type", "required"),
+    Output("btn_delete_record_type", "disabled"),
+    Input("text_delete_record_type", "value"),
+    Input("text_delete_record_type", "required"),
 )
-def is_btn_delete_disabled(data_type, is_required):
+def is_btn_delete_disabled(record_type, is_required):
     is_disabled = True
-    if data_type is not None:
+    if record_type is not None:
         is_disabled = False
 
     return is_disabled
@@ -190,16 +190,16 @@ def is_btn_delete_disabled(data_type, is_required):
 
 @dash.callback(
     Output("md_delete_output", "children"),
-    Input("btn_delete_data_type", "n_clicks"),
-    State("text_delete_data_type", "value"),
+    Input("btn_delete_record_type", "n_clicks"),
+    State("text_delete_record_type", "value"),
     State("store_db_info", "data"),
     prevent_initial_call=True,
 )
-def delete_data_type(btn_delete, data_type, db_info):
-    if data_type is None:
+def delete_record_type(btn_delete, record_type, db_info):
+    if record_type is None:
         raise PreventUpdate
     try:
-        md = app_db.delete_all_items_data_type(db_info, data_type)
+        md = app_db.delete_all_items_record_type(db_info, record_type)
     except Exception as e:
-        md = f"Please enter a data_type to delete all items. {e}"
+        md = f"Please enter a record_type to delete all items. {e}"
     return md
