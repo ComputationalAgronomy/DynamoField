@@ -103,7 +103,7 @@ There are a few core concepts and terminologies for **DynamoField**.
 
 - **field_trial_id:** Each trial has a unique ID. This column is required for all data.
 
-- **data_type:** Within each trial, information is categorized into multiple different **data_type**. There are no strict rules on how data is divided into categories; however, it is recommended that grouping data collected similar information together. For example;
+- **record_type:** Within each trial, information is categorized into multiple different **record_type**. There are no strict rules on how data is divided into categories; however, it is recommended that grouping data collected similar information together. For example;
   - Trt: Treatment information such as treatment id, treatment code, treatment name, etc.
   - Contact: Contact information include contact person, phone number, email address, company name, etc.
   - Plot: Yield for each plot, plot location, treatment id, etc.
@@ -131,13 +131,13 @@ There are a few core concepts and terminologies for **DynamoField**.
 #### Import data panel
 Import data in CSV format into the database
 - Upload a CSV file
-- Enter a **data_type**
+- Enter a **record_type**
 - Choose between "Insert new data" or "Replace existing".
 - Click **Import Data**
 
 #### Query data panel
 - Query data from the database
-- Merge data from multiple **data_type**
+- Merge data from multiple **record_type**
 - Plotting data
 - Perform basic statistical analysis
 - Export data
@@ -156,7 +156,7 @@ Import data in CSV format into the database
 
 2. **Import data panel:**  Upload example dataset from the `example_basic` folder
 
-    | filename       | data_type  |
+    | filename       | record_type  |
     | -------------- | ---------- |
     | eg_contact.csv | contact    |
     | eg_management  | management |
@@ -209,9 +209,9 @@ This example contains 17 field trials from Online Farm Trials (OFT) https://www.
 2. **Import data panel:**  Upload example dataset from the `example_OFT` folder
 
     The filenames use the following naming conventions
-    `oft_trial_TRIAL_ID_key_DATA_TYPE.csv`
+    `oft_trial_TRIAL_ID_key_RECORD_TYPE.csv`
 
-    | filename                                 | trial_id       | data_type | Description                          |
+    | filename                                 | trial_id       | record_type | Description                          |
     | ---------------------------------------- | -------------- | --------- | ------------------------------------ |
     | oft_key_copyright.csv                    | -              | copyright | Copyright information for all trials |
     | oft_trial_9176109_key_info.csv           | 9176109        | info      | Information for this trial           |

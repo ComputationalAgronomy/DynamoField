@@ -6,7 +6,7 @@ from dynamofield.utils import json_utils
 
 
 def get_non_na_column_name(dd: pd.DataFrame, info) -> list:
-    dsub = dd[dd['data_type'].str.startswith(f"{info}_")]
+    dsub = dd[dd['record_type'].str.startswith(f"{info}_")]
     dsub = dsub.dropna(axis=1, how='all')
     # d1 = pd.DataFrame()
     col_name = dsub.columns #.values.to_list()
@@ -15,7 +15,7 @@ def get_non_na_column_name(dd: pd.DataFrame, info) -> list:
     return col_name
 
 def subset_by_info(dd: pd.DataFrame, info):
-    dd_sub = dd[dd['data_type'].str.startswith(f"{info}_")]
+    dd_sub = dd[dd['record_type'].str.startswith(f"{info}_")]
     dd_ret = dd_sub.dropna(axis=1, how="all")
     return dd_ret
 

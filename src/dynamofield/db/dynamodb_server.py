@@ -37,7 +37,7 @@ class DynamodbServer:
         response = db_client.remove_table(client, tablename)
         return response
 
-    def delete_all_items_data_type(self, tablename, sort_key):
+    def delete_all_items_record_type(self, tablename, sort_key):
         client = self.session.client('dynamodb', endpoint_url=self.endpoint_url)
         response = db_client.delete_all_items_sort_key(client, tablename, sort_key)
         return response

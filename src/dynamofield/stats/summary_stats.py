@@ -151,7 +151,7 @@ def tukey(df, factor="treatment", response_list=["yields", "meta"], block=None):
 
 # @deprecated
 def parse_design(df):
-    subdata = df[['data_type', "treatment"]]
-    df['data_type'].replace("plot_(.*)", "\\1", regex=True)
+    subdata = df[['record_type', "treatment"]]
+    df['record_type'].replace("plot_(.*)", "\\1", regex=True)
 
 

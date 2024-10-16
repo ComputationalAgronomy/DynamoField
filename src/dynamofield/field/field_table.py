@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 class FieldTable:
     """Encapsulates an Amazon DynamoDB table of field trial data."""
     PARTITION_KEY_NAME = "field_trial_id"
-    SORT_KEY_NAME = "data_type"
+    SORT_KEY_NAME = "record_type"
     PARTITION_KEY = Key(PARTITION_KEY_NAME)
     SORT_KEY = Key(SORT_KEY_NAME)
     TRIAL_ID_LIST_PARTITION_KEY = "__private_list_all_id__"
@@ -148,7 +148,7 @@ class FieldTable:
         sort_key_list = []
 
         for item in response['Items']:
-            sort_key_list.append(item.get('data_type'))
+            sort_key_list.append(item.get('record_type'))
         if prune_common:
             other_sort_keys = [i for i in sort_key_list if not i.startswith(
                 'plot_') | i.startswith('trt_')]
@@ -173,14 +173,14 @@ class FieldTable:
             response = self.res_table.query(**keywords)
             other_info_dict[sort_key] = response["Items"]
         # for item in response['Items']:
-        #     sort_key_list.append(item.get('data_type'))
+        #     sort_key_list.append(item.get('record_type'))
 
         return other_info_dict
 
 
     def get_all_trial_id(self):
         response = self.query_by_single_trial_id(FieldTable.TRIAL_ID_LIST_PARTITION_KEY)
-        all_ids = [t['data_type'] for t in response]
+        all_ids = [t['record_type'] for t in response]
         return all_ids
 
 
@@ -276,11 +276,11 @@ class FieldTable:
 
 
 
-    def find_offset(self, data_type):
+    def find_offset(self, record_type):
         # try:
-        current_data = self.get_by_sort_key(data_type)
+        current_data = self.get_by_sort_key(record_type)
         current_data_split = current_data.groupby(FieldTable.PARTITION_KEY_NAME)
-        offset = current_data_split['data_type'].aggregate(lambda x : db_keys.find_offset_sort_key_list(x))
+        offset = current_data_split['record_type'].aggregate(lambda x : db_keys.find_offset_sort_key_list(x))
         # except NameError:
         #     offest =
         return offset

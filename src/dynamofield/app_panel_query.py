@@ -18,7 +18,7 @@ def trial_selection_panel():
                            **app_style.BTN_STD_CONF),
             ], width=3),
             dbc.Col([
-                dbc.Label('Multi-Select data_types related to this trial'),
+                dbc.Label('Multi-Select record_types related to this trial'),
                 dcc.Dropdown(id="dropdown_info_sortkey", multi=True),
                 dbc.Button('Select All', id='button_info_all',
                            **app_style.BTN_STD_CONF),
@@ -40,7 +40,7 @@ def merging_columns_within_info():
                     children=[
         dbc.Row([
             dbc.Col([
-                dbc.Label('Select a data_type'),
+                dbc.Label('Select a record_type'),
                 dcc.Dropdown(id="dropdown_info_merge", multi=False),
             ], width={"size": 2}),
             dbc.Col([
@@ -59,7 +59,7 @@ def merging_columns_within_info():
             ], width={"size": "3", "offset": 0.5}),
             dbc.Col([
                 html.Br(),
-                dbc.Button('Replace existing data_type',
+                dbc.Button('Replace existing record_type',
                            id='btn_replace_merged_columns',
                            color="warning",
                            **app_style.BTN_ACTION_CONF)
@@ -72,18 +72,18 @@ def merging_columns_within_info():
 def merging_two_info():
     return html.Div(style={'padding': 10},
                     children=[
-        # dbc.Row(html.H6("Merging two data_types tables")),
+        # dbc.Row(html.H6("Merging two record_types tables")),
         dbc.Row([
             dbc.Col([
-                dbc.Label('First data_type table'),
+                dbc.Label('First record_type table'),
                 dcc.Dropdown(id="dropdown_info_sortkey_t1", multi=False),
-                dbc.Label('First data_type - Column name'),
+                dbc.Label('First record_type - Column name'),
                 dcc.Dropdown(id="dropdown_info_t1_column", multi=False),
             ], width={"size": 3}),
             dbc.Col([
-                dbc.Label('Second data_type table'),
+                dbc.Label('Second record_type table'),
                 dcc.Dropdown(id="dropdown_info_sortkey_t2", multi=False),
-                dbc.Label('Second data_type - Column name'),
+                dbc.Label('Second record_type - Column name'),
                 dcc.Dropdown(id="dropdown_info_t2_column", multi=False),
             ], width={"size": 3, "offset": 0.5}),
             dbc.Col([
@@ -144,10 +144,10 @@ def generate_query_panel():
         dbc.Accordion([
             dbc.AccordionItem(
                 children=merging_columns_within_info(),
-                title="Merging columns within a data_type"),
+                title="Merging columns within a record_type"),
             dbc.AccordionItem(
                 children=merging_two_info(),
-                title="Merging two data_types"),
+                title="Merging two record_types"),
             dbc.AccordionItem(
                 children=plot_stats_panel(),
                 title="Basic statistical analysis"),
